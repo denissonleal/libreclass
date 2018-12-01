@@ -5,8 +5,8 @@
 
 @section('js')
 @parent
-{{ HTML::script("js/bootstrap-toggle.min.js") }}
-{{ HTML::script("js/offer-toogle.js") }}
+<script src="/js/bootstrap-toggle.min.js"></script>
+<script src="/js/offer-toogle.js"></script>
 @stop
 
 @extends('modules.offers')

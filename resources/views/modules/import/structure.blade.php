@@ -8,8 +8,8 @@
 
 @section('js')
 @parent
-{{ HTML::script('js/blocks.js') }}
-{{ HTML::script('js/import.js') }}
+<script src="/js/blocks.js"></script>
+<script src="/js/import.js"></script>
 @stop
 
 @section('body')

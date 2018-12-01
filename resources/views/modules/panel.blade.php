@@ -8,9 +8,9 @@
 
 @section('js')
 @parent
-{{ HTML::script('js/blocks.js') }}
-{{ HTML::script('js/lessons.js') }}
-{{ HTML::script('js/units.js') }}
+<script src="/js/blocks.js"></script>
+<script src="/js/lessons.js"></script>
+<script src="/js/units.js"></script>
 {{-- HTML::script('http://rubaxa.github.io/Sortable/Sortable.js') --}}
 @stop
 

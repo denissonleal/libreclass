@@ -6,7 +6,7 @@
 
 @section('js')
 @parent
-{{ HTML::script('js/blocks.js') }}
+<script src="/js/blocks.js"></script>
 @stop
 
 @section('body')

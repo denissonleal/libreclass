@@ -8,9 +8,9 @@
 
 @section('js')
 @parent
-  {{ HTML::script('js/config.js') }}
-  {{ HTML::script('http://maps.googleapis.com/maps/api/js?key=AIzaSyBVmdz-iIJpd-TisFvAg4qIU9WVqRVvVbk&v=3.exp&libraries=places') }}
-  {{ HTML::script('js/validations/usersConfig.js') }}
+  <script src="/js/config.js"></script>
+  <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBVmdz-iIJpd-TisFvAg4qIU9WVqRVvVbk&v=3.exp&libraries=places"></script>
+  <script src="/js/validations/usersConfig.js"></script>
 @stop
 
 @section('body')

@@ -7,9 +7,9 @@
 
 @section('js')
 @parent
-{{ HTML::script('js/blocks.js') }}
-{{ HTML::script('js/teacher.js') }}
-{{ HTML::script('js/validations/modulesAddTeachers.js') }}
+<script src="/js/blocks.js"></script>
+<script src="/js/teacher.js"></script>
+<script src="/js/validations/modulesAddTeachers.js"></script>
 @stop
 
 @section('body')

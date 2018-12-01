@@ -4,7 +4,7 @@
 <head>
   <link media="all" type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
   <link media="all" type="text/css" rel="stylesheet" href="/css/question.css">
-  {{ HTML::script('js/jquery.min.js') }}
+  <script src="/js/jquery.min.js"></script>
   <title>
     LibreClass
   </title>

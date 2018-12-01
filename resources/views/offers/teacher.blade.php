@@ -2,8 +2,8 @@
 
 @section('js')
 @parent
-{{ HTML::script('js/lib/jquery-ui-sortable.min.js') }}
-{{ HTML::script('js/offer-sortable.js') }}
+<script src="/js/lib/jquery-ui-sortable.min.js"></script>
+<script src="/js/offer-sortable.js"></script>
 @stop
 
 @section('offer-option')

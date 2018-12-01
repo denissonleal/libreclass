@@ -10,7 +10,7 @@
   <link media="all" type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
   <link media="all" type="text/css" rel="stylesheet" href="/css/home.css">
   <link media="all" type="text/css" rel="stylesheet" href="/css/fa/css/font-awesome.min.css">
-  {{ HTML::script('js/jquery.min.js') }}
+  <script src="/js/jquery.min.js"></script>
   <!-- Scripts are placed here -->
 </head>
 <body>

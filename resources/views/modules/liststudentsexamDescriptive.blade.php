@@ -7,8 +7,8 @@
 
 @section('js')
 @parent
-{{ HTML::script('js/blocks.js') }}
-{{ HTML::script('js/avaliable.js') }}
+<script src="/js/blocks.js"></script>
+<script src="/js/avaliable.js"></script>
 @stop
 
 @section('body')
