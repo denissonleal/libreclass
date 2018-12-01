@@ -2,8 +2,8 @@
 
 @section('css')
 @parent
-{{ HTML::style('css/blocks.css') }}
-{{ HTML::style('css/forms.css') }}
+<link media="all" type="text/css" rel="stylesheet" href="/css/blocks.css">
+<link media="all" type="text/css" rel="stylesheet" href="/css/forms.css">
 @stop
 
 @section('js')

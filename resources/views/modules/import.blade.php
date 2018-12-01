@@ -2,7 +2,7 @@
 
 @section('css')
 @parent
-  {{ HTML::style('css/blocks.css') }}
+  <link media="all" type="text/css" rel="stylesheet" href="/css/blocks.css">
   {{-- HTML::style('css/import.css') --}}
 @stop
 
@@ -47,7 +47,7 @@
             Passo 2 - Finalizado o passo 1, carregue o arquivo escola-alunosClasse.csv no formulário de importação de alunos. Clique em <b class="label label-primary">Enviar</b> para importar
             os alunos e vinculá-los nas turmas.
           </p>
-          
+
         </div>
         <div class="col-md-8">
           <div class="panel panel-default">
@@ -63,7 +63,7 @@
           </div>
 
           <div class="panel panel-default">
-            <div class="panel-body">  
+            <div class="panel-body">
               <h4>Importar alunos</h4><br>
               {{ Form::open(["enctype" => "multipart/form-data"]) }}
                 <div class="form-group">
@@ -75,9 +75,9 @@
           </div>
           <div class="text-center spinupload visible-none">
             <i class="text-info fa fa-2x fa-spinner fa-spin"></i>
-          </div>  
+          </div>
         </div>
-       
+
       </div>
     </div>
     @if( isset($result) )

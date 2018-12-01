@@ -2,15 +2,15 @@
 
 @section('css')
 @parent
-{{ HTML::style('css/blocks.css') }}
+  <link media="all" type="text/css" rel="stylesheet" href="/css/blocks.css">
 @stop
 
 @section('js')
 @parent
-{{ HTML::script('js/blocks.js') }}
-{{ HTML::script('js/student.js') }}
-{{ HTML::script('js/user.js') }}
-{{ HTML::script('js/validations/modulesAddStudents.js') }}
+  <script src="/js/blocks.js"></script>
+  <script src="/js/student.js"></script>
+  <script src="/js/user.js"></script>
+  <script src="/js/validations/modulesAddStudents.js"></script>
 @stop
 
 @section('body')

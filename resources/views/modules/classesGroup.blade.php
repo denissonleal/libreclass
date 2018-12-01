@@ -2,7 +2,7 @@
 
 @section('css')
 @parent
-{{ HTML::style('css/classes-group.css') }}
+<link media="all" type="text/css" rel="stylesheet" href="/css/classes-group.css">
 @stop
 
 @section('js')

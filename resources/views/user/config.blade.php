@@ -2,8 +2,8 @@
 
 @section('css')
 @parent
-  {{ HTML::style('css/blocks.css') }}
-  {{ HTML::style('css/config.css') }}
+  <link media="all" type="text/css" rel="stylesheet" href="/css/blocks.css">
+  <link media="all" type="text/css" rel="stylesheet" href="/css/config.css">
 @stop
 
 @section('js')
@@ -22,8 +22,8 @@
 
     <div id="block-config" class="block">
 
-      @if(Session::has("message"))
-      <div class="alert alert-success" role="alert">{{ Session::get("message") }}</div>
+      @if (session("message"))
+        <div class="alert alert-success" role="alert">{{ session("message") }}</div>
       @endif
 
       <div class="row">
@@ -120,8 +120,8 @@
                 </td>
               </tr>
             @endif
-            
-            @if($user->type == "I")  
+
+            @if($user->type == "I")
             <tr class="block-config-item">
               <td>Código da UEE</td>
               <td class="text-info">{{$user->uee or "Inserir"}}</td>
@@ -143,7 +143,7 @@
               </td>
             </tr>
           @endif
-            
+
           @if($user->type != "I")
             <tr class="block-config-item">
               <td>Data de Nascimento</td>
@@ -280,7 +280,7 @@
                 {{-- Form::close() --}}
               </td>
             </tr> -->
-          @if($user->type == "I")  
+          @if($user->type == "I")
             <tr class="block-config-item">
               <td>Endereço</td>
               <td class="text-info" id="institution-description">{{$user->street or "Inserir"}}</td>
@@ -302,7 +302,7 @@
               </td>
             </tr>
           @endif
-             
+
             <tr id="block-map" class="block-config-item">
               <td>Localização</td>
               <td class="text-info">{{ $user->idCity ? $user->printLocation() : "" }}</td>

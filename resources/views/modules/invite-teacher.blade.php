@@ -2,7 +2,7 @@
 
 @section('css')
 @parent
-{{ HTML::style('css/blocks.css') }}
+<link media="all" type="text/css" rel="stylesheet" href="/css/blocks.css">
 @stop
 
 @section('js')
@@ -32,7 +32,7 @@
           <div class="block-list">
 
             <div class="row block-list-item">
-              
+
             {{ Form::open() }}
             {{ Form::hidden("teacher", null) }}
             <div class="form-group">
@@ -53,7 +53,7 @@
 
             {{ Form::submit("Confirmar", ["class" => "btn btn-primary"]) }}
           {{ Form::close() }}
-              
+
             </div>
           </div>
         </div>

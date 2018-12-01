@@ -1,7 +1,7 @@
 @extends('social.master')
 @section('css')
 @parent
-{{ HTML::style('css/blocks.css') }}
+<link media="all" type="text/css" rel="stylesheet" href="/css/blocks.css">
 @stop
 
 @section('js')

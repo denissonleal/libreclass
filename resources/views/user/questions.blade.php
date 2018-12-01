@@ -2,8 +2,8 @@
 
 <html>
 <head>
-  {{ HTML::style('css/bootstrap.min.css') }}
-  {{ HTML::style('css/question.css') }}
+  <link media="all" type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
+  <link media="all" type="text/css" rel="stylesheet" href="/css/question.css">
   {{ HTML::script('js/jquery.min.js') }}
   <title>
     LibreClass

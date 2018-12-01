@@ -7,9 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no ">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  {{ HTML::style('css/bootstrap.min.css') }}
-  {{ HTML::style('css/home.css') }}
-  {{ HTML::style('css/fa/css/font-awesome.min.css') }}
+  <link media="all" type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
+  <link media="all" type="text/css" rel="stylesheet" href="/css/home.css">
+  <link media="all" type="text/css" rel="stylesheet" href="/css/fa/css/font-awesome.min.css">
   {{ HTML::script('js/jquery.min.js') }}
   <!-- Scripts are placed here -->
 </head>
