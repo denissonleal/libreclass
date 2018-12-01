@@ -49,7 +49,7 @@ class AttestCommand extends Command {
                   WHERE Attests.institution_id=Courses.institution_id
                     AND Courses.id=Periods.course_id
                     AND Periods.id=Classes.period_id
-                    AND Classes.id=Offers.idClass
+                    AND Classes.id=Offers.class_id
                     AND Offers.id=Units.offer_id
                     AND Units.id=Lessons.idUnit
                     AND Lessons.id=Frequencies.idLesson

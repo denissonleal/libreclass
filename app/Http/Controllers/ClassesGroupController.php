@@ -17,13 +17,13 @@ class ClassesGroupController extends \BaseController
 
   /**
    * Carrega view para agrupar ofertas.
-   * @param  [String] $idClass [Id da turma].
+   * @param  [String] $class_id [Id da turma].
    * @return [View]
    */
-  public function loadClassGroup($idClass)
+  public function loadClassGroup($class_id)
   {
-    $classe = Classe::find(decrypt($idClass));
-    $classe->disciplines = $this->getOffers($idClass);
+    $classe = Classe::find(decrypt($class_id));
+    $classe->disciplines = $this->getOffers($class_id);
     $classe->id = encrypt($classe->id);
 
     $user = User::find($this->user_id);
@@ -32,13 +32,13 @@ class ClassesGroupController extends \BaseController
 
   /**
    * Obtém nomes e ids das ofertas associadas a uma turma
-   * @param  [string] $idClass [Id criptografado da turma]
+   * @param  [string] $class_id [Id criptografado da turma]
    * @return [array]           [Ofertas]
    */
-  private function getOffers($idClass)
+  private function getOffers($class_id)
   {
     $o = [];
-    $offers = Offer::where('idClass', decrypt($idClass))->get();
+    $offers = Offer::where('class_id', decrypt($class_id))->get();
     foreach ($offers as $offer) {
       if ($offer->discipline) {
         $o[] = (object) [
@@ -54,13 +54,13 @@ class ClassesGroupController extends \BaseController
 
   /**
    * Retorna nomes e ids das ofertas associadas a uma turma em formato JSON
-   * @param  [string] $idClass [Id criptografado da turma]
+   * @param  [string] $class_id [Id criptografado da turma]
    * @return [json]            [Ofertas]
    */
   public function jsonOffers()
   {
     try {
-      return Response::json(['status' => 1, 'disciplines' => $this->getOffers(Input::get('idClass'))]);
+      return Response::json(['status' => 1, 'disciplines' => $this->getOffers(Input::get('class_id'))]);
     } catch (Exception $e) {
       return Response::json(['status' => 0, 'message' => 'Erro: ' . $e->getMessage() . ' (' . $e->getLine() . ')']);
     }
@@ -78,7 +78,7 @@ class ClassesGroupController extends \BaseController
       }
       $master_discipline = Discipline::create(['name' => Input::get('name')]);
       $master_offer = Offer::create([
-        'idClass' => decrypt(Input::get('classe')),
+        'class_id' => decrypt(Input::get('classe')),
         'idDiscipline' => $master_discipline->id,
         'grouping' => 'M',
       ]);

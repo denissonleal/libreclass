@@ -72,7 +72,7 @@ class DisciplinesController extends \BaseController {
                             FROM Offers, Classes
                              WHERE Classes.status = 'E' AND
                              Offers.idDiscipline=? AND
-                             Offers.idClass=Classes.id", [$discipline->id]);
+                             Offers.class_id=Classes.id", [$discipline->id]);
 
     if(count($offers)) {
       return Redirect::to("/disciplines")->with("error", "Não foi possível excluir. <br>Disciplina vinculada à turma <b>". $offers[0]->name . "</b>");

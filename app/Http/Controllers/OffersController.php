@@ -33,7 +33,7 @@ class OffersController extends \BaseController
       $classe = Classe::find(decrypt(Input::get("t")));
       $period = Period::find($classe->period_id);
       $course = Course::find($period->course_id);
-      $offers = Offer::where("idClass", $classe->id)->get();
+      $offers = Offer::where("class_id", $classe->id)->get();
 
       foreach ($offers as $offer) {
         $teachers = [];
@@ -63,7 +63,7 @@ class OffersController extends \BaseController
   {
     $offer = Offer::find(decrypt($offer));
     if ($this->user_id != $offer->getClass()->getPeriod()->getCourse()->institution_id) {
-      return Redirect::to("/classes/offers?t=" . encrypt($offer->idClass))->with("error", "Você não tem permissão para criar unidade");
+      return Redirect::to("/classes/offers?t=" . encrypt($offer->class_id))->with("error", "Você não tem permissão para criar unidade");
     }
 
     $old = Unit::where("offer_id", $offer->id)->orderBy("value", "desc")->first();
@@ -93,7 +93,7 @@ class OffersController extends \BaseController
 		}
 
 
-    return Redirect::to("/classes/offers?t=" . encrypt($offer->idClass))->with("success", "Unidade criada com sucesso!");
+    return Redirect::to("/classes/offers?t=" . encrypt($offer->class_id))->with("success", "Unidade criada com sucesso!");
   }
 
   public function postTeacher()
@@ -159,11 +159,11 @@ class OffersController extends \BaseController
     if ($this->user_id) {
       $user = User::find($this->user_id);
 
-      $info = DB::select("SELECT Courses.name as course, Periods.name as period, Classes.id as idClass, Classes.class as class
+      $info = DB::select("SELECT Courses.name as course, Periods.name as period, Classes.id as class_id, Classes.class as class
                           FROM Courses, Periods, Classes, Offers
                           WHERE Courses.id = Periods.course_id
                           AND Periods.id = Classes.period_id
-                          AND Classes.id = Offers.idClass
+                          AND Classes.id = Offers.class_id
                           AND Offers.id = " . decrypt($offer) . "
                           ");
       $students = DB::select("SELECT Users.name as name, Users.id as id, Attends.status as status
@@ -224,7 +224,7 @@ class OffersController extends \BaseController
     $unit = Unit::where('offer_id', $offer->id)->orderBy('value', 'desc')->first();
     $unit->delete();
 
-    return Redirect::to("/classes/offers?t=" . encrypt($offer->idClass))->with("success", "Unidade deletada com sucesso!");
+    return Redirect::to("/classes/offers?t=" . encrypt($offer->class_id))->with("success", "Unidade deletada com sucesso!");
   }
 
 	public function postOffersGrouped() {

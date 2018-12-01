@@ -97,7 +97,7 @@ class SyncController extends \BaseController {
 
           $offer->discipline = Discipline::find($offer->idDiscipline);
           $offer->discipline->id = encrypt($offer->discipline->id); //crypt discipline
-          $offer->class = Classe::find($offer->idClass);
+          $offer->class = Classe::find($offer->class_id);
           $offer->class->id = encrypt($offer->class->id); //crypt class
           $offer->period = Period::find($offer->discipline->period_id);
           $offer->period->id = encrypt($offer->period->id); //crypt period
@@ -112,7 +112,7 @@ class SyncController extends \BaseController {
           /*crypt offer left*/
           $offer->units = $units;
           $offer->idDiscipline = $offer->discipline->id;
-          $offer->idClass = $offer->class->id;
+          $offer->class_id = $offer->class->id;
           $lecture->offer = $offer;
   //        return $lecture;
         }

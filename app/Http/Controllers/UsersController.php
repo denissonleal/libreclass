@@ -235,7 +235,7 @@ class UsersController extends \BaseController
     $student = decrypt(Input::get("student"));
     $disciplines = DB::select("SELECT  Courses.id as course, Disciplines.name, Offers.id as offer, Attends.id as attend, Classes.status as statusclasse "
       . "FROM Classes, Periods, Courses, Disciplines, Offers, Units, Attends "
-      . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.schoolYear=? AND Classes.id=Offers.idClass AND Offers.idDiscipline=Disciplines.id AND Offers.id=Units.offer_id AND Units.id=Attends.idUnit AND Attends.user_id=? "
+      . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.schoolYear=? AND Classes.id=Offers.class_id AND Offers.idDiscipline=Disciplines.id AND Offers.id=Units.offer_id AND Units.id=Attends.idUnit AND Attends.user_id=? "
       . "group by Offers.id",
       [$this->user_id, Input::get("class"), $student]);
 
@@ -507,7 +507,7 @@ class UsersController extends \BaseController
     $offers = DB::select("SELECT Courses.name AS course, Periods.name AS period, Classes.class as class, Disciplines.name AS discipline "
       . "FROM Courses, Periods, Classes, Offers, Lectures, Disciplines "
       . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND "
-      . "Periods.id=Classes.period_id AND Classes.id=Offers.idClass AND "
+      . "Periods.id=Classes.period_id AND Classes.id=Offers.class_id AND "
       . "Offers.idDiscipline=Disciplines.id AND "
       . "Offers.id=Lectures.offer_id AND Lectures.user_id=?", [$this->user_id, $idTeacher]);
 
@@ -594,7 +594,7 @@ class UsersController extends \BaseController
         and Courses.id = Periods.course_id
         and Periods.id = Classes.period_id
         and Classes.schoolYear =  ?
-        and Classes.id = Offers.idClass
+        and Classes.id = Offers.class_id
         and Offers.idDiscipline = Disciplines.id
         and Offers.id = Units.offer_id
         and Units.id = Attends.idUnit and Attends.user_id =  ?

@@ -319,7 +319,7 @@ class LessonsController extends \BaseController
   public function postListOffers()
   {
     $offers = DB::select("SELECT Offers.id, Disciplines.name, Classes.class, Periods.name as `periodName`, Courses.name as `courseName` FROM Lectures, Offers, Classes, Disciplines, Periods, Courses "
-      . "WHERE Lectures.user_id=? AND Lectures.offer_id=Offers.id AND Offers.idClass=Classes.id AND Offers.idDiscipline=Disciplines.id AND Disciplines.period_id=Periods.id AND Periods.course_id=Courses.id",
+      . "WHERE Lectures.user_id=? AND Lectures.offer_id=Offers.id AND Offers.class_id=Classes.id AND Offers.idDiscipline=Disciplines.id AND Disciplines.period_id=Periods.id AND Periods.course_id=Courses.id",
       [$this->user_id]);
 
     foreach ($offers as $offer) {

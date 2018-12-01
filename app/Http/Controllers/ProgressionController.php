@@ -49,7 +49,7 @@ class ProgressionController extends \BaseController
 		$students = DB::select("
 			SELECT Users.id
 			FROM Classes, Offers, Units, Attends, Users
-			WHERE Classes.id = Offers.idClass
+			WHERE Classes.id = Offers.class_id
 				AND Offers.id = Units.offer_id
 				AND Units.id = Attends.idUnit
 				AND Users.id = Attends.user_id
@@ -67,7 +67,7 @@ class ProgressionController extends \BaseController
 		$attends = DB::select("
 			SELECT Users.name as user_name, Attends.id as attend_id, Users.id as user_id
 			FROM Classes, Offers, Units, Attends, Users
-			WHERE Classes.id = Offers.idClass
+			WHERE Classes.id = Offers.class_id
 				AND Offers.id = Units.offer_id
 				AND Units.id = Attends.idUnit ".
 				(!empty($students) ? "AND Users.id NOT IN ($students) " : "").
@@ -93,7 +93,7 @@ class ProgressionController extends \BaseController
 		}
 
 		$classe_id = Input::get('classe_id');
-		$offers = Offer::where('idClass', decrypt($classe_id))->get();
+		$offers = Offer::where('class_id', decrypt($classe_id))->get();
 
 		if(!$offers) {
 			return ['status' => 0, 'message' => 'A turma ainda não possui ofertas'];

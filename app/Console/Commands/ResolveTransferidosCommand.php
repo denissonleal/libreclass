@@ -42,8 +42,8 @@ class ResolveTransferidosCommand extends Command {
 		foreach($attends as $attend) {
 			echo $attend->status;
 			$offer = $attend->getUnit()->getOffer();
-			$class = Classe::find($offer->idClass);
-			$offers = Offer::where('idClass',$class->id)->get();
+			$class = Classe::find($offer->class_id);
+			$offers = Offer::where('class_id',$class->id)->get();
 			$units = [];
 			foreach($offers as $offer) {
 				$units = array_merge($units, array_pluck($offer->units, 'id'));

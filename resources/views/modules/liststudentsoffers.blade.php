@@ -29,7 +29,7 @@
           </ol>
         </div>
         <div class="col-md-2 col-sm-2text-right">
-          <a class="btn btn-block btn-default btn-block-xs" href="{{ URL::to("/classes/offers?t=".encrypt($info[0]->idClass)) }}">Voltar</a>
+          <a class="btn btn-block btn-default btn-block-xs" href="{{ URL::to("/classes/offers?t=".encrypt($info[0]->class_id)) }}">Voltar</a>
         </div>
       </div>
     </div>

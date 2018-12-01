@@ -102,7 +102,7 @@ class ClassesController extends \BaseController
   public function postListdisciplines()
   {
     if (Input::has("flag")) {
-      $offers = Offer::where("idClass", decrypt(Input::get("classe_id")))->get();
+      $offers = Offer::where("class_id", decrypt(Input::get("classe_id")))->get();
       $registered_disciplines_ids = [];
       foreach ($offers as $offer) {
         $registered_disciplines_ids[] = $offer->idDiscipline;
@@ -125,7 +125,7 @@ class ClassesController extends \BaseController
     foreach (Input::all() as $key => $value) {
       if (strstr($key, "discipline_") != false) {
         $offer = new Offer;
-        $offer->idClass = $class->id;
+        $offer->class_id = $class->id;
         $offer->idDiscipline = decrypt($value);
         $offer->save();
         $unit = new Unit;
@@ -156,7 +156,7 @@ class ClassesController extends \BaseController
       foreach (Input::all() as $key => $value) {
         if (strstr($key, "discipline_") != false) {
           $offer = new Offer;
-          $offer->idClass = $class->id;
+          $offer->class_id = $class->id;
           $offer->idDiscipline = decrypt($value);
           $offer->save();
           $unit = new Unit;
@@ -209,7 +209,7 @@ class ClassesController extends \BaseController
 
   public function anyListOffers()
   {
-    $offers = Offer::where("idClass", decrypt(Input::get("class")))->get();
+    $offers = Offer::where("class_id", decrypt(Input::get("class")))->get();
     $idStudent = decrypt(Input::get("student"));
 
     foreach ($offers as $offer) {
@@ -240,7 +240,7 @@ class ClassesController extends \BaseController
 																		 FROM Periods, Classes, Offers, Units
 																		WHERE Periods.course_id=?
 																					AND Periods.id=Classes.period_id
-																					AND Classes.id=Offers.idCLass
+																					AND Classes.id=Offers.class_id
 																					AND Classes.status='E'
 																					AND Offers.id=Units.offer_id
 																					AND Units.status=?
@@ -263,7 +263,7 @@ class ClassesController extends \BaseController
     foreach ($periods as $period) {
       $classes = Classe::where("period_id", $period->id)->get();
       foreach ($classes as $class) {
-        $offers = Offer::where("idClass", $class->id)->get();
+        $offers = Offer::where("class_id", $class->id)->get();
         foreach ($offers as $offer) {
           Unit::where("offer_id", $offer->id)->whereValue(Input::get("unit"))->whereStatus("E")->update(array('status' => "D"));
         }
@@ -283,7 +283,7 @@ class ClassesController extends \BaseController
     foreach ($periods as $period) {
       $classes = Classe::where("period_id", $period->id)->get();
       foreach ($classes as $class) {
-        $offers = Offer::where("idClass", $class->id)->get();
+        $offers = Offer::where("class_id", $class->id)->get();
         foreach ($offers as $offer) {
           Unit::where("offer_id", $offer->id)->whereValue(Input::get("unit"))->whereStatus("D")->update(array('status' => "E"));
         }
@@ -301,7 +301,7 @@ class ClassesController extends \BaseController
     }
 
     $offers = DB::select("SELECT Offers.id FROM Periods, Classes, Offers "
-      . "WHERE Periods.course_id=? AND Periods.id=Classes.period_id AND Classes.id=Offers.idClass", [$course->id]);
+      . "WHERE Periods.course_id=? AND Periods.id=Classes.period_id AND Classes.id=Offers.class_id", [$course->id]);
 
     if (!count($offers)) {
       throw new Exception("Não possui ofertas nesse curso.");
@@ -357,7 +357,7 @@ class ClassesController extends \BaseController
 					continue;
 				}
 
-				$offers = Offer::where('idClass', $classe->id)->get();
+				$offers = Offer::where('class_id', $classe->id)->get();
 				$tmp_groups = [];
 				foreach($offers as $offer) {
 					if($offer->grouping != "M") { // Diferente de master, porque a master é criada quando há slaves.
@@ -390,7 +390,7 @@ class ClassesController extends \BaseController
 	public function createOffer($offer, $classe, $group) {
 
 		$new_offer = new Offer();
-		$new_offer->idClass = $classe->id;
+		$new_offer->class_id = $classe->id;
 		$new_offer->idDiscipline = $offer->idDiscipline;
 		$new_offer->classroom = $offer->classroom;
 		$new_offer->day_period = $offer->day_period;

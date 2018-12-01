@@ -129,7 +129,7 @@ class CSVController extends \BaseController {
           $offer = new Offer;
           $offer->idDiscipline = $discipline->id;
           $offer->classroom = "";
-          $offer->idClass = $classe->id;
+          $offer->class_id = $classe->id;
           $offer->save();
 
           if( !$s_units )
@@ -188,15 +188,15 @@ class CSVController extends \BaseController {
               $s_relations .= ", (".$this->user->id.", $student->id, '1')";
           }
         }
-        if (!($units and $units[0]->idClass == $attend[6]))
+        if (!($units and $units[0]->class_id == $attend[6]))
         {
           if ( !$attend[6] )
           {
               $class = Classe::where("period_id", $attend[7])->whereClass($attend[5])->where("status", "!=", "D")->first();
               $attend[6] = $class->id;
           }
-          $units = DB::select("SELECT Units.id as id, Offers.idClass as idClass FROM Units, Offers
-                               WHERE Offers.idClass=? AND Units.offer_id=Offers.id ORDER BY Units.value DESC", [$attend[6]]);
+          $units = DB::select("SELECT Units.id as id, Offers.class_id as class_id FROM Units, Offers
+                               WHERE Offers.class_id=? AND Units.offer_id=Offers.id ORDER BY Units.value DESC", [$attend[6]]);
         }
         foreach ($units as $unit) {
           if (!Attend::where("idUnit", $unit->id)->where("user_id", $attend[4])->first())
@@ -403,7 +403,7 @@ class CSVController extends \BaseController {
           $offer = new Offer;
           $offer->idDiscipline = $discipline->id;
           $offer->classroom = $offer_aux[6];
-          $offer->idClass = $classe->id;
+          $offer->class_id = $classe->id;
           $offer->save();
           $lecture = new Lecture;
           $lecture->user_id = $teacher->id;

@@ -60,7 +60,7 @@ if (Session::get("user") == null) {
 
     Route::post('classes/group/create', "ClassesGroupController@createMasterOffer");
     Route::post('classes/group/offers', 'ClassesGroupController@jsonOffers');
-    Route::get('classes/group/{idClass}', "ClassesGroupController@loadClassGroup");
+    Route::get('classes/group/{class_id}', "ClassesGroupController@loadClassGroup");
 
     Route::controller('courses', "CoursesController");
     Route::controller('disciplines', "DisciplinesController");

@@ -3,7 +3,7 @@
 class Offer extends \Moloquent
 {
 
-  protected $fillable = ['idClass', 'idDiscipline', 'classroom', 'day_period', 'grouping'];
+  protected $fillable = ['class_id', 'idDiscipline', 'classroom', 'day_period', 'grouping'];
 
   public function master()
   {
@@ -27,7 +27,7 @@ class Offer extends \Moloquent
 
   public function classe()
   {
-    return $this->belongsTo('Classe', 'idClass');
+    return $this->belongsTo('Classe', 'class_id');
   }
 
   public function getDiscipline()
@@ -37,7 +37,7 @@ class Offer extends \Moloquent
 
   public function getClass()
   {
-    return Classe::find($this->idClass);
+    return Classe::find($this->class_id);
   }
 
   public function getFirstUnit()
@@ -122,7 +122,7 @@ class Offer extends \Moloquent
 
   public function getCourse()
   {
-    $course = DB::select("SELECT Periods.course_id FROM Classes, Periods WHERE ?=Classes.id AND Classes.period_id=Periods.id", [$this->idClass])[0]->course_id;
+    $course = DB::select("SELECT Periods.course_id FROM Classes, Periods WHERE ?=Classes.id AND Classes.period_id=Periods.id", [$this->class_id])[0]->course_id;
     return Course::find($course);
   }
 
