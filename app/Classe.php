@@ -3,16 +3,16 @@
 class Classe extends \Moloquent
 {
 
-  protected $fillable = ['name', 'idPeriod', 'class'];
+  protected $fillable = ['name', 'period_id', 'class'];
 
   public function period()
   {
-    return $this->belongsTo('Period', 'idPeriod');
+    return $this->belongsTo('Period');
   }
 
   public function getPeriod()
   {
-    return Period::find($this->idPeriod);
+    return Period::find($this->period_id);
   }
 
   public function fullName()

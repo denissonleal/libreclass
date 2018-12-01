@@ -27,7 +27,7 @@ $(function() {
       $("#formEditClass input[name='class']").val(data.name);
 
 			$("#modalEditClass .EditClass-list-disciplines").load("classes/listdisciplines", {
-	      "period_id": data.idPeriodCrypt,
+	      "period_id": data.period_idCrypt,
 		  "classe_id": classe,
 	      "flag": 1
 	    }, function(){
@@ -47,7 +47,7 @@ $(function() {
     //   $("#formEditClass input[name='class']").val(data.name);
 
     //   $("#modalEditClass .EditClass-list-disciplines").load("classes/listdisciplines", {
-    //     "period_id": data.idPeriodCrypt,
+    //     "period_id": data.period_idCrypt,
     //   "classe_id": classe,
     //     "flag": 1
     //   }, function(){

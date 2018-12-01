@@ -122,7 +122,7 @@ class Offer extends \Moloquent
 
   public function getCourse()
   {
-    $course = DB::select("SELECT Periods.idCourse FROM Classes, Periods WHERE ?=Classes.id AND Classes.idPeriod=Periods.id", [$this->idClass])[0]->idCourse;
+    $course = DB::select("SELECT Periods.idCourse FROM Classes, Periods WHERE ?=Classes.id AND Classes.period_id=Periods.id", [$this->idClass])[0]->idCourse;
     return Course::find($course);
   }
 

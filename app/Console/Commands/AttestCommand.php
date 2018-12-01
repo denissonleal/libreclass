@@ -48,7 +48,7 @@ class AttestCommand extends Command {
                   SET Frequencies.value='A'
                   WHERE Attests.idInstitution=Courses.idInstitution
                     AND Courses.id=Periods.idCourse
-                    AND Periods.id=Classes.idPeriod
+                    AND Periods.id=Classes.period_id
                     AND Classes.id=Offers.idClass
                     AND Offers.id=Units.idOffer
                     AND Units.id=Lessons.idUnit

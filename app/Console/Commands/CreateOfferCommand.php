@@ -71,7 +71,7 @@ class CreateOfferCommand extends Command {
 				}
 				elseif ($cols[0] == 'Ano') {//Period
 					$period = Period::where('idCourse', $course->id)->where('name', $cols[1])->first();
-					$class = Classe::where('idPeriod', $period->id)->where('name', $cols[3])->first();
+					$class = Classe::where('period_id', $period->id)->where('name', $cols[3])->first();
 
 					switch ($cols[5]) {
 						case 'MANHÃ':
@@ -113,8 +113,8 @@ class CreateOfferCommand extends Command {
 							$professor = User::where('name', $cols[1])->whereIn('type', ['P', 'M'])->first();
 
 							if (!strlen($cols[2])){//Disciplinas
-								if (!$discipline = Discipline::where('name', $period->name)->where('idPeriod', $period->id)->first()){
-									$discipline = Discipline::create(['name'=>$period->name, 'idPeriod'=>$period->id]);
+								if (!$discipline = Discipline::where('name', $period->name)->where('period_id', $period->id)->first()){
+									$discipline = Discipline::create(['name'=>$period->name, 'period_id'=>$period->id]);
 								}
 								if (!$offer = Offer::where('idClass', $class->id)->where('idDiscipline', $discipline->id)->first()){
 									$offer = Offer::create(['idClass'=>$class->id, 'idDiscipline'=>$discipline->id, 'classroom'=>$classroom, 'day_period'=>$day_period]);

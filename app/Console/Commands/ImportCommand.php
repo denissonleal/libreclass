@@ -75,8 +75,8 @@ class ImportCommand extends Command {
 					if (!$period = Period::where('idCourse', $course->id)->where('name', $cols[1])->first()){
 						$period = Period::create(['idCourse'=>$course->id, 'name'=>$cols[1]]);
 					}
-					if (!$class = Classe::where('idPeriod', $period->id)->where('name', $cols[3])->first()){
-						$class = Classe::create(['idPeriod'=>$period->id, 'name'=>$cols[3], 'class'=>'2017']);
+					if (!$class = Classe::where('period_id', $period->id)->where('name', $cols[3])->first()){
+						$class = Classe::create(['period_id'=>$period->id, 'name'=>$cols[3], 'class'=>'2017']);
 					}
 					switch ($cols[5]) {
 						case 'MANHÃ':
@@ -122,8 +122,8 @@ class ImportCommand extends Command {
 						}
 					}
 					if (strlen($cols[2])){//Disciplinas
-						if (!$discipline = Discipline::where('name', $cols[2])->where('idPeriod', $period->id)->first()){
-							$discipline = Discipline::create(['name'=>$cols[2], 'idPeriod'=>$period->id]);
+						if (!$discipline = Discipline::where('name', $cols[2])->where('period_id', $period->id)->first()){
+							$discipline = Discipline::create(['name'=>$cols[2], 'period_id'=>$period->id]);
 						}
 						if (!$offer = Offer::where('idClass', $class->id)->where('idDiscipline', $discipline->id)->first()){
 							$offer = Offer::create(['idClass'=>$class->id, 'idDiscipline'=>$discipline->id, 'classroom'=>$classroom, 'day_period'=>$day_period]);

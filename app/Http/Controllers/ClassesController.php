@@ -40,7 +40,7 @@ class ClassesController extends \BaseController
 															Classes.status <> 'D' AND
 															Classes.schoolYear IN ($year, $year-1) AND
 															Periods.idCourse=Courses.id AND
-															Classes.idPeriod=Periods.id", [$user->id]);
+															Classes.period_id=Periods.id", [$user->id]);
       //~ return $classes;
 			$atual_classes = array_where($classes, function($key, $classe) use($year)
 			{
@@ -74,7 +74,7 @@ class ClassesController extends \BaseController
 				Classes.status <> 'D' AND
 				Classes.schoolYear=$year AND
 				Periods.idCourse=Courses.id AND
-				Classes.idPeriod=Periods.id", [$user->id]
+				Classes.period_id=Periods.id", [$user->id]
 			);
 
 			return ['classes' => $classes];
@@ -107,9 +107,9 @@ class ClassesController extends \BaseController
       foreach ($offers as $offer) {
         $registered_disciplines_ids[] = $offer->idDiscipline;
       }
-      $disciplines = Discipline::where("idPeriod", decrypt(Input::get("period_id")))->whereStatus('E')->whereNotIn('id', $registered_disciplines_ids)->get();
+      $disciplines = Discipline::where("period_id", decrypt(Input::get("period_id")))->whereStatus('E')->whereNotIn('id', $registered_disciplines_ids)->get();
     } else {
-      $disciplines = Discipline::where("idPeriod", decrypt(Input::get("period")))->whereStatus('E')->get();
+      $disciplines = Discipline::where("period_id", decrypt(Input::get("period")))->whereStatus('E')->get();
     }
     return View::make("modules.disciplines.listOffer", ["disciplines" => $disciplines]);
   }
@@ -117,7 +117,7 @@ class ClassesController extends \BaseController
   public function postNew()
   {
     $class = new Classe;
-    $class->idPeriod = decrypt(Input::get("period"));
+    $class->period_id = decrypt(Input::get("period"));
     $class->name = Input::get("name");
     $class->class = Input::get("class");
     $class->status = 'E';
@@ -141,8 +141,8 @@ class ClassesController extends \BaseController
   public function getInfo()
   {
     $class = Classe::find(decrypt(Input::get("classe")));
-    $class->idPeriodCrypt = encrypt($class->idPeriod);
-    $class->course = Course::find(Period::find($class->idPeriod)->idCourse);
+    $class->period_idCrypt = encrypt($class->period_id);
+    $class->course = Course::find(Period::find($class->period_id)->idCourse);
 
     return $class;
   }
@@ -239,7 +239,7 @@ class ClassesController extends \BaseController
       $course->units = DB::select("SELECT Units.value
 																		 FROM Periods, Classes, Offers, Units
 																		WHERE Periods.idCourse=?
-																					AND Periods.id=Classes.idPeriod
+																					AND Periods.id=Classes.period_id
 																					AND Classes.id=Offers.idCLass
 																					AND Classes.status='E'
 																					AND Offers.id=Units.idOffer
@@ -261,7 +261,7 @@ class ClassesController extends \BaseController
 
     $periods = Period::where("idCourse", $course->id)->get();
     foreach ($periods as $period) {
-      $classes = Classe::where("idPeriod", $period->id)->get();
+      $classes = Classe::where("period_id", $period->id)->get();
       foreach ($classes as $class) {
         $offers = Offer::where("idClass", $class->id)->get();
         foreach ($offers as $offer) {
@@ -281,7 +281,7 @@ class ClassesController extends \BaseController
 
     $periods = Period::where("idCourse", $course->id)->get();
     foreach ($periods as $period) {
-      $classes = Classe::where("idPeriod", $period->id)->get();
+      $classes = Classe::where("period_id", $period->id)->get();
       foreach ($classes as $class) {
         $offers = Offer::where("idClass", $class->id)->get();
         foreach ($offers as $offer) {
@@ -301,7 +301,7 @@ class ClassesController extends \BaseController
     }
 
     $offers = DB::select("SELECT Offers.id FROM Periods, Classes, Offers "
-      . "WHERE Periods.idCourse=? AND Periods.id=Classes.idPeriod AND Classes.id=Offers.idClass", [$course->id]);
+      . "WHERE Periods.idCourse=? AND Periods.id=Classes.period_id AND Classes.id=Offers.idClass", [$course->id]);
 
     if (!count($offers)) {
       throw new Exception("Não possui ofertas nesse curso.");
@@ -345,7 +345,7 @@ class ClassesController extends \BaseController
 				$classe = Classe::find($in['classe_id']);
 
 				$new_classe = new Classe();
-				$new_classe->idPeriod = $classe->idPeriod;
+				$new_classe->period_id = $classe->period_id;
 				$new_classe->name = $classe->name;
 				$new_classe->schoolYear = $classe->schoolYear + 1;
 				$new_classe->class = '';

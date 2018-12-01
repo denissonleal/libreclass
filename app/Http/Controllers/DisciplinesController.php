@@ -51,7 +51,7 @@ class DisciplinesController extends \BaseController {
       else {
         $discipline = new Discipline;
       }
-      $discipline->idPeriod = $period->id;
+      $discipline->period_id = $period->id;
       $discipline->name = Input::get("name");
       $discipline->ementa = Input::get("ementa");
       $discipline->save();
@@ -91,8 +91,8 @@ class DisciplinesController extends \BaseController {
   public function getDiscipline()
   {
     $discipline = Discipline::find(decrypt(Input::get("discipline")));
-//    $discipline->course = encrypt(Course::find(Period::find($discipline->idPeriod)->id)->id);
-//    $discipline->period = $discipline->idPeriod;
+//    $discipline->course = encrypt(Course::find(Period::find($discipline->period_id)->id)->id);
+//    $discipline->period = $discipline->period_id;
     return $discipline;
   }
 
@@ -126,7 +126,7 @@ class DisciplinesController extends \BaseController {
   public function anyList()
   {
     if(Input::get("course")) {
-      $disciplines = DB::select("SELECT Disciplines.id AS id, Disciplines.name AS name, Periods.name AS period FROM Disciplines, Periods WHERE idPeriod = Periods.id AND idCourse = ? AND Disciplines.status = 'E'", [decrypt(Input::get("course"))]);
+      $disciplines = DB::select("SELECT Disciplines.id AS id, Disciplines.name AS name, Periods.name AS period FROM Disciplines, Periods WHERE period_id = Periods.id AND idCourse = ? AND Disciplines.status = 'E'", [decrypt(Input::get("course"))]);
       return View::make("social.disciplines.list", [ "disciplines" => $disciplines ]);
     }
   }

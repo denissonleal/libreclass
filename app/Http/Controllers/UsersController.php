@@ -188,7 +188,7 @@ class UsersController extends \BaseController
     $user = User::find($this->idUser);
     $profile = decrypt(Input::get("u"));
     $classes = DB::select("SELECT Classes.id, Classes.name, Classes.class FROM Classes, Periods, Courses "
-      . "WHERE Courses.idInstitution=? AND Courses.id=Periods.idCourse AND Periods.id=Classes.idPeriod AND Classes.status='E'",
+      . "WHERE Courses.idInstitution=? AND Courses.id=Periods.idCourse AND Periods.id=Classes.period_id AND Classes.status='E'",
       [$user->id]);
     $listclasses = [];
     $listidsclasses = [];
@@ -202,13 +202,13 @@ class UsersController extends \BaseController
       $profile = User::find($profile);
 			// $courses = DB::select("SELECT Courses.id, Courses.name FROM Users, Courses, Periods, Disciplines, Attends, Units, Offers "
 			// . "WHERE Users.id=? AND Users.id = Attends.idUser AND Units.id = Attends.idUnit AND Offers.id = Units.idOffer "
-			// . "AND Disciplines.id = Offers.idDiscipline AND Disciplines.idPeriod = Periods.id AND Periods.idCourse = Courses.id", [$profile]);
+			// . "AND Disciplines.id = Offers.idDiscipline AND Disciplines.period_id = Periods.id AND Periods.idCourse = Courses.id", [$profile]);
 			$courses = DB::select("SELECT Courses.id, Courses.name, Courses.quantUnit FROM Attends, Units, Offers, Disciplines, Periods, Courses, Classes "
 			. " WHERE Units.id = Attends.idUnit "
 			. " AND Offers.id = Units.idOffer "
 			. " AND Disciplines.id = Offers.idDiscipline "
-			. " AND Periods.id = Disciplines.idPeriod "
-			// . " AND Classes.idPeriod = Periods.id "
+			. " AND Periods.id = Disciplines.period_id "
+			// . " AND Classes.period_id = Periods.id "
 			. " AND Courses.id = Periods.idCourse "
 			. " AND Attends.idUser = ? "
 			. " GROUP BY Courses.id", [$profile->id]);
@@ -242,7 +242,7 @@ class UsersController extends \BaseController
     $student = decrypt(Input::get("student"));
     $disciplines = DB::select("SELECT  Courses.id as course, Disciplines.name, Offers.id as offer, Attends.id as attend, Classes.status as statusclasse "
       . "FROM Classes, Periods, Courses, Disciplines, Offers, Units, Attends "
-      . "WHERE Courses.idInstitution=? AND Courses.id=Periods.idCourse AND Periods.id=Classes.idPeriod AND Classes.schoolYear=? AND Classes.id=Offers.idClass AND Offers.idDiscipline=Disciplines.id AND Offers.id=Units.idOffer AND Units.id=Attends.idUnit AND Attends.idUser=? "
+      . "WHERE Courses.idInstitution=? AND Courses.id=Periods.idCourse AND Periods.id=Classes.period_id AND Classes.schoolYear=? AND Classes.id=Offers.idClass AND Offers.idDiscipline=Disciplines.id AND Offers.id=Units.idOffer AND Units.id=Attends.idUnit AND Attends.idUser=? "
       . "group by Offers.id",
       [$this->idUser, Input::get("class"), $student]);
 
@@ -515,7 +515,7 @@ class UsersController extends \BaseController
     $offers = DB::select("SELECT Courses.name AS course, Periods.name AS period, Classes.class as class, Disciplines.name AS discipline "
       . "FROM Courses, Periods, Classes, Offers, Lectures, Disciplines "
       . "WHERE Courses.idInstitution=? AND Courses.id=Periods.idCourse AND "
-      . "Periods.id=Classes.idPeriod AND Classes.id=Offers.idClass AND "
+      . "Periods.id=Classes.period_id AND Classes.id=Offers.idClass AND "
       . "Offers.idDiscipline=Disciplines.id AND "
       . "Offers.id=Lectures.idOffer AND Lectures.idUser=?", [$this->idUser, $idTeacher]);
 
@@ -600,7 +600,7 @@ class UsersController extends \BaseController
       WHERE
         Courses.idInstitution =  ?
         and Courses.id = Periods.idCourse
-        and Periods.id = Classes.idPeriod
+        and Periods.id = Classes.period_id
         and Classes.schoolYear =  ?
         and Classes.id = Offers.idClass
         and Offers.idDiscipline = Disciplines.id
