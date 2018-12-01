@@ -49,7 +49,7 @@ class PermissionController extends \BaseController {
 		}
 
 
-		return View::make("institution.permissions", ["user" => $user, "listfriends" => $listfriends, "listmodules" => $listmodules, "adminers" => $adminers]);
+		return view("institution.permissions", ["user" => $user, "listfriends" => $listfriends, "listmodules" => $listmodules, "adminers" => $adminers]);
 	}
 
 	public function postIndex() {

@@ -23,7 +23,7 @@ class LecturesController extends \BaseController
 			$lectures = array_where($lectures, function($key, $value) {
 				return $value->offer->classe->status != 'F';
 			});
-      return View::make("offers.teacher", ["user" => $user, "lectures" => $lectures]);
+      return view("offers.teacher", ["user" => $user, "lectures" => $lectures]);
     } else {
       return Redirect::guest("/");
     }
@@ -105,7 +105,7 @@ class LecturesController extends \BaseController
       }
     }
 
-    return View::make("modules.disciplines.finalreport", [
+    return view("modules.disciplines.finalreport", [
       "user" => $user,
       "units" => $units,
       "students" => $alunos,
@@ -128,7 +128,7 @@ class LecturesController extends \BaseController
       . "where Units.offer_id=? and Attends.unit_id=Units.id and Attends.user_id=Users.id and Attends.status = 'M'"
       . "group by Users.id order by Users.name", [$offer->id]);
 
-    return View::make("modules.frequency", ["user" => $user, "offer" => $offer, "units" => $units, "students" => $students]);
+    return view("modules.frequency", ["user" => $user, "offer" => $offer, "units" => $units, "students" => $students]);
     return $offer;
   }
 

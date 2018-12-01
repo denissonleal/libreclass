@@ -94,7 +94,7 @@ class UsersController extends \BaseController
         . "WHERE Relationships.user_id=? AND Relationships.type='2' AND Relationships.idFriend=Users.id "
         . "AND (Users.name LIKE ? OR Relationships.enrollment=?) ", [$this->user_id, "%$search%", $search]);
 
-      return View::make(
+      return view(
         "modules.addTeachers",
         [
           "courses" => $listCourses,
@@ -215,7 +215,7 @@ class UsersController extends \BaseController
 	    }
 
       $attests = Attest::where("idStudent", $profile->id)->where("institution_id", $user->id)->orderBy("date", "desc")->get();
-      return View::make("modules.profilestudent", ["user" => $user, "profile" => $profile, "listclasses" => $listclasses, "attests" => $attests, "listidsclasses" => $listidsclasses, "listCourses" => $listCourses, 'courses' => $courses]);
+      return view("modules.profilestudent", ["user" => $user, "profile" => $profile, "listclasses" => $listclasses, "attests" => $attests, "listidsclasses" => $listidsclasses, "listCourses" => $listCourses, 'courses' => $courses]);
     } else {
       return Redirect::guest("/");
     }
@@ -272,7 +272,7 @@ class UsersController extends \BaseController
 
       }
     }
-    return View::make("institution.reportStudentDetail", ["disciplines" => $disciplines]);
+    return view("institution.reportStudentDetail", ["disciplines" => $disciplines]);
   }
 
   public function getReporterStudentOffer()
@@ -377,7 +377,7 @@ class UsersController extends \BaseController
         case '7':$profile->formation = "Doutor";
           break;
       }
-      return View::make("modules.profileteacher", ["user" => $user, "profile" => $profile]);
+      return view("modules.profileteacher", ["user" => $user, "profile" => $profile]);
     } else {
       return Redirect::guest("/");
     }
@@ -449,7 +449,7 @@ class UsersController extends \BaseController
         . "WHERE Relationships.user_id=? AND Relationships.type='1' AND Relationships.idFriend=Users.id "
         . "AND (Users.name LIKE ? OR Users.enrollment=?) ", [$this->user_id, "%$search%", $search]);
 
-      return View::make("modules.addStudents",
+      return view("modules.addStudents",
         [
           "courses" => $listCourses,
           "user" => $user,
@@ -467,7 +467,7 @@ class UsersController extends \BaseController
   public function anyFindUser($search)
   {
     $users = User::where("name", "like", "%" . $search . "%")->orWhere("email", $search)->get();
-    return View::make("user.list-search", ["users" => $users, "i" => 0]);
+    return view("user.list-search", ["users" => $users, "i" => 0]);
   }
 
   public function postStudent()

@@ -23,7 +23,7 @@ class PeriodsController extends \BaseController {
 			foreach ($courses as $course) {
 				$listCourses[$course->id] = $course->name;
 			}
-			return View::make("social.periods", ["listCourses" => $listCourses, "user" => $user]);
+			return view("social.periods", ["listCourses" => $listCourses, "user" => $user]);
 		}
 		else {
 //      return Redirect::guest("/");
@@ -34,7 +34,7 @@ class PeriodsController extends \BaseController {
 		if ($this->user_id) {
 			$periods = Period::where('course_id', Input::get('course_id'))->where('status', 'E')->get();
 			if($periods) {
-	      return View::make("social.periods.list", [ "periods" => $periods ]);
+	      return view("social.periods.list", [ "periods" => $periods ]);
 	    }
 		}
 	}

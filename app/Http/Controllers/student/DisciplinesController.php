@@ -17,7 +17,7 @@ class DisciplinesController extends \BaseController {
     $offers= DB::select("SELECT Offers.id, Disciplines.name as discipline FROM Attends, Units, Offers, Disciplines "
                   . " WHERE Attends.user_id=? AND Attends.unit_id=Units.id AND Units.offer_id=Offers.id AND Offers.discipline_id=Disciplines.id", [$this->user->id]);
 
-    return View::make("students.disciplines", ["offers" => $offers]);
+    return view("students.disciplines", ["offers" => $offers]);
 	}
 
   public function getUnits($offer)
@@ -28,7 +28,7 @@ class DisciplinesController extends \BaseController {
     $units = Unit::where("offer_id", $offer->id)->orderBy("value", "desc")->get();
     $course = $offer->getCourse();
 
-    return View::make("students.units", ["offer" => $offer, "teachers" => $teachers, "discipline" => $discipline, "units" => $units, "course" => $course]);
+    return view("students.units", ["offer" => $offer, "teachers" => $teachers, "discipline" => $discipline, "units" => $units, "course" => $course]);
   }
 
   public function postResumeUnit($unit)

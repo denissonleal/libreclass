@@ -19,12 +19,12 @@ class ClassroomController extends \BaseController {
     }
     $user = User::find($this->user_id);
     Session::put("type", $user->type);
-    return View::make("classrooms.home", ["user" => $user]);
+    return view("classrooms.home", ["user" => $user]);
   }
 
   public function getCampus() {
     $user = User::find($this->user_id);
-    return View::make("classrooms.campus", ["user" => $user]);
+    return view("classrooms.campus", ["user" => $user]);
   }
 
 }

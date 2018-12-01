@@ -44,7 +44,7 @@ class UnitsController extends \BaseController
       $lessons = Lesson::where("unit_id", $unit_current->id)->whereStatus('E')->orderBy("date", "desc")->orderBy("id", "desc")->get();
       $recovery = Exam::where("unit_id", $unit_current->id)->whereAval("R")->first();
       $exams = Exam::where("unit_id", $unit_current->id)->whereStatus('E')->whereAval("A")->orderBy("id", "desc")->get();
-      return View::make("modules.panel", ["user" => $user,
+      return view("modules.panel", ["user" => $user,
         "list_units" => $list_units,
         "unit_current" => $unit_current,
         "lessons" => $lessons,
@@ -109,7 +109,7 @@ class UnitsController extends \BaseController
 
       $students = DB::select("SELECT Users.name as name, Users.id as id FROM Users, Attends WHERE Users.id=Attends.user_id AND Attends.unit_id = " . $this->unit->id . " ORDER BY Users.name");
 
-      return View::make("modules.units", ["user" => $user, "list_students" => $list_students, "students" => $students]);
+      return view("modules.units", ["user" => $user, "list_students" => $list_students, "students" => $students]);
     } else {
       return Redirect::guest("/");
     }
@@ -308,10 +308,10 @@ class UnitsController extends \BaseController
         ->setOption('margin-left', 5);
       return $pdf->stream();
 
-      // return View::make('reports.arroio_dos_ratos-rs.class_diary', ['data' => $data]);
+      // return view('reports.arroio_dos_ratos-rs.class_diary', ['data' => $data]);
 
     } catch (Exception $e) {
-      return View::make("reports.report_error", [
+      return view("reports.report_error", [
         "message" => $e->getMessage() . ' ' . $e->getLine() . '.',
       ]);
     }
@@ -427,7 +427,7 @@ class UnitsController extends \BaseController
         ->setOption('margin-left', 5);
       return $pdf->stream();
     } catch (Exception $e) {
-      return View::make("reports.report_error", [
+      return view("reports.report_error", [
         "message" => $e->getMessage() . ' ' . $e->getLine() . '.',
       ]);
     }

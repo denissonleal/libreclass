@@ -62,7 +62,7 @@ class LessonsController extends \BaseController
         $student->maxlessons = $frequency->maxlessons;
         $student->qtd = $frequency->qtd - $qtdAttests;
       }
-      return View::make("modules.lessons", ["user" => $user, "lesson" => $lesson, "students" => $students]);
+      return view("modules.lessons", ["user" => $user, "lesson" => $lesson, "students" => $students]);
     } else {
       return Redirect::guest("/");
     }

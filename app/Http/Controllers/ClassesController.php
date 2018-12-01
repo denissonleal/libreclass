@@ -52,9 +52,9 @@ class ClassesController extends \BaseController
 				return $classe->schoolYear == $year-1;
 			});
 
-      return View::make("modules.classes", ["listPeriod" => $listPeriod, "user" => $user, "classes" => $classes,  "atual_classes" => $atual_classes,  "previous_classes" => $previous_classes, "schoolYear" => $year]);
+      return view("modules.classes", ["listPeriod" => $listPeriod, "user" => $user, "classes" => $classes,  "atual_classes" => $atual_classes,  "previous_classes" => $previous_classes, "schoolYear" => $year]);
     } else {
-      return Redirect::guest("/");
+      return redirect("/");
     }
   }
 
@@ -80,7 +80,7 @@ class ClassesController extends \BaseController
 			return ['classes' => $classes];
 		}
 		else {
-			return Redirect::guest("/");
+			return redirect("/");
 		}
 	}
 
@@ -93,9 +93,9 @@ class ClassesController extends \BaseController
       foreach ($courses as $course) {
         $listCourses[encrypt($course->id)] = $course->name;
       }
-      return View::make("modules.panel", ["listCourses" => $listCourses, "user" => $user]);
+      return view("modules.panel", ["listCourses" => $listCourses, "user" => $user]);
     } else {
-      return Redirect::guest("/");
+      return redirect("/");
     }
   }
 
@@ -111,7 +111,7 @@ class ClassesController extends \BaseController
     } else {
       $disciplines = Discipline::where("period_id", decrypt(Input::get("period")))->whereStatus('E')->get();
     }
-    return View::make("modules.disciplines.listOffer", ["disciplines" => $disciplines]);
+    return view("modules.disciplines.listOffer", ["disciplines" => $disciplines]);
   }
 
   public function postNew()
@@ -128,6 +128,7 @@ class ClassesController extends \BaseController
         $offer->class_id = $class->id;
         $offer->discipline_id = decrypt($value);
         $offer->save();
+
         $unit = new Unit;
         $unit->offer_id = $offer->id;
         $unit->value = "1";
@@ -135,7 +136,7 @@ class ClassesController extends \BaseController
         $unit->save();
       }
     }
-    return Redirect::guest("classes")->with("success", "Turma criada com sucesso!");
+    return redirect("classes")->with("success", "Turma criada com sucesso!");
   }
 
   public function getInfo()
@@ -159,6 +160,7 @@ class ClassesController extends \BaseController
           $offer->class_id = $class->id;
           $offer->discipline_id = decrypt($value);
           $offer->save();
+
           $unit = new Unit;
           $unit->offer_id = $offer->id;
           $unit->value = "1";
@@ -166,9 +168,9 @@ class ClassesController extends \BaseController
           $unit->save();
         }
       }
-      return Redirect::guest("/classes")->with("success", "Classe editada com sucesso!");
+      return redirect("/classes")->with("success", "Classe editada com sucesso!");
     }
-    return Redirect::guest("/classes")->with("error", "Não foi possível editar!");
+    return redirect("/classes")->with("error", "Não foi possível editar!");
 
   }
 
@@ -178,9 +180,9 @@ class ClassesController extends \BaseController
     if ($class) {
       $class->status = "D";
       $class->save();
-      return Redirect::guest("/classes")->with("success", "Excluído com sucesso!");
+      return redirect("/classes")->with("success", "Excluído com sucesso!");
     } else {
-      return Redirect::guest("/classes")->with("error", "Não foi possível excluir!");
+      return redirect("/classes")->with("error", "Não foi possível excluir!");
     }
   }
 

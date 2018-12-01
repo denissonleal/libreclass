@@ -27,7 +27,7 @@ class ClassesGroupController extends \BaseController
     $classe->id = encrypt($classe->id);
 
     $user = User::find($this->user_id);
-    return View::make("modules.classesGroup", ['user' => $user, 'classe' => $classe]);
+    return view("modules.classesGroup", ['user' => $user, 'classe' => $classe]);
   }
 
   /**

@@ -47,7 +47,7 @@ class OffersController extends \BaseController
         }
       }
 
-      return View::make("offers.institution", [
+      return view("offers.institution", [
         "course" => $course,
         "user" => $user,
         "offers" => $offers,
@@ -172,7 +172,7 @@ class OffersController extends \BaseController
                               AND Attends.unit_id = Units.id
                               AND Units.offer_id = " . decrypt($offer) . " GROUP BY Users.id ORDER BY Users.name");
 
-      return View::make("modules.liststudentsoffers", ["user" => $user, "info" => $info, "students" => $students, "offer" => $offer]);
+      return view("modules.liststudentsoffers", ["user" => $user, "info" => $info, "students" => $students, "offer" => $offer]);
     } else {
       return Redirect::guest("/");
     }

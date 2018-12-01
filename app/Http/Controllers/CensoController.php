@@ -22,7 +22,7 @@ class CensoController extends \BaseController {
 	 */
 	public function getStudent()
 	{
-		return View::make("censo.formStudent", ['user' => User::find($this->user_id)]);//
+		return view("censo.formStudent", ['user' => User::find($this->user_id)]);//
 	}
 
 	/**

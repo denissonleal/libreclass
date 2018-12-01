@@ -27,7 +27,7 @@ class AvaliableController extends \BaseController
     if ($exam->aval == "A") {
       $students = Attend::where("unit_id", $exam->unit_id)->get();
     }
-    return View::make("modules.avaliable", ["user" => $user, "exam" => $exam, "students" => $students, "unit" => Unit::find($exam->unit_id)]);
+    return view("modules.avaliable", ["user" => $user, "exam" => $exam, "students" => $students, "unit" => Unit::find($exam->unit_id)]);
   }
 
   public function postSave()
@@ -92,7 +92,7 @@ class AvaliableController extends \BaseController
     $exam->weight = "1";
     $exam->type = 2;
 
-    return View::make("modules.avaliable", ["user" => $user, "exam" => $exam, "students" => [], "unit" => $unit]);
+    return view("modules.avaliable", ["user" => $user, "exam" => $exam, "students" => [], "unit" => $unit]);
   }
 
   public function postExam()
@@ -170,7 +170,7 @@ class AvaliableController extends \BaseController
       }
       $course = Unit::find($unit)->getOffer()->getDiscipline()->getPeriod()->getCourse();
       $attends = Attend::where("unit_id", $unit)->get();
-      return View::make("modules.units.retrieval", ["exam" => $final, "user" => $user, "attends" => $attends, "average" => $course->average]);
+      return view("modules.units.retrieval", ["exam" => $final, "user" => $user, "attends" => $attends, "average" => $course->average]);
     } catch (Exception $e) {
       return "$e";
     }
@@ -270,7 +270,7 @@ class AvaliableController extends \BaseController
       $final = FinalExam::where("user_id", $aluno->id)->where("offer_id", $offer->id)->first();
       $aluno->final = $final ? $final->value : "";
     }
-    return View::make("modules.disciplines.retrieval", ["user" => $user, "alunos" => $alunos, "course" => $course, "offer" => $offer]);
+    return view("modules.disciplines.retrieval", ["user" => $user, "alunos" => $alunos, "course" => $course, "offer" => $offer]);
   }
 
   public function getAverageUnit($unit)
@@ -293,12 +293,7 @@ class AvaliableController extends \BaseController
       }
       $attend->media = $sum / $sumWeight;
       $attend->name = User::find($attend->user_id)->name;
-//    $result = $media < $course->average ? "FINAL" : "APROVADO";
-      //    echo User::find($attend->user_id)->name . " | $sumWeight | $sum | $media | $result<br>";
     }
-//  echo "Total de avaliações: $qtdExam<br>";
-    //  echo "Peso: $sumWeight<br>";
-    //  echo "Média do curso: $course->average<br><br>";
     return $attends;
   }
 
@@ -322,13 +317,10 @@ class AvaliableController extends \BaseController
       case "S": // Soma
       case "A": // Média Aritmética
       case "W": // Média Ponderada
-        return View::make("modules.liststudentsexam", ["user" => $user, "exam" => $exam, "students" => $students]);
-        break;
+        return view("modules.liststudentsexam", ["user" => $user, "exam" => $exam, "students" => $students]);
       case "P": // Parecer Descritivo
-        return View::make("modules.liststudentsexamDescriptive", ["user" => $user, "exam" => $exam, "students" => $students]);
-        break;
+        return view("modules.liststudentsexamDescriptive", ["user" => $user, "exam" => $exam, "students" => $students]);
     }
-    // return decrypt($exam);
   }
 
   public function postDelete()

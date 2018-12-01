@@ -117,7 +117,7 @@ class SyncController extends \BaseController {
   //        return $lecture;
         }
         $data->lectures = $lectures;
-        return View::make("modules.sync.login", ["data" => $data]);
+        return view("modules.sync.login", ["data" => $data]);
         //return $data;
       }
 
@@ -150,7 +150,7 @@ class SyncController extends \BaseController {
   {
     if( !Input::has("confirm") )
     {
-      return View::make("modules.sync.send", ["data" => $this->user ]);
+      return view("modules.sync.send", ["data" => $this->user ]);
     }
 
     Session::forget("redirect");
@@ -264,6 +264,6 @@ class SyncController extends \BaseController {
                 ->subject("Tentativa de burlar o sistema");
       });
 
-    return View::make("modules.sync.error", ["data" => $this->user, "error" => Session::get("error")]);
+    return view("modules.sync.error", ["data" => $this->user, "error" => Session::get("error")]);
   }
 }

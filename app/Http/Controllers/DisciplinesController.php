@@ -32,7 +32,7 @@ class DisciplinesController extends \BaseController {
       foreach ($courses as $course) {
         $listCourses[encrypt($course->id)] = $course->name;
       }
-      return View::make("social.disciplines", ["listCourses" => $listCourses, "user" => $user]);
+      return view("social.disciplines", ["listCourses" => $listCourses, "user" => $user]);
     }
     else {
 //      return Redirect::guest("/");
@@ -125,7 +125,7 @@ class DisciplinesController extends \BaseController {
   {
     if(Input::get("course")) {
       $disciplines = DB::select("SELECT Disciplines.id AS id, Disciplines.name AS name, Periods.name AS period FROM Disciplines, Periods WHERE period_id = Periods.id AND course_id = ? AND Disciplines.status = 'E'", [decrypt(Input::get("course"))]);
-      return View::make("social.disciplines.list", [ "disciplines" => $disciplines ]);
+      return view("social.disciplines.list", [ "disciplines" => $disciplines ]);
     }
   }
 

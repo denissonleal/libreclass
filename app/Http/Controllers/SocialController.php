@@ -20,7 +20,7 @@ class SocialController extends \BaseController {
     $user = User::find($this->user_id);
     Session::put("type", $user->type);
 
-    return View::make("social.home", ["user" => $user]);
+    return view("social.home", ["user" => $user]);
   }
 
   public function postQuestion()

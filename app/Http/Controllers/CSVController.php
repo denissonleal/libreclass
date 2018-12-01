@@ -25,7 +25,7 @@ class CSVController extends \BaseController {
     Session::forget("attends");
     Session::forget("classes");
 
-    return View::make("modules.import",["user" => $this->user]);
+    return view("modules.import",["user" => $this->user]);
   }
 
   /**
@@ -105,7 +105,7 @@ class CSVController extends \BaseController {
       }
       Session::put("attends", $result);
       Session::put("classes", $classes);
-      return View::make("modules.import.classes",["user" => $this->user, "classes" => $classes]);
+      return view("modules.import.classes",["user" => $this->user, "classes" => $classes]);
   }
 
   public function getConfirmClasses()
@@ -140,7 +140,7 @@ class CSVController extends \BaseController {
     }
     if($s_units) DB::insert($s_units);
 
-    return View::make("modules.import/students",["user" => $this->user, "students" => Session::get("attends")]);
+    return view("modules.import/students",["user" => $this->user, "students" => Session::get("attends")]);
   }
 
 
@@ -284,7 +284,7 @@ class CSVController extends \BaseController {
         $structure[] = [$cod, $offer];
       }
       Session::put("structure", $structure);
-      return View::make("modules.import.structure",["user" => $this->user, "school" => $school]);
+      return view("modules.import.structure",["user" => $this->user, "school" => $school]);
     }
     catch (Exception $e) {
       return Redirect::to("/import")->with("error", "Arquivo inválido!");
@@ -338,7 +338,7 @@ class CSVController extends \BaseController {
           ];
       }
     }
-    return View::make("modules.import.teacher", ["user" => $this->user, "teachers" => $teachers]);
+    return view("modules.import.teacher", ["user" => $this->user, "teachers" => $teachers]);
   }
 
   /**
@@ -372,7 +372,7 @@ class CSVController extends \BaseController {
       }
       if($s_relations) DB::insert($s_relations);
     }
-    return View::make("modules.import.offers", ["user" => $this->user, "structure" => $structure]);
+    return view("modules.import.offers", ["user" => $this->user, "structure" => $structure]);
   }
 
   public function getConfirmoffer()

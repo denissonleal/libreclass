@@ -35,7 +35,7 @@ class ConfigController extends \BaseController {
 	public function getIndex()
 	{
 		if ( $this->user_id ) {
-			return View::make("user.config", [ "user" => User::find($this->user_id), "select" => $this->select ]);
+			return view("user.config", [ "user" => User::find($this->user_id), "select" => $this->select ]);
 		}
 		else {
 			return Redirect::guest("/");
@@ -44,7 +44,7 @@ class ConfigController extends \BaseController {
 
 	public function postIndex()
 	{
-		return View::make("user.config", [ "user" => User::find($this->user_id), "select" => $this->select ]);
+		return view("user.config", [ "user" => User::find($this->user_id), "select" => $this->select ]);
 	}
 
 	public function postPhoto()
@@ -108,7 +108,7 @@ class ConfigController extends \BaseController {
 			}
 			User::whereId($this->user_id)->update([$key => $value]) ? $value: "error";
 		}
-//    return View::make("user.config", [ "user" => User::find($this->user_id), "select" => $this->select ]);
+//    return view("user.config", [ "user" => User::find($this->user_id), "select" => $this->select ]);
 		return Redirect::to("/config")->with("success", "Modificado com sucesso!");
 	}
 
