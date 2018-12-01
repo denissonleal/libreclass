@@ -18,7 +18,7 @@
             <div class="media">
               <div class="media-body">
                 <h4 class="media-heading"><a href="/attends/units/{{ encrypt($offer->id) }}">{{ $offer->discipline }}</a></h4>
-                <?php $teachers = DB::select("SELECT Users.id, Users.name, Users.photo FROM Lectures, Users WHERE Lectures.idOffer=? and Lectures.user_id=Users.id", [$offer->id]); ?>
+                <?php $teachers = DB::select("SELECT Users.id, Users.name, Users.photo FROM Lectures, Users WHERE Lectures.offer_id=? and Lectures.user_id=Users.id", [$offer->id]); ?>
                 @foreach($teachers as $teacher)
                   <img src="{{ strlen($teacher->photo) ? $teacher->photo : "/images/user-photo-default.jpg" }}" class="icon-user-min img-circle">
                   <span class="text-10">{{ $teacher->name }}</span>

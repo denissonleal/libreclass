@@ -7,12 +7,12 @@ class Offer extends \Moloquent
 
   public function master()
   {
-    return $this->belongsTo('Offer', 'idOffer');
+    return $this->belongsTo('Offer', 'offer_id');
   }
 
   public function slaves()
   {
-    return $this->hasMany('Offer', 'idOffer');
+    return $this->hasMany('Offer', 'offer_id');
   }
 
   public function discipline()
@@ -22,7 +22,7 @@ class Offer extends \Moloquent
 
   public function units()
   {
-    return $this->hasMany('Unit', 'idOffer');
+    return $this->hasMany('Unit', 'offer_id');
   }
 
   public function classe()
@@ -42,34 +42,34 @@ class Offer extends \Moloquent
 
   public function getFirstUnit()
   {
-    return Unit::where("idOffer", $this->id)->first();
+    return Unit::where("offer_id", $this->id)->first();
   }
 
   public function getLastUnit()
   {
-    return Unit::where("idOffer", $this->id)->orderBy("value", "desc")->first();
+    return Unit::where("offer_id", $this->id)->orderBy("value", "desc")->first();
   }
 
   public function getUnits()
   {
-    return Unit::where("idOffer", $this->id)->get();
+    return Unit::where("offer_id", $this->id)->get();
   }
 
   public function getLectures()
   {
-    return Lecture::where("idOffer", $this->id)->first();
+    return Lecture::where("offer_id", $this->id)->first();
   }
 
   public function getAllLectures()
   {
-    return Lecture::where("idOffer", $this->id)->get();
+    return Lecture::where("offer_id", $this->id)->get();
   }
 
   public function qtdAbsences($idStudent)
   {
     return DB::select("SELECT COUNT(*) as 'qtd'
                         FROM Units, Attends, Lessons, Frequencies
-                        WHERE Units.idOffer=? AND
+                        WHERE Units.offer_id=? AND
                               Units.id=Lessons.idUnit AND
                               Lessons.id=Frequencies.idLesson AND
                               Lessons.deleted_at IS NULL AND
@@ -82,7 +82,7 @@ class Offer extends \Moloquent
   {
     return DB::select("SELECT COUNT(*) as 'qtd'
                         FROM Units, Attends, Lessons, Frequencies
-                        WHERE Units.idOffer = ? AND
+                        WHERE Units.offer_id = ? AND
                               Units.value = ? AND
                               Units.id = Lessons.idUnit AND
                               Lessons.id = Frequencies.idLesson AND
@@ -96,7 +96,7 @@ class Offer extends \Moloquent
   {
     return DB::select("SELECT COUNT(*) as 'qtd'
                         FROM Units, Lessons
-                        WHERE Units.idOffer=? AND
+                        WHERE Units.offer_id=? AND
                               Units.id=Lessons.idUnit AND
                               Lessons.deleted_at IS NULL", [$this->id])[0]->qtd;
   }
@@ -105,7 +105,7 @@ class Offer extends \Moloquent
 	{
 		return DB::select("SELECT *
                         FROM Units, Lessons
-                        WHERE Units.idOffer=? AND
+                        WHERE Units.offer_id=? AND
                               Units.id=Lessons.idUnit AND
                               Lessons.deleted_at IS NULL", [$this->id]);
 	}
@@ -114,7 +114,7 @@ class Offer extends \Moloquent
   {
     return DB::select("SELECT COUNT(*) as 'qtd'
                         FROM Units, Lessons
-                        WHERE Units.idOffer=? AND
+                        WHERE Units.offer_id=? AND
                               Units.value=? AND
                               Units.id=Lessons.idUnit AND
                               Lessons.deleted_at IS NULL", [$this->id, $unitValue])[0]->qtd;
@@ -129,7 +129,7 @@ class Offer extends \Moloquent
   public function getTeachers()
   {
     $teachers = [];
-    $lectures = Lecture::where("idOffer", $this->id)->get();
+    $lectures = Lecture::where("offer_id", $this->id)->get();
     foreach ($lectures as $lecture) {
       $teachers[] = $lecture->getUser()->name;
     }

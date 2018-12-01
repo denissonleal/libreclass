@@ -89,7 +89,7 @@ class CSVController extends \BaseController {
             $classes[] = $class;
           }
 //        $units = DB::select("SELECT * FROM Units, Offers
-//                             WHERE Offers.idClass=? AND Units.idOffer=Offers.id ORDER BY Units.value DESC", [$class->id]);
+//                             WHERE Offers.idClass=? AND Units.offer_id=Offers.id ORDER BY Units.value DESC", [$class->id]);
         }
         elseif (is_numeric($cols[0]))
         {
@@ -151,12 +151,12 @@ class CSVController extends \BaseController {
           $offer->save();
 
           if( !$s_units )
-            $s_units = "INSERT IGNORE INTO Units (idOffer) VALUES ($offer->id)";
+            $s_units = "INSERT IGNORE INTO Units (offer_id) VALUES ($offer->id)";
           else
             $s_units .= ", ($offer->id)";
 
 //          $unit = new Unit;
-//          $unit->idOffer = $offer->id;
+//          $unit->offer_id = $offer->id;
 //          $unit->save();
       }
     }
@@ -231,7 +231,7 @@ class CSVController extends \BaseController {
 //            }
           }
           $units = DB::select("SELECT Units.id as id, Offers.idClass as idClass FROM Units, Offers
-                               WHERE Offers.idClass=? AND Units.idOffer=Offers.id ORDER BY Units.value DESC", [$attend[6]]);
+                               WHERE Offers.idClass=? AND Units.offer_id=Offers.id ORDER BY Units.value DESC", [$attend[6]]);
 //          return DB::getQueryLog();
         }
         foreach ($units as $unit) {
@@ -459,10 +459,10 @@ class CSVController extends \BaseController {
           $offer->save();
           $lecture = new Lecture;
           $lecture->user_id = $teacher->id;
-          $lecture->idOffer = $offer->id;
+          $lecture->offer_id = $offer->id;
           $lecture->save();
           $unit = new Unit;
-          $unit->idOffer = $offer->id;
+          $unit->offer_id = $offer->id;
           $unit->save();
         }
       }

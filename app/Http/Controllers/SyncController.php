@@ -38,17 +38,17 @@ class SyncController extends \BaseController {
          * Cada vez que criptografa sai uma chave diferente. */
 
         foreach ( $lectures as $lecture ) {
-          $offer = Offer::find($lecture->idOffer);
-          $units = Unit::where('idOffer', $offer->id)->get();
+          $offer = Offer::find($lecture->offer_id);
+          $units = Unit::where('offer_id', $offer->id)->get();
           $offer->id = encrypt($offer->id); //crypt offer
-          $lecture->idOffer = $offer->id;
+          $lecture->offer_id = $offer->id;
           $lecture->user_id = $data->id;
           foreach ( $units as $unit ) {
             $exams = Exam::where('idUnit', $unit->id)->get();
             $lessons = Lesson::where('idUnit', $unit->id)->get();
             $attends = Attend::where('idUnit', $unit->id)->get();
             $unit->id = encrypt($unit->id); //crypt unit
-            $unit->idOffer = $offer->id;
+            $unit->offer_id = $offer->id;
 
             foreach ( $attends as $attend ) {
               $keyAttend[$attend->id] = encrypt($attend->id);
@@ -166,7 +166,7 @@ class SyncController extends \BaseController {
       {
         $unit->id = decrypt($unit->id);
         $valid = DB::select("SELECT COUNT(*) as valid FROM Lectures, Offers, Units "
-                            . "WHERE Lectures.user_id=? AND Lectures.idOffer=Units.idOffer AND Units.id=?",
+                            . "WHERE Lectures.user_id=? AND Lectures.offer_id=Units.offer_id AND Units.id=?",
                             [$this->user->id, $unit->id])[0]->valid;
         if($valid == 0)
           return Redirect::to("/sync/error")

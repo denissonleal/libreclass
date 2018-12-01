@@ -21,7 +21,7 @@ class LessonsController extends \BaseController
       $user = User::find($this->user_id);
       $lesson = Lesson::find(decrypt(Input::get("l")));
 
-      $students = DB::select("SELECT Users.name AS name, Attends.id AS idAttend, Frequencies.value AS value, Units.idOffer, Attends.user_id, Units.id AS idUnit
+      $students = DB::select("SELECT Users.name AS name, Attends.id AS idAttend, Frequencies.value AS value, Units.offer_id, Attends.user_id, Units.id AS idUnit
                                 FROM Frequencies, Attends, Users, Units
                                 WHERE Frequencies.idAttend=Attends.id AND
 																			Attends.status != 'T' AND
@@ -56,14 +56,12 @@ class LessonsController extends \BaseController
 
         $frequency = DB::select("SELECT Offers.maxlessons, COUNT(*) as qtd "
                                   . "FROM Offers, Units, Attends, Frequencies "
-                                  . "WHERE Offers.id=? AND Offers.id=Units.idOffer AND Units.id=Attends.idUnit "
+                                  . "WHERE Offers.id=? AND Offers.id=Units.offer_id AND Units.id=Attends.idUnit "
                                     . "AND Attends.user_id=? AND Attends.id=Frequencies.idAttend AND Frequencies.value='F'",
-                                [$student->idOffer, $student->user_id])[0];
+                                [$student->offer_id, $student->user_id])[0];
         $student->maxlessons = $frequency->maxlessons;
-				// var_dump([$frequency->qtd, $qtdAttests]);
         $student->qtd = $frequency->qtd - $qtdAttests;
       }
-			// return $students;
       return View::make("modules.lessons", ["user" => $user, "lesson" => $lesson, "students" => $students]);
     } else {
       return Redirect::guest("/");
@@ -177,13 +175,13 @@ class LessonsController extends \BaseController
     $idLesson = decrypt(Input::get("idLesson"));
     $value = Input::get("value") == "P" ? "F" : "P";
 
-    $idOffer = DB::select(
-      "SELECT Units.idOffer "
+    $offer_id = DB::select(
+      "SELECT Units.offer_id "
       . "  FROM Lessons, Units "
       . "WHERE Lessons.id = ? "
       . "  AND Lessons.idUnit = Units.id",
       [$idLesson]
-    )[0]->idOffer;
+    )[0]->offer_id;
 
     $status = Frequency::where("idAttend", $attend->id)->where("idLesson", $idLesson)->update(["value" => $value]);
 
@@ -191,12 +189,12 @@ class LessonsController extends \BaseController
       "SELECT Offers.maxlessons, COUNT(*) as qtd "
       . "  FROM Offers, Units, Attends, Frequencies "
       . "WHERE Offers.id = ? "
-      . "  AND Offers.id = Units.idOffer "
+      . "  AND Offers.id = Units.offer_id "
       . "  AND Units.id = Attends.idUnit "
       . "  AND Attends.user_id = ? "
       . "  AND Attends.id = Frequencies.idAttend "
       . "  AND Frequencies.value = 'F'",
-      [$idOffer, $attend->user_id]
+      [$offer_id, $attend->user_id]
     )[0];
 
   	$this->slavesFrequency($attend->id, $idLesson, $value);
@@ -219,13 +217,13 @@ class LessonsController extends \BaseController
       return;
     }
 		$unit = Attend::find($idAttend)->getUnit();
-		$slaveOffers = Offer::where('idOffer', $unit->offer->id)->get();
+		$slaveOffers = Offer::where('offer_id', $unit->offer->id)->get();
 		$groupLesson = Lesson::find($idLesson);
 		$student = Attend::find($idAttend)->getUser();
 
 
 		foreach($slaveOffers as $o) {
-			$o_unit = Unit::where('idOffer', $o->id)->where('value', $unit->value)->first();
+			$o_unit = Unit::where('offer_id', $o->id)->where('value', $unit->value)->first();
 			$lessons = Lesson::where("idUnit", $o_unit->id)->where('date', $groupLesson->date)->whereStatus('E')->orderBy("date", "desc")->orderBy("id", "desc")->get();
 
 			foreach ($lessons as $key => $lesson) {
@@ -233,54 +231,6 @@ class LessonsController extends \BaseController
 				Frequency::where("idAttend", $o_attend->id)->where("idLesson", $lesson->id)->update(["value" => $value]);
 			}
 		}
-
-    // try {
-		//
-		//
-    //   $lesson_number = -1;
-    //   $lessons = Lesson::where("idUnit", $unit->id)
-    //     ->whereStatus('E')->orderBy("date", "desc")
-    //     ->orderBy("id", "desc")
-    //     ->get();
-    //   foreach ($lessons as $key => $lesson) {
-    //     if ($lesson->id == $idLesson) {
-    //       $lesson_number = $key;
-    //     }
-    //   }
-    //   if ($lesson_number == -1) {
-    //     throw new Exception('Aula não encontrada!', 1);
-    //   }
-    //   $slaveOffers = Offer::where('idOffer', $unit->offer->id)->get();
-    //   if (!$slaveOffers) {
-    //     throw new Exception('Oferta "slave" não encontrada!', 1);
-    //   }
-    //   foreach ($slaveOffers as $o) {
-    //     $o_unit = Unit::where('idOffer', $o->id)->where('value', $unit->value)->first();
-    //     if (!$o_unit) {
-    //       throw new Exception('Não foi encontrada uma unidade correspondente na oferta slave!', 1);
-    //     }
-    //     $o_lessons = $lessons = Lesson::where("idUnit", $o_unit->id)->whereStatus('E')->orderBy("date", "desc")->orderBy("id", "desc")->get();
-    //     if (!$o_lessons[$lesson_number]) {
-    //       throw new Exception('Não foi encontrada a aula correspondente na oferta slave!', 1);
-    //     }
-    //     $o_student = Attend::find($idAttend)->getUser();
-    //     $o_attend = Attend::where('user_id', $o_student->id)->where('idUnit', $o_unit->id)->first();
-    //     if (!$o_attend) {
-    //       throw new Exception('Relacionamento inconsistente entre unidade e aluno', 1);
-    //     }
-    //     $o_frequency = Frequency::where("idAttend", $o_attend->id)->where("idLesson", $o_lessons[$lesson_number]->id)->update(["value" => $value]);
-    //   }
-		//
-    // } catch (Exception $e) {
-    //   // if ($e->getCode() == 1) {
-    //     Log::info('slavesFrequency', [
-    //       'message' => 'Erro: ' . $e->getMessage(),
-    //       'file' => $e->getFile(),
-    //       'line' => $e->getLine(),
-    //       'code' => $e->getCode(),
-    //     ]);
-    //   // }
-    // }
   }
 
   public function postDelete()
@@ -322,7 +272,7 @@ class LessonsController extends \BaseController
   public function anyCopy()
   {
     $lesson = Lesson::find(decrypt(Input::get("lesson")));
-    $auth = DB::select("SELECT COUNT(*) as qtd FROM Units, Lectures WHERE Units.id=? AND Units.idOffer=Lectures.idOffer AND Lectures.user_id=?",
+    $auth = DB::select("SELECT COUNT(*) as qtd FROM Units, Lectures WHERE Units.id=? AND Units.offer_id=Lectures.offer_id AND Lectures.user_id=?",
       [$lesson->idUnit, $this->user_id])[0]->qtd;
     if (!$auth) {
       return Response::JSON(false);
@@ -330,7 +280,7 @@ class LessonsController extends \BaseController
 
     $copy = $lesson->replicate();
     if (Input::get("type") == 3) {
-      $unit = Unit::where("idOffer", decrypt(Input::get("offer")))->whereStatus("E")->orderBy("value", "desc")->first();
+      $unit = Unit::where("offer_id", decrypt(Input::get("offer")))->whereStatus("E")->orderBy("value", "desc")->first();
       $copy->idUnit = $unit->id;
       $copy->save();
 
@@ -369,7 +319,7 @@ class LessonsController extends \BaseController
   public function postListOffers()
   {
     $offers = DB::select("SELECT Offers.id, Disciplines.name, Classes.class, Periods.name as `periodName`, Courses.name as `courseName` FROM Lectures, Offers, Classes, Disciplines, Periods, Courses "
-      . "WHERE Lectures.user_id=? AND Lectures.idOffer=Offers.id AND Offers.idClass=Classes.id AND Offers.idDiscipline=Disciplines.id AND Disciplines.period_id=Periods.id AND Periods.course_id=Courses.id",
+      . "WHERE Lectures.user_id=? AND Lectures.offer_id=Offers.id AND Offers.idClass=Classes.id AND Offers.idDiscipline=Disciplines.id AND Disciplines.period_id=Periods.id AND Periods.course_id=Courses.id",
       [$this->user_id]);
 
     foreach ($offers as $offer) {
@@ -381,7 +331,6 @@ class LessonsController extends \BaseController
 
   public function anyDelete()
   {
-    // return decrypt(Input::get("input-trash"));
     Lesson::find(decrypt(Input::get("input-trash")))->delete();
     return Redirect::back()->with("alert", "Aula excluída!");
   }

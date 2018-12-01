@@ -127,13 +127,13 @@ class ImportCommand extends Command {
 						}
 						if (!$offer = Offer::where('idClass', $class->id)->where('idDiscipline', $discipline->id)->first()){
 							$offer = Offer::create(['idClass'=>$class->id, 'idDiscipline'=>$discipline->id, 'classroom'=>$classroom, 'day_period'=>$day_period]);
-							$unit = Unit::create(['idOffer'=>$offer->id]);
+							$unit = Unit::create(['offer_id'=>$offer->id]);
 							foreach ($students as $student) {
 								Attend::create(['user_id'=>$student->id, 'idUnit'=>$unit->id]);
 							}
 						}
 						if (strlen($cols[1])){
-							Lecture::create(['user_id'=>$professor->id, 'idOffer'=>$offer->id]);
+							Lecture::create(['user_id'=>$professor->id, 'offer_id'=>$offer->id]);
 						}
 					}
 					if (!strlen($cols[1]) && !strlen($cols[2])) {

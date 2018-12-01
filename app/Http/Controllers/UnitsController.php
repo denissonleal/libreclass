@@ -35,7 +35,7 @@ class UnitsController extends \BaseController
 				return Redirect::to("lectures")->with("error", "Não é possível acessar unidade de turmas encerradas");
 			}
 
-      $units = Unit::where("idOffer", $unit_current->idOffer)->get();
+      $units = Unit::where("offer_id", $unit_current->offer_id)->get();
       $list_units = [];
       foreach ($units as $unit) {
         $list_units[] = $unit->value;
@@ -75,10 +75,10 @@ class UnitsController extends \BaseController
   {
     if (Input::has("offer")) {
       $offer = decrypt(Input::get("offer"));
-      $old = Unit::where("idOffer", $offer)->orderBy("value", "desc")->first();
+      $old = Unit::where("offer_id", $offer)->orderBy("value", "desc")->first();
 
       $unit = new Unit;
-      $unit->idOffer = $old->idOffer;
+      $unit->offer_id = $old->offer_id;
       $unit->value = $old->value + 1;
       $unit->calculation = $old->calculation;
       $unit->save();
@@ -211,12 +211,12 @@ class UnitsController extends \BaseController
       $data['period'] = $unit->offer->classe->getPeriod();
       $data['course'] = $unit->offer->classe->period->getCourse();
 
-      $offer = Offer::find($unit->idOffer);
+      $offer = Offer::find($unit->offer_id);
 
       $students = DB::select(""
         . " SELECT Users.id, Users.name "
         . " FROM Users, Attends, Units "
-        . " WHERE Units.idOffer=? AND Attends.idUnit=Units.id AND Attends.user_id=Users.id AND Attends.status = 'M' "
+        . " WHERE Units.offer_id=? AND Attends.idUnit=Units.id AND Attends.user_id=Users.id AND Attends.status = 'M' "
         . " GROUP BY Users.id "
         . " ORDER BY Users.name ASC", [$offer->id]
       );
@@ -335,12 +335,12 @@ class UnitsController extends \BaseController
       $data['period'] = $unit->offer->classe->getPeriod();
       $data['course'] = $unit->offer->classe->period->getCourse();
 
-      $offer = Offer::find($unit->idOffer);
+      $offer = Offer::find($unit->offer_id);
 
       $students = DB::select(""
         . " SELECT Users.id, Users.name "
         . " FROM Users, Attends, Units "
-        . " WHERE Units.idOffer=? AND Attends.idUnit=Units.id AND Attends.user_id=Users.id AND Attends.status = 'M'"
+        . " WHERE Units.offer_id=? AND Attends.idUnit=Units.id AND Attends.user_id=Users.id AND Attends.status = 'M'"
         . " GROUP BY Users.id "
         . " ORDER BY Users.name ASC", [$offer->id]
       );

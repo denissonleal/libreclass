@@ -37,13 +37,13 @@ class OffersController extends \BaseController
 
       foreach ($offers as $offer) {
         $teachers = [];
-        $list = Lecture::where("idOffer", $offer->id)->get();
+        $list = Lecture::where("offer_id", $offer->id)->get();
         foreach ($list as $value) {
           $teachers[] = base64_encode($value->user_id);
         }
         $offer->teachers = $teachers;
-        if (isset($offer->idOffer) && !empty($offer->idOffer)) {
-          $offer->offer = Offer::find($offer->idOffer);
+        if (isset($offer->offer_id) && !empty($offer->offer_id)) {
+          $offer->offer = Offer::find($offer->offer_id);
         }
       }
 
@@ -66,10 +66,10 @@ class OffersController extends \BaseController
       return Redirect::to("/classes/offers?t=" . encrypt($offer->idClass))->with("error", "Você não tem permissão para criar unidade");
     }
 
-    $old = Unit::where("idOffer", $offer->id)->orderBy("value", "desc")->first();
+    $old = Unit::where("offer_id", $offer->id)->orderBy("value", "desc")->first();
 
     $unit = new Unit;
-    $unit->idOffer = $offer->id;
+    $unit->offer_id = $offer->id;
 
 		if(!$old) {
 			$unit->value = 1;
@@ -119,7 +119,7 @@ class OffersController extends \BaseController
     foreach ($lectures as $lecture) {
       $find = array_search($lecture->user_id, $teachers);
       if ($find === false) {
-        Lecture::where('idOffer', $offer->id)->where('user_id', $lecture->user_id)->delete();
+        Lecture::where('offer_id', $offer->id)->where('user_id', $lecture->user_id)->delete();
       } else {
         unset($teachers[$find]);
       }
@@ -132,30 +132,10 @@ class OffersController extends \BaseController
 
       $lecture = new Lecture;
       $lecture->user_id = $teacher;
-      $lecture->idOffer = $offer->id;
+      $lecture->offer_id = $offer->id;
       $lecture->order = $last;
       $lecture->save();
     }
-
-    //   $idTeacher = decrypt(Input::get("teacher"));
-    //   $last = Lecture::where("user_id", $idTeacher)->orderBy("order", "desc")->first();
-    //   $last = $last ? $last->order+1 : 1;
-    //
-    //   if (!$lecture) {
-    //     $lecture = new Lecture;
-    //     $lecture->user_id = $idTeacher;
-    //     $lecture->idOffer = $offer->id;
-    //     $lecture->order = $last;
-    //     $lecture->save();
-    //   }
-    //   else if($lecture->user_id != $idTeacher) {
-    //     Lecture::where('idOffer', $offer->id)->where('user_id', $lecture->user_id)->update(["user_id" => $idTeacher, "order" => $last]);
-    //   }
-    // }
-    // else if ($lecture)
-    // {
-    //   Lecture::where('idOffer', $offer->id)->where('user_id', $lecture->user_id)->delete();
-    // }
 
     return Redirect::guest(Input::get("prev"))->with("success", "Modificado com sucesso!");
   }
@@ -181,10 +161,6 @@ class OffersController extends \BaseController
     if ($this->user_id) {
       $user = User::find($this->user_id);
 
-      //$students = User::whereType("N")->orderby("name")->get();
-      //$list_students = [];
-      //foreach( $students as $student )
-      //$list_students[encrypt($student->id)] = $student->name;
       $info = DB::select("SELECT Courses.name as course, Periods.name as period, Classes.id as idClass, Classes.class as class
                           FROM Courses, Periods, Classes, Offers
                           WHERE Courses.id = Periods.course_id
@@ -196,7 +172,7 @@ class OffersController extends \BaseController
                               FROM Users, Attends, Units
                               WHERE Users.id=Attends.user_id
                               AND Attends.idUnit = Units.id
-                              AND Units.idOffer = " . decrypt($offer) . " GROUP BY Users.id ORDER BY Users.name");
+                              AND Units.offer_id = " . decrypt($offer) . " GROUP BY Users.id ORDER BY Users.name");
 
       return View::make("modules.liststudentsoffers", ["user" => $user, "info" => $info, "students" => $students, "offer" => $offer]);
     } else {
@@ -210,7 +186,7 @@ class OffersController extends \BaseController
     //~ return Input::all();
     $offer = decrypt(Input::get("offer"));
     $student = decrypt(Input::get("student"));
-    $units = Unit::where("idOffer", $offer)->get();
+    $units = Unit::where("offer_id", $offer)->get();
 
     if (Input::get("status") == 'M') {
       foreach ($units as $unit) {
@@ -247,7 +223,7 @@ class OffersController extends \BaseController
   {
     $offer = Offer::find(decrypt($offer));
 
-    $unit = Unit::where('idOffer', $offer->id)->orderBy('value', 'desc')->first();
+    $unit = Unit::where('offer_id', $offer->id)->orderBy('value', 'desc')->first();
     $unit->delete();
 
     return Redirect::to("/classes/offers?t=" . encrypt($offer->idClass))->with("success", "Unidade deletada com sucesso!");
@@ -259,7 +235,7 @@ class OffersController extends \BaseController
 		}
 
 		$groupId = Input::get('group_id');
-		$offers = Offer::where('idOffer', decrypt($groupId))->where('grouping', 'S')->get();
+		$offers = Offer::where('offer_id', decrypt($groupId))->where('grouping', 'S')->get();
 		foreach ($offers as $key => $offer) {
 			$offer->id = encrypt($offer->id);
 			$offer->_discipline = $offer->discipline;

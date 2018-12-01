@@ -3,16 +3,16 @@
 class Unit extends \Moloquent
 {
 
-  protected $fillable = ['idOffer'];
+  protected $fillable = ['offer_id'];
 
   public function offer()
   {
-    return $this->belongsTo('Offer', 'idOffer');
+    return $this->belongsTo('Offer', 'offer_id');
   }
 
   public function getOffer()
   {
-    return Offer::find($this->idOffer);
+    return Offer::find($this->offer_id);
   }
 
   public function getAverage($student)

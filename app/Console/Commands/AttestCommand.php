@@ -50,7 +50,7 @@ class AttestCommand extends Command {
                     AND Courses.id=Periods.course_id
                     AND Periods.id=Classes.period_id
                     AND Classes.id=Offers.idClass
-                    AND Offers.id=Units.idOffer
+                    AND Offers.id=Units.offer_id
                     AND Units.id=Lessons.idUnit
                     AND Lessons.id=Frequencies.idLesson
                     AND Frequencies.idAttend=Attends.id

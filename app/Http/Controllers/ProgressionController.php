@@ -50,7 +50,7 @@ class ProgressionController extends \BaseController
 			SELECT Users.id
 			FROM Classes, Offers, Units, Attends, Users
 			WHERE Classes.id = Offers.idClass
-				AND Offers.id = Units.idOffer
+				AND Offers.id = Units.offer_id
 				AND Units.id = Attends.idUnit
 				AND Users.id = Attends.user_id
 				AND Classes.id = $classe_id
@@ -68,7 +68,7 @@ class ProgressionController extends \BaseController
 			SELECT Users.name as user_name, Attends.id as attend_id, Users.id as user_id
 			FROM Classes, Offers, Units, Attends, Users
 			WHERE Classes.id = Offers.idClass
-				AND Offers.id = Units.idOffer
+				AND Offers.id = Units.offer_id
 				AND Units.id = Attends.idUnit ".
 				(!empty($students) ? "AND Users.id NOT IN ($students) " : "").
 				"AND Users.id = Attends.user_id

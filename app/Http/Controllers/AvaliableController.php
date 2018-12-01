@@ -238,12 +238,12 @@ class AvaliableController extends \BaseController
         }
       }
 
-      if (FinalExam::where("user_id", $student)->where("idOffer", $offer)->first()) {
-        FinalExam::where("user_id", $student)->where("idOffer", $offer)->update(["value" => $value]);
+      if (FinalExam::where("user_id", $student)->where("offer_id", $offer)->first()) {
+        FinalExam::where("user_id", $student)->where("offer_id", $offer)->update(["value" => $value]);
       } else {
         $offervalue = new FinalExam;
         $offervalue->user_id = $student;
-        $offervalue->idOffer = $offer;
+        $offervalue->offer_id = $offer;
         $offervalue->value = $value;
         $offervalue->save();
       }
@@ -263,14 +263,14 @@ class AvaliableController extends \BaseController
       $offer->dateFinal = date("Y-m-d");
     }
 
-    if (!Lecture::where("user_id", $user->id)->where("idOffer", $offer->id)->first()) {
+    if (!Lecture::where("user_id", $user->id)->where("offer_id", $offer->id)->first()) {
       return Redirect::to("/logout");
     }
-    $units = Unit::where("idOffer", $offer->id)->get();
+    $units = Unit::where("offer_id", $offer->id)->get();
     $course = Offer::find($offer->id)->getDiscipline()->getPeriod()->getCourse();
     $alunos = DB::select("select Users.id, Users.name
                           from Attends, Units, Users
-                          where Units.idOffer=? AND Units.id=Attends.idUnit AND Attends.user_id=Users.id
+                          where Units.offer_id=? AND Units.id=Attends.idUnit AND Attends.user_id=Users.id
 													AND Attends.status = 'M'
                           group by Attends.user_id
                           order by Users.name", [$offer->id]);
@@ -284,7 +284,7 @@ class AvaliableController extends \BaseController
         $sum += $aluno->averages[$unit->value];
       }
       $aluno->med = $sum / count($units);
-      $final = FinalExam::where("user_id", $aluno->id)->where("idOffer", $offer->id)->first();
+      $final = FinalExam::where("user_id", $aluno->id)->where("offer_id", $offer->id)->first();
       $aluno->final = $final ? $final->value : "";
     }
     return View::make("modules.disciplines.retrieval", ["user" => $user, "alunos" => $alunos, "course" => $course, "offer" => $offer]);

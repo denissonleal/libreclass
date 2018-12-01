@@ -60,7 +60,6 @@ class UsersController extends \BaseController
       . " ORDER BY name",
       [$this->user_id]);
     foreach ($teachers as $teacher) {
-      //  $teacher->selected = Lecture::where("user_id", $teacher->id)->where("idOffer", $offer)->count();
       $teacher->id = base64_encode($teacher->id);
     }
 
@@ -200,26 +199,20 @@ class UsersController extends \BaseController
 
     if ($profile) {
       $profile = User::find($profile);
-			// $courses = DB::select("SELECT Courses.id, Courses.name FROM Users, Courses, Periods, Disciplines, Attends, Units, Offers "
-			// . "WHERE Users.id=? AND Users.id = Attends.user_id AND Units.id = Attends.idUnit AND Offers.id = Units.idOffer "
-			// . "AND Disciplines.id = Offers.idDiscipline AND Disciplines.period_id = Periods.id AND Periods.course_id = Courses.id", [$profile]);
 			$courses = DB::select("SELECT Courses.id, Courses.name, Courses.quantUnit FROM Attends, Units, Offers, Disciplines, Periods, Courses, Classes "
 			. " WHERE Units.id = Attends.idUnit "
-			. " AND Offers.id = Units.idOffer "
+			. " AND Offers.id = Units.offer_id "
 			. " AND Disciplines.id = Offers.idDiscipline "
 			. " AND Periods.id = Disciplines.period_id "
-			// . " AND Classes.period_id = Periods.id "
 			. " AND Courses.id = Periods.course_id "
 			. " AND Attends.user_id = ? "
 			. " GROUP BY Courses.id", [$profile->id]);
 
 			$listCourses = [];
 			foreach ($courses as $course) {
-	      // $listCourses[$course->name] = $course->name;
 	      $listCourses[encrypt($course->id)] = "$course->name";
 
 	    }
-			// dd($listCourses);
 
       $attests = Attest::where("idStudent", $profile->id)->where("institution_id", $user->id)->orderBy("date", "desc")->get();
       return View::make("modules.profilestudent", ["user" => $user, "profile" => $profile, "listclasses" => $listclasses, "attests" => $attests, "listidsclasses" => $listidsclasses, "listCourses" => $listCourses, 'courses' => $courses]);
@@ -242,13 +235,13 @@ class UsersController extends \BaseController
     $student = decrypt(Input::get("student"));
     $disciplines = DB::select("SELECT  Courses.id as course, Disciplines.name, Offers.id as offer, Attends.id as attend, Classes.status as statusclasse "
       . "FROM Classes, Periods, Courses, Disciplines, Offers, Units, Attends "
-      . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.schoolYear=? AND Classes.id=Offers.idClass AND Offers.idDiscipline=Disciplines.id AND Offers.id=Units.idOffer AND Units.id=Attends.idUnit AND Attends.user_id=? "
+      . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.schoolYear=? AND Classes.id=Offers.idClass AND Offers.idDiscipline=Disciplines.id AND Offers.id=Units.offer_id AND Units.id=Attends.idUnit AND Attends.user_id=? "
       . "group by Offers.id",
       [$this->user_id, Input::get("class"), $student]);
 
     foreach ($disciplines as $discipline) {
       $sum = 0;
-      $discipline->units = Unit::where("idOffer", $discipline->offer)->get();
+      $discipline->units = Unit::where("offer_id", $discipline->offer)->get();
       foreach ($discipline->units as $unit) {
         $unit->exams = Exam::where("idUnit", $unit->id)->orderBy("aval")->get();
         foreach ($unit->exams as $exam) {
@@ -260,7 +253,7 @@ class UsersController extends \BaseController
         $sum += isset($value[1]) ? $value[1] : $value[0];
       }
       $discipline->average = sprintf("%.2f", ($sum + .0) / count($discipline->units));
-      $discipline->final = FinalExam::where("user_id", $student)->where("idOffer", $discipline->offer)->first();
+      $discipline->final = FinalExam::where("user_id", $student)->where("offer_id", $discipline->offer)->first();
       $offer = Offer::find($discipline->offer);
       $discipline->absencese = sprintf("%.1f", (100. * ($offer->maxlessons - $offer->qtdAbsences($student))) / $offer->maxlessons);
 
@@ -293,12 +286,11 @@ class UsersController extends \BaseController
       $user_id = (int) decrypt(Input::get("student"));
 
       foreach (Input::get("offers") as $offer) {
-        $units = Unit::where("idOffer", decrypt($offer))->get();
+        $units = Unit::where("offer_id", decrypt($offer))->get();
         foreach ($units as $unit) {
           $attend = Attend::where("user_id", $user_id)->where("idUnit", $unit->id)->first();
           if ($attend) {
             $disc = Offer::find(decrypt($offer))->getDiscipline();
-            //$status = ["E" => "Cursando", "D" => "Disabilitado"];
             return Redirect::back()
               ->with("error", "O aluno não pode ser inserido.<br>"
                 . "O aluno já está matriculado na oferta da disciplina <b>" . $disc->name . "</b>."); //. " com o status " . $attend->status . ".");
@@ -307,7 +299,7 @@ class UsersController extends \BaseController
       }
 
       foreach (Input::get("offers") as $offer) {
-        $units = Unit::where("idOffer", decrypt($offer))->get();
+        $units = Unit::where("offer_id", decrypt($offer))->get();
         foreach ($units as $unit) {
           $attend = new Attend;
           $attend->user_id = $user_id;
@@ -517,7 +509,7 @@ class UsersController extends \BaseController
       . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND "
       . "Periods.id=Classes.period_id AND Classes.id=Offers.idClass AND "
       . "Offers.idDiscipline=Disciplines.id AND "
-      . "Offers.id=Lectures.idOffer AND Lectures.user_id=?", [$this->user_id, $idTeacher]);
+      . "Offers.id=Lectures.offer_id AND Lectures.user_id=?", [$this->user_id, $idTeacher]);
 
     if (count($offers)) {
       $str = "Erro ao desvincular professor, ele está associado a(s) disciplina(s): <br><br>";
@@ -604,7 +596,7 @@ class UsersController extends \BaseController
         and Classes.schoolYear =  ?
         and Classes.id = Offers.idClass
         and Offers.idDiscipline = Disciplines.id
-        and Offers.id = Units.idOffer
+        and Offers.id = Units.offer_id
         and Units.id = Attends.idUnit and Attends.user_id =  ?
 				and Units.value IN (?)
 				and Classes.status = 'E'
@@ -612,12 +604,6 @@ class UsersController extends \BaseController
       GROUP BY Offers.id",
       [$this->user_id, Input::get('schoolYear'), $data['student']->id, implode(',', Input::get('unit_value')), Input::get('course')]
     );
-
-		// dd(Input::get('course'));
-		// dd(array_pluck($disciplines, 'offer'));
-
-    // $offer = Offer::find($disciplines[0]->offer);
-    // dd($offer->qtdLessons());
 
     if (!$disciplines) {
       return "Não há informações para gerar o boletim.";
@@ -635,24 +621,17 @@ class UsersController extends \BaseController
 			$pareceres->disciplines[$key]->units = [];
 			$pareceres->disciplines[$key]->hasParecer = false;
 
-      // Obtém unidades
-      // $units = Offer::find($data['disciplines'][$key]['offer'])->units()->orderBy('created_at')->get();
       $units = Offer::find($data['disciplines'][$key]['offer'])->units()->whereIn('value', Input::get('unit_value'))->orderBy('created_at')->get();
-			// $pareceres = [];
       foreach ($units as $key2 => $unit) {
-				// var_dump($key2, $key);
-				// var_dump('<br />');
-				// var_dump('<br />');
 				$pareceres->disciplines[$key]->units[] = $unit;
         // Obtém quantidade de aulas realizadas
-        $data['disciplines'][$key][$unit->value]['lessons'] = Offer::find($unit->idOffer)->qtdUnitLessons($unit->value);
+        $data['disciplines'][$key][$unit->value]['lessons'] = Offer::find($unit->offer_id)->qtdUnitLessons($unit->value);
 
         // Obtém quantidade de faltas
-        $data['disciplines'][$key][$unit->value]['absenceses'] = Offer::find($unit->idOffer)->qtdUnitAbsences($data['student']['id'], $unit->value);
+        $data['disciplines'][$key][$unit->value]['absenceses'] = Offer::find($unit->offer_id)->qtdUnitAbsences($data['student']['id'], $unit->value);
 
         // Obtém a média do alunos por disciplina por unidade
         $average = number_format($unit->getAverage($data['student']['id'])[0], 0);
-				// var_dump($data['disciplines'][$key][$unit->value]);
         if ($unit->calculation != 'P') {
           $data['disciplines'][$key][$unit->value]['average'] = ($average > 10) ? number_format($average, 0) : number_format($average, 2);
         }
@@ -688,7 +667,6 @@ class UsersController extends \BaseController
       }
 			$data['units'] = count($data['units']) < count($units) ? $units : $data['units'];
     }
-		// dd($data['units']);
 		//Guarda pareceres
 		$data['pareceres'] = $pareceres;
 
@@ -700,7 +678,6 @@ class UsersController extends \BaseController
 
     $pdf = PDF::loadView('reports.arroio_dos_ratos-rs.final_result', ['data' => $data]);
     return $pdf->stream();
-		// return $pareceres->disciplines;
   }
 
 	public function typesExams($type) {

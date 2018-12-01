@@ -42,12 +42,12 @@ class LecturesController extends \BaseController
 
     $alunos = DB::select("SELECT Users.id, Users.name
                           FROM Attends, Units, Users
-                          WHERE Units.idOffer=? AND Units.id=Attends.idUnit AND Attends.user_id=Users.id
+                          WHERE Units.offer_id=? AND Units.id=Attends.idUnit AND Attends.user_id=Users.id
 													AND Attends.status = 'M'
                           GROUP BY Attends.user_id
                           ORDER BY Users.name", [$offer->id]);
 
-    $units = Unit::where("idOffer", $offer->id)->get();
+    $units = Unit::where("offer_id", $offer->id)->get();
 
     foreach ($alunos as $aluno) {
       $aluno->absence = $offer->qtdAbsences($aluno->id);
@@ -88,7 +88,7 @@ class LecturesController extends \BaseController
         $aluno->result = "Ap. por nota";
         $aluno->status = "label-success";
       } else {
-        $rec = FinalExam::where("idOffer", $offer->id)->where("user_id", $aluno->id)->first();
+        $rec = FinalExam::where("offer_id", $offer->id)->where("user_id", $aluno->id)->first();
         $aluno->rec = $rec ? $rec->value : "0.00";
         if ($aluno->rec >= $course->average_final) {
           $aluno->result = "Aprovado";
@@ -122,10 +122,10 @@ class LecturesController extends \BaseController
     if ($offer->getLectures()->user_id != $this->user_id) {
       return Redirect::to("/lectures")->with("error", "Você não tem acesso a essa página");
     }
-    $units = Unit::where("idOffer", $offer->id)->get();
+    $units = Unit::where("offer_id", $offer->id)->get();
     $students = DB::select("select Users.id, Users.name "
       . "from Users, Attends, Units "
-      . "where Units.idOffer=? and Attends.idUnit=Units.id and Attends.user_id=Users.id and Attends.status = 'M'"
+      . "where Units.offer_id=? and Attends.idUnit=Units.id and Attends.user_id=Users.id and Attends.status = 'M'"
       . "group by Users.id order by Users.name", [$offer->id]);
 
     return View::make("modules.frequency", ["user" => $user, "offer" => $offer, "units" => $units, "students" => $students]);
@@ -135,7 +135,7 @@ class LecturesController extends \BaseController
   public function postSort()
   {
     foreach (Input::get("order") as $key => $value) {
-      Lecture::where('idOffer', decrypt($value))->where('user_id', $this->user_id)->update(["order" => $key + 1]);
+      Lecture::where('offer_id', decrypt($value))->where('user_id', $this->user_id)->update(["order" => $key + 1]);
     }
   }
 }

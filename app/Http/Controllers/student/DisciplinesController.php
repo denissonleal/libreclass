@@ -15,7 +15,7 @@ class DisciplinesController extends \BaseController {
   public function getIndex()
 	{
     $offers= DB::select("SELECT Offers.id, Disciplines.name as discipline FROM Attends, Units, Offers, Disciplines "
-                  . " WHERE Attends.user_id=? AND Attends.idUnit=Units.id AND Units.idOffer=Offers.id AND Offers.idDiscipline=Disciplines.id", [$this->user->id]);
+                  . " WHERE Attends.user_id=? AND Attends.idUnit=Units.id AND Units.offer_id=Offers.id AND Offers.idDiscipline=Disciplines.id", [$this->user->id]);
 
     return View::make("students.disciplines", ["offers" => $offers]);
 	}
@@ -23,9 +23,9 @@ class DisciplinesController extends \BaseController {
   public function getUnits($offer)
   {
     $offer = Offer::find(decrypt($offer));
-    $teachers = DB::select("SELECT Users.id, Users.name, Users.photo FROM Lectures, Users WHERE Lectures.idOffer=? and Lectures.user_id=Users.id", [$offer->id]);
+    $teachers = DB::select("SELECT Users.id, Users.name, Users.photo FROM Lectures, Users WHERE Lectures.offer_id=? and Lectures.user_id=Users.id", [$offer->id]);
     $discipline = Discipline::find($offer->idDiscipline);
-    $units = Unit::where("idOffer", $offer->id)->orderBy("value", "desc")->get();
+    $units = Unit::where("offer_id", $offer->id)->orderBy("value", "desc")->get();
     $course = $offer->getCourse();
 
     return View::make("students.units", ["offer" => $offer, "teachers" => $teachers, "discipline" => $discipline, "units" => $units, "course" => $course]);

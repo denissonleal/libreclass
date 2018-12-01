@@ -45,7 +45,7 @@ class ClassesGroupController extends \BaseController
           'name' => $offer->discipline->name,
           'id' => encrypt($offer->id),
           'grouping' => $offer->grouping,
-          'master_discipline' => ($offer->grouping == 'S') ? Offer::find($offer->idOffer)->discipline->name : null,
+          'master_discipline' => ($offer->grouping == 'S') ? Offer::find($offer->offer_id)->discipline->name : null,
         ];
       }
     }
@@ -83,14 +83,14 @@ class ClassesGroupController extends \BaseController
         'grouping' => 'M',
       ]);
       $unit = new Unit;
-      $unit->IdOffer = $master_offer->id;
+      $unit->offer_id = $master_offer->id;
       $unit->value = "1";
       $unit->calculation = "A";
       $unit->save();
       foreach (Input::get('offers') as $offer_id) {
         $id = decrypt($offer_id);
         $offer = Offer::find($id);
-        $offer->idOffer = $master_offer->id;
+        $offer->offer_id = $master_offer->id;
         $offer->grouping = 'S';
         $offer->save();
       }

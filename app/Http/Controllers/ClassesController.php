@@ -129,7 +129,7 @@ class ClassesController extends \BaseController
         $offer->idDiscipline = decrypt($value);
         $offer->save();
         $unit = new Unit;
-        $unit->IdOffer = $offer->id;
+        $unit->offer_id = $offer->id;
         $unit->value = "1";
         $unit->calculation = "A";
         $unit->save();
@@ -160,7 +160,7 @@ class ClassesController extends \BaseController
           $offer->idDiscipline = decrypt($value);
           $offer->save();
           $unit = new Unit;
-          $unit->IdOffer = $offer->id;
+          $unit->offer_id = $offer->id;
           $unit->value = "1";
           $unit->calculation = "A";
           $unit->save();
@@ -214,7 +214,7 @@ class ClassesController extends \BaseController
 
     foreach ($offers as $offer) {
       $offer->status = DB::select("SELECT count(*) as qtd FROM Units, Attends " .
-        "WHERE Units.idOffer=? AND Units.id=Attends.idUnit AND Attends.user_id=?",
+        "WHERE Units.offer_id=? AND Units.id=Attends.idUnit AND Attends.user_id=?",
         [$offer->id, $idStudent])[0]->qtd;
 
       $offer->name = Discipline::find($offer->idDiscipline)->name;
@@ -242,7 +242,7 @@ class ClassesController extends \BaseController
 																					AND Periods.id=Classes.period_id
 																					AND Classes.id=Offers.idCLass
 																					AND Classes.status='E'
-																					AND Offers.id=Units.idOffer
+																					AND Offers.id=Units.offer_id
 																					AND Units.status=?
 																 GROUP BY Units.value", [$course->id, $status]);
 
@@ -265,7 +265,7 @@ class ClassesController extends \BaseController
       foreach ($classes as $class) {
         $offers = Offer::where("idClass", $class->id)->get();
         foreach ($offers as $offer) {
-          Unit::where("idOffer", $offer->id)->whereValue(Input::get("unit"))->whereStatus("E")->update(array('status' => "D"));
+          Unit::where("offer_id", $offer->id)->whereValue(Input::get("unit"))->whereStatus("E")->update(array('status' => "D"));
         }
 
       }
@@ -285,7 +285,7 @@ class ClassesController extends \BaseController
       foreach ($classes as $class) {
         $offers = Offer::where("idClass", $class->id)->get();
         foreach ($offers as $offer) {
-          Unit::where("idOffer", $offer->id)->whereValue(Input::get("unit"))->whereStatus("D")->update(array('status' => "E"));
+          Unit::where("offer_id", $offer->id)->whereValue(Input::get("unit"))->whereStatus("D")->update(array('status' => "E"));
         }
 
       }
@@ -308,10 +308,10 @@ class ClassesController extends \BaseController
     }
 
     foreach ($offers as $offer) {
-      $old = Unit::where("idOffer", $offer->id)->orderBy("value", "desc")->first();
+      $old = Unit::where("offer_id", $offer->id)->orderBy("value", "desc")->first();
 
       $unit = new Unit;
-      $unit->idOffer = $old->idOffer;
+      $unit->offer_id = $old->offer_id;
       $unit->value = $old->value + 1;
       $unit->calculation = $old->calculation;
       $unit->save();
@@ -362,13 +362,13 @@ class ClassesController extends \BaseController
 				foreach($offers as $offer) {
 					if($offer->grouping != "M") { // Diferente de master, porque a master é criada quando há slaves.
 						if($offer->grouping == 'S')  { // Criar grupo de ofertas / Oferta Slave
-							if(isset($tmp_groups[$offer->idOffer])) { // Se o grupo já foi criado
-								$this->createOffer($offer, $new_classe, $tmp_groups[$offer->idOffer]); //Cria oferta apontado para o novo grupo existente.
+							if(isset($tmp_groups[$offer->offer_id])) { // Se o grupo já foi criado
+								$this->createOffer($offer, $new_classe, $tmp_groups[$offer->offer_id]); //Cria oferta apontado para o novo grupo existente.
 							}
 							else {
-								$group = Offer::find($offer->idOffer);
-								$tmp_groups[$offer->idOffer] = $this->createOffer($group, $new_classe, null); //Cria grupo de oferta e guarda o id;
-								$this->createOffer($offer, $new_classe, $tmp_groups[$offer->idOffer]);
+								$group = Offer::find($offer->offer_id);
+								$tmp_groups[$offer->offer_id] = $this->createOffer($group, $new_classe, null); //Cria grupo de oferta e guarda o id;
+								$this->createOffer($offer, $new_classe, $tmp_groups[$offer->offer_id]);
 							}
 						}
 						else {
@@ -402,13 +402,13 @@ class ClassesController extends \BaseController
 		$new_offer->grouping = $offer->grouping;
 
 		if($offer->grouping == "S") {
-			$new_offer->idOffer = $group;
+			$new_offer->offer_id = $group;
 		}
 
 		$new_offer->save();
 		//Cria uma unidade
 		$unit = new Unit();
-		$unit->idOffer = $new_offer->id;
+		$unit->offer_id = $new_offer->id;
 		$unit->value = 1;
 		$unit->save();
 

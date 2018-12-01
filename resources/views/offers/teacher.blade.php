@@ -25,7 +25,7 @@
 
       @forelse ($lectures as $lecture)
 
-        <li class="panel panel-default panel-daily" data-id="{{ encrypt($lecture->idOffer) }}">
+        <li class="panel panel-default panel-daily" data-id="{{ encrypt($lecture->offer_id) }}">
           <div class="panel-heading sortLocal">
             <span class="text-muted">
               {{ $lecture->offer->classe->period->course->institution->name }} &nbsp; / &nbsp;
@@ -74,7 +74,7 @@
                       <a class="list-group-item" href='{{ URL::to("/lectures/units?u=" . encrypt($unit->id)) }}'> Unidade {{ $unit->value }} </a>
                     @endif
                   @endforeach
-                  <a class="list-group-item" href="{{"/avaliable/finaldiscipline/" . encrypt($lecture->idOffer)}}"> Prova Final </a>
+                  <a class="list-group-item" href="{{"/avaliable/finaldiscipline/" . encrypt($lecture->offer_id)}}"> Prova Final </a>
                 </div>
               </div>
 
