@@ -50,11 +50,11 @@ class ConfigController extends Controller
 
 	public function postPhoto()
 	{
-		if ( Input::hasFile("photo") && Input::file("photo")->isValid() )
+		if ( request()->hasFile("photo") && request()->file("photo")->isValid() )
 		{
 			$fileName = "/uploads/" . sha1($this->user_id) . "_" . microtime(true) . ".jpg";
 
-			switch(Input::file("photo")->getMimeType())
+			switch(request()->file("photo")->getMimeType())
 			{
 				case "image/png":
 				case "image/jpeg":
@@ -64,7 +64,7 @@ class ConfigController extends Controller
 					return redirect("/config")->with("error", "Não pode ser modificado!");
 			}
 
-			$image    = new Imagick(Input::file("photo")->getRealPath());
+			$image    = new Imagick(request()->file("photo")->getRealPath());
 			$width   = $image->getImageWidth();
 			$height  = $image->getImageHeight();
 			if ( $width < $height )
@@ -75,7 +75,7 @@ class ConfigController extends Controller
 			if ( $image->getImageHeight() > 400)
 				$image->thumbnailImage(400, 400);
 
-			//~ Input::file("imageproduct")->move("uploads", $fileName);
+			//~ request()->file("imageproduct")->move("uploads", $fileName);
 			$image->writeImage(__DIR__ . "/../../public" . $fileName);
 
 			return User::whereId($this->user_id)->update(["photo" => $fileName ]) ?
@@ -89,9 +89,9 @@ class ConfigController extends Controller
 	public function postBirthdate()
 	{
 		$user = User::find($this->user_id);
-		$user->birthdate = Input::get("birthdate-year") . "-" .
-											 Input::get("birthdate-month") . "-" .
-											 Input::get("birthdate-day");
+		$user->birthdate = request()->get("birthdate-year") . "-" .
+											 request()->get("birthdate-month") . "-" .
+											 request()->get("birthdate-day");
 		$user->save();
 		return redirect("/config")->with("success", "Modificado com sucesso!"); //date("d / m / Y", strtotime($user->birthdate));
 	}
@@ -102,7 +102,7 @@ class ConfigController extends Controller
 	 */
 	public function postCommon()
 	{
-		foreach (Input::all() as $key => $value)
+		foreach (request()->all() as $key => $value)
 		{
 			if ($key == "_token" || $key == "q") {
 				continue;
@@ -115,7 +115,7 @@ class ConfigController extends Controller
 
 	public function postCommonselect()
 	{
-		foreach( Input::all() as $key => $value ) {
+		foreach( request()->all() as $key => $value ) {
 			if ( $key == "_token" || $key == "q") continue;
 
 			return User::whereId($this->user_id)->update([$key => $value]) ?
@@ -127,7 +127,7 @@ class ConfigController extends Controller
 	public function postGender()
 	{
 		$user = User::find($this->user_id);
-		$user->gender = Input::get("gender");
+		$user->gender = request()->get("gender");
 		$user->save();
 
 		return redirect("/config")->with("success", "Modificado com sucesso!");
@@ -136,7 +136,7 @@ class ConfigController extends Controller
 	public function postType()
 	{
 		$user = User::find($this->user_id);
-		$user->type = Input::get("type");
+		$user->type = request()->get("type");
 		$user->save();
 
 		Session::put("type", $user->type);
@@ -146,9 +146,9 @@ class ConfigController extends Controller
 	public function postPassword()
 	{
 		$user = User::find($this->user_id);
-		if ( Hash::check(Input::get("password"), $user->password) )
+		if ( Hash::check(request()->get("password"), $user->password) )
 		{
-			$user->password = Hash::make(Input::get("newpassword"));
+			$user->password = Hash::make(request()->get("newpassword"));
 			$user->save();
 			return redirect("/config")->with("success", "Modificado com sucesso!");
 		}
@@ -159,25 +159,25 @@ class ConfigController extends Controller
 
 	public function postLocation()
 	{
-		$city = City::whereName(Input::get("city"))->first();
+		$city = City::whereName(request()->get("city"))->first();
 		if ( $city == null ) {
-			$state = State::whereShort(Input::get("state_short"))->first();
+			$state = State::whereShort(request()->get("state_short"))->first();
 			if ( $state == null ) {
-				$country = Country::whereShort(Input::get("country_short"))->first();
+				$country = Country::whereShort(request()->get("country_short"))->first();
 				if ( $country == null ) {
 					$country = new Country;
-					$country->name  = Input::get("country");
-					$country->short = Input::get("country_short");
+					$country->name  = request()->get("country");
+					$country->short = request()->get("country_short");
 					$country->save();
 				}
 				$state = new State;
-				$state->name = Input::get("state");
-				$state->short = Input::get("state_short");
+				$state->name = request()->get("state");
+				$state->short = request()->get("state_short");
 				$state->idCountry = $country->id;
 				$state->save();
 			}
 			$city = new City;
-			$city->name = Input::get("city");
+			$city->name = request()->get("city");
 			$city->idState = $state->id;
 			$city->save();
 		}
@@ -186,14 +186,14 @@ class ConfigController extends Controller
 		$user->idCity = $city->id;
 		$user->save();
 
-		return Input::get("city") . ", " . Input::get("state") . ", " . Input::get("country");
+		return request()->get("city") . ", " . request()->get("state") . ", " . request()->get("country");
 	}
 
 	public function postStreet()
 	{
 		try {
 			$user = User::find($this->user_id);
-			$user->street = Input::get("street");
+			$user->street = request()->get("street");
 			$user->save();
 			return redirect("/config")->with("success", "Modificado com sucesso!");
 		}
@@ -206,7 +206,7 @@ class ConfigController extends Controller
 	{
 		try {
 			$user = User::find($this->user_id);
-			$user->uee = Input::get("uee");
+			$user->uee = request()->get("uee");
 			$user->save();
 			return redirect("/config")->with("success", "Modificado com sucesso!");
 		}

@@ -17,8 +17,8 @@ class SyncController extends Controller
     $keyExams = [];
     $keyLessons = [];
 
-    if (Input::has("lb"))
-      Session::put("lb", Input::get("lb"));
+    if (request()->has("lb"))
+      Session::put("lb", request()->get("lb"));
 
 
     if ($user)
@@ -134,8 +134,8 @@ class SyncController extends Controller
 
   public function postReceive()
   {
-    Session::put("data", Input::get("data"));
-    Session::put("lb", Input::get("lb"));
+    Session::put("data", request()->get("data"));
+    Session::put("lb", request()->get("lb"));
     if ($this->user)
     {
       return redirect("/sync/receive");
@@ -149,7 +149,7 @@ class SyncController extends Controller
 
   public function getReceive()
   {
-    if( !Input::has("confirm") )
+    if( !request()->has("confirm") )
     {
       return view("modules.sync.send", ["data" => $this->user ]);
     }

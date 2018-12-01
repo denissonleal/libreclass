@@ -4,9 +4,9 @@ class BindController extends Controller
 {
 	public function anyLink()
 	{
-		$user = decrypt(Input::get("user"));
-		$discipline = decrypt(Input::get("discipline"));
-		if ( Input::get("bind") == "true"){
+		$user = decrypt(request()->get("user"));
+		$discipline = decrypt(request()->get("discipline"));
+		if ( request()->get("bind") == "true"){
 			$bind = new Bind;
 			$bind->user_id = $user;
 			$bind->discipline_id = $discipline;
@@ -21,7 +21,7 @@ class BindController extends Controller
 
 	public function anyList()
 	{
-		$teacher = decrypt(Input::get("teacher"));
+		$teacher = decrypt(request()->get("teacher"));
 
 		return view("modules.addTeacherDisciplineForm",
 								["courses" => Course::where("institution_id", decrypt(session("user")))->get(),

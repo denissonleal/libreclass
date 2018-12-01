@@ -26,8 +26,8 @@ class SocialController extends Controller
 
   public function postQuestion()
   {
-    //~ print_r(Input::all());
-    foreach( Input::all() as $key => $value )
+    //~ print_r(request()->all());
+    foreach( request()->all() as $key => $value )
       return User::whereId($this->user_id)->update([$key => $value]);
   }
 
@@ -35,18 +35,18 @@ class SocialController extends Controller
   {
     $suggestion = new Suggestion;
     $suggestion->user_id      = $this->user_id;
-    $suggestion->title       = Input::get("title");
-    $suggestion->value       = Input::get("value");
-    $suggestion->description = Input::get("description");
+    $suggestion->title       = request()->get("title");
+    $suggestion->value       = request()->get("value");
+    $suggestion->description = request()->get("description");
     $suggestion->save();
 
     $user = User::find($this->user_id);
 
-    Mail::send('email.suporte', ["descricao" => Input::get("description"), "email" => $user->email, "title" => Input::get("title")], function($message)
+    Mail::send('email.suporte', ["descricao" => request()->get("description"), "email" => $user->email, "title" => request()->get("title")], function($message)
     {
       $op = ["B" => "Bugson", "O" => "Outros", "S" => "Sugestão"];
       $message->to( "suporte@sysvale.com", "Suporte" )
-              ->subject("LibreClass Suporte - " . $op[Input::get("value")]);
+              ->subject("LibreClass Suporte - " . $op[request()->get("value")]);
     });
 
     return Redirect::back()->with("success", "Obrigado pela sua mensagem. Nossa equipe irá analisar e responderá o mais breve possível.");

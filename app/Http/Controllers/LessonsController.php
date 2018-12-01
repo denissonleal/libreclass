@@ -19,7 +19,7 @@ class LessonsController extends Controller
   {
     if ($this->user_id) {
       $user = User::find($this->user_id);
-      $lesson = Lesson::find(decrypt(Input::get("l")));
+      $lesson = Lesson::find(decrypt(request()->get("l")));
 
       $students = DB::select("SELECT Users.name AS name, Attends.id AS attend_id, Frequencies.value AS value, Units.offer_id, Attends.user_id, Units.id AS unit_id
                                 FROM Frequencies, Attends, Users, Units
@@ -70,11 +70,11 @@ class LessonsController extends Controller
 
   public function anyNew()
   {
-    $unit = Unit::find(decrypt(Input::get("unit")));
+    $unit = Unit::find(decrypt(request()->get("unit")));
 
 		$date = date("Y-m-d");
-		if(Input::has("date-year") && Input::has("date-month") && Input::has("date-day")) {
-			$date = Input::get("date-year") . "-" . Input::get("date-month") . "-" . Input::get("date-day");
+		if(request()->has("date-year") && request()->has("date-month") && request()->has("date-day")) {
+			$date = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
 		}
 
     $lesson = new Lesson;
@@ -94,9 +94,9 @@ class LessonsController extends Controller
     }
 
     if ($unit->offer->grouping == 'M') {
-			if(Input::has('slaves')) {
+			if(request()->has('slaves')) {
 				$slaves = [];
-				foreach (Input::get('slaves') as $key => $s) {
+				foreach (request()->get('slaves') as $key => $s) {
 					$slaves[] = (int) decrypt($s);
 				}
 				$offers = Offer::whereIn('id', $slaves)->get();
@@ -113,7 +113,7 @@ class LessonsController extends Controller
         }
         $lesson_slave = new Lesson;
         $lesson_slave->unit_id = $unit_slave->id;
-        $lesson_slave->date = Input::get("date-year") . "-" . Input::get("date-month") . "-" . Input::get("date-day");
+        $lesson_slave->date = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
         $lesson_slave->title = $lesson->title;
         Log::info('Lesson Slave', [$lesson_slave]);
         $lesson_slave->save();
@@ -142,22 +142,22 @@ class LessonsController extends Controller
 
   public function postSave()
   {
-    //~ var_dump(Input::all());
+    //~ var_dump(request()->all());
 
-    $lesson = Lesson::find(decrypt(Input::get("l")));
+    $lesson = Lesson::find(decrypt(request()->get("l")));
 
-    $lesson->date = Input::get("date-year") . "-" . Input::get("date-month") . "-" . Input::get("date-day");
-    $lesson->title = Input::get("title");
-    $lesson->description = Input::get("description");
-    $lesson->goals = Input::get("goals");
-    $lesson->content = Input::get("content");
-    $lesson->methodology = Input::get("methodology");
-    $lesson->resources = Input::get("resources");
-    $lesson->valuation = Input::get("valuation");
-    $lesson->estimatedTime = Input::get("estimatedTime");
-    $lesson->keyworks = Input::get("keyworks");
-    $lesson->bibliography = Input::get("bibliography");
-    $lesson->notes = Input::get("notes");
+    $lesson->date = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
+    $lesson->title = request()->get("title");
+    $lesson->description = request()->get("description");
+    $lesson->goals = request()->get("goals");
+    $lesson->content = request()->get("content");
+    $lesson->methodology = request()->get("methodology");
+    $lesson->resources = request()->get("resources");
+    $lesson->valuation = request()->get("valuation");
+    $lesson->estimatedTime = request()->get("estimatedTime");
+    $lesson->keyworks = request()->get("keyworks");
+    $lesson->bibliography = request()->get("bibliography");
+    $lesson->notes = request()->get("notes");
     $lesson->save();
 
     //~ return $lesson;
@@ -171,9 +171,9 @@ class LessonsController extends Controller
 
   public function anyFrequency()
   {
-    $attend = Attend::find(decrypt(Input::get("attend_id")));
-    $lesson_id = decrypt(Input::get("lesson_id"));
-    $value = Input::get("value") == "P" ? "F" : "P";
+    $attend = Attend::find(decrypt(request()->get("attend_id")));
+    $lesson_id = decrypt(request()->get("lesson_id"));
+    $value = request()->get("value") == "P" ? "F" : "P";
 
     $offer_id = DB::select(
       "SELECT Units.offer_id "
@@ -235,7 +235,7 @@ class LessonsController extends Controller
 
   public function postDelete()
   {
-    $lesson = Lesson::find(decrypt(Input::get("input-trash")));
+    $lesson = Lesson::find(decrypt(request()->get("input-trash")));
 
     $unit = DB::select("SELECT Units.id, Units.status
                           FROM Units, Lessons
@@ -256,7 +256,7 @@ class LessonsController extends Controller
 
   public function getInfo()
   {
-    $lesson = Lesson::find(decrypt(Input::get("lesson")));
+    $lesson = Lesson::find(decrypt(request()->get("lesson")));
     $lesson->date = date("d/m/Y", strtotime($lesson->date));
     return $lesson;
   }
@@ -271,7 +271,7 @@ class LessonsController extends Controller
    */
   public function anyCopy()
   {
-    $lesson = Lesson::find(decrypt(Input::get("lesson")));
+    $lesson = Lesson::find(decrypt(request()->get("lesson")));
     $auth = DB::select("SELECT COUNT(*) as qtd FROM Units, Lectures WHERE Units.id=? AND Units.offer_id=Lectures.offer_id AND Lectures.user_id=?",
       [$lesson->unit_id, $this->user_id])[0]->qtd;
     if (!$auth) {
@@ -279,8 +279,8 @@ class LessonsController extends Controller
     }
 
     $copy = $lesson->replicate();
-    if (Input::get("type") == 3) {
-      $unit = Unit::where("offer_id", decrypt(Input::get("offer")))->whereStatus("E")->orderBy("value", "desc")->first();
+    if (request()->get("type") == 3) {
+      $unit = Unit::where("offer_id", decrypt(request()->get("offer")))->whereStatus("E")->orderBy("value", "desc")->first();
       $copy->unit_id = $unit->id;
       $copy->save();
 
@@ -298,7 +298,7 @@ class LessonsController extends Controller
       foreach ($frequencies as $frequency) {
         $frequency = $frequency->replicate();
         $frequency->lesson_id = $copy->id;
-        if (Input::get("type") == 1) {
+        if (request()->get("type") == 1) {
           $frequency->value = "P";
         }
 
@@ -331,7 +331,7 @@ class LessonsController extends Controller
 
   public function anyDelete()
   {
-    Lesson::find(decrypt(Input::get("input-trash")))->delete();
+    Lesson::find(decrypt(request()->get("input-trash")))->delete();
     return Redirect::back()->with("alert", "Aula excluída!");
   }
 }

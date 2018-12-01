@@ -17,12 +17,12 @@ class ProgressionController extends Controller
 
 	public function postStudentsAndClasses()
 	{
-		if(!Input::has('previous_classe_id')) {
+		if(!request()->has('previous_classe_id')) {
 			return ['status' => 0, 'message' => 'Nenhuma turma selecionada.'];
 		}
 
-		$previous_classe_id = decrypt(Input::get('previous_classe_id'));
-		$classe_id = decrypt(Input::get('classe_id'));
+		$previous_classe_id = decrypt(request()->get('previous_classe_id'));
+		$classe_id = decrypt(request()->get('classe_id'));
 		// $atual_classe = Classe::find($previous_classe_id);
 		// $atual_period = Period::find($atual_classe->period_id);
 
@@ -88,18 +88,18 @@ class ProgressionController extends Controller
 	}
 
 	public function postImportStudent() {
-		if(!count(Input::get('student_ids'))) {
+		if(!count(request()->get('student_ids'))) {
 			return ['status' => 0, 'message' => 'Nenhum aluno selecionado'];
 		}
 
-		$classe_id = Input::get('classe_id');
+		$classe_id = request()->get('classe_id');
 		$offers = Offer::where('class_id', decrypt($classe_id))->get();
 
 		if(!$offers) {
 			return ['status' => 0, 'message' => 'A turma ainda não possui ofertas'];
 		}
 
-		$students_ids = Input::get('student_ids');
+		$students_ids = request()->get('student_ids');
 		foreach($offers as $offer) {
 			if(!count($offer->units)) {
 				return ['status' => 0, 'message' => 'Não foi possível importar. Existem ofertas sem unidades.'];

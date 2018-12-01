@@ -37,7 +37,7 @@ class CSVController extends Controller
    */
   public function postIndex()
   {
-      $csv = utf8_encode(file_get_contents(Input::file("csv")));
+      $csv = utf8_encode(file_get_contents(request()->file("csv")));
       if (!strpos($csv, "RM;RA;Nome Aluno;"))
       {
         throw new Exception("Arquivo inválido");
@@ -229,7 +229,7 @@ class CSVController extends Controller
   public function postClasswithteacher()
   {
     try {
-      $csv = utf8_encode(file_get_contents(Input::file("csv")));
+      $csv = utf8_encode(file_get_contents(request()->file("csv")));
       if (!strpos($csv, "SERVIDORES ATRIBUÍDOS NA CLASSE")) {
         throw new Exception("Arquivo inválido");
       }

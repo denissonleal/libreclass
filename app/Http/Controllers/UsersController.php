@@ -17,7 +17,7 @@ class UsersController extends Controller
 
   public function postSearchTeacher()
   {
-    $teacher = User::where('email', Input::get('str'))->first();
+    $teacher = User::where('email', request()->get('str'))->first();
     \Log::info('post search teacher', [$teacher]);
     if ($teacher) {
       $relationship = Relationship::where('user_id', $this->user_id)->where('idFriend', $teacher->id)->first();
@@ -70,8 +70,8 @@ class UsersController extends Controller
   {
     if ($this->user_id) {
       $block = 30;
-      $search = Input::has("search") ? Input::get("search") : "";
-      $current = (int) Input::has("current") ? Input::get("current") : 0;
+      $search = request()->has("search") ? request()->get("search") : "";
+      $current = (int) request()->has("current") ? request()->get("current") : 0;
       $user = User::find($this->user_id);
       $courses = Course::where("institution_id", $this->user_id)
         ->whereStatus("E")
@@ -115,15 +115,15 @@ class UsersController extends Controller
   {
     // Verifica se o número de matrícula já existe
 
-    if (strlen(Input::get("teacher"))) {
-      $user = User::find(decrypt(Input::get("teacher")));
-      if (strlen(Input::get("registered"))) {
+    if (strlen(request()->get("teacher"))) {
+      $user = User::find(decrypt(request()->get("teacher")));
+      if (strlen(request()->get("registered"))) {
         $relationship = Relationship::where('user_id', $this->user_id)->where('idFriend', $user->id)->first();
         if (!$relationship) {
           $relationship = new Relationship;
           $relationship->user_id = $this->user_id;
           $relationship->idFriend = $user->id;
-          $relationship->enrollment = Input::get('enrollment');
+          $relationship->enrollment = request()->get('enrollment');
           $relationship->status = "E";
           $relationship->type = "2";
           $relationship->save();
@@ -135,36 +135,36 @@ class UsersController extends Controller
       if ($user->type == "P") {
         return redirect("/user/teacher")->with("error", "Professor não pode ser editado!");
       }
-      $user->email = Input::get("email");
-      // $user->enrollment = Input::get("enrollment");
-      $user->name = Input::get("name");
-      $user->formation = Input::get("formation");
-      $user->gender = Input::get("gender");
+      $user->email = request()->get("email");
+      // $user->enrollment = request()->get("enrollment");
+      $user->name = request()->get("name");
+      $user->formation = request()->get("formation");
+      $user->gender = request()->get("gender");
       $user->save();
       return redirect("/user/teacher")->with("success", "Professor editado com sucesso!");
     } else {
-      $verify = Relationship::whereEnrollment(Input::get("enrollment"))->where('user_id', $this->user_id)->first();
+      $verify = Relationship::whereEnrollment(request()->get("enrollment"))->where('user_id', $this->user_id)->first();
       if (isset($verify) || $verify != null) {
         return redirect("/user/teacher")->with("error", "Este número de inscrição já está cadastrado!");
       }
       $user = new User;
       $user->type = "M";
-      // $user->email = Input::get("email");
-      // $user->enrollment = Input::get("enrollment");
-      $user->name = Input::get("name");
-      $user->formation = Input::get("formation");
-      $user->gender = Input::get("gender");
-      if (Input::has("date-year")) {
-        $user->birthdate = Input::get("date-year") . "-"
-        . Input::get("date-month") . "-"
-        . Input::get("date-day");
+      // $user->email = request()->get("email");
+      // $user->enrollment = request()->get("enrollment");
+      $user->name = request()->get("name");
+      $user->formation = request()->get("formation");
+      $user->gender = request()->get("gender");
+      if (request()->has("date-year")) {
+        $user->birthdate = request()->get("date-year") . "-"
+        . request()->get("date-month") . "-"
+        . request()->get("date-day");
       }
       $user->save();
 
       $relationship = new Relationship;
       $relationship->user_id = $this->user_id;
       $relationship->idFriend = $user->id;
-      $relationship->enrollment = Input::get("enrollment");
+      $relationship->enrollment = request()->get("enrollment");
       $relationship->status = "E";
       $relationship->type = "2";
       $relationship->save();
@@ -177,15 +177,15 @@ class UsersController extends Controller
 
   public function updateEnrollment()
   {
-    $user = User::find(decrypt(Input::get("teacher")));
-    Relationship::where('user_id', $this->user_id)->where('idFriend', $user->id)->update(['enrollment' => Input::get('enrollment')]);
+    $user = User::find(decrypt(request()->get("teacher")));
+    Relationship::where('user_id', $this->user_id)->where('idFriend', $user->id)->update(['enrollment' => request()->get('enrollment')]);
     return redirect("/user/teacher")->with("success", "Matrícula editada com sucesso!");
   }
 
   public function getProfileStudent()
   {
     $user = User::find($this->user_id);
-    $profile = decrypt(Input::get("u"));
+    $profile = decrypt(request()->get("u"));
     $classes = DB::select("SELECT Classes.id, Classes.name, Classes.class FROM Classes, Periods, Courses "
       . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.status='E'",
       [$user->id]);
@@ -222,7 +222,7 @@ class UsersController extends Controller
   }
 
 	public function postGetStudent() {
-		$student = User::whereId(decrypt(Input::get('student_id')))->first(['id', 'name', 'email', 'birthdate', 'enrollment', 'gender', 'course']);
+		$student = User::whereId(decrypt(request()->get('student_id')))->first(['id', 'name', 'email', 'birthdate', 'enrollment', 'gender', 'course']);
 		if(!$student) {
 			return ['status'=>0, 'message'=> 'Não encontrado'];
 		}
@@ -232,12 +232,12 @@ class UsersController extends Controller
 
   public function anyReporterStudentClass()
   {
-    $student = decrypt(Input::get("student"));
+    $student = decrypt(request()->get("student"));
     $disciplines = DB::select("SELECT  Courses.id as course, Disciplines.name, Offers.id as offer, Attends.id as attend, Classes.status as statusclasse "
       . "FROM Classes, Periods, Courses, Disciplines, Offers, Units, Attends "
       . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.schoolYear=? AND Classes.id=Offers.class_id AND Offers.discipline_id=Disciplines.id AND Offers.id=Units.offer_id AND Units.id=Attends.unit_id AND Attends.user_id=? "
       . "group by Offers.id",
-      [$this->user_id, Input::get("class"), $student]);
+      [$this->user_id, request()->get("class"), $student]);
 
     foreach ($disciplines as $discipline) {
       $sum = 0;
@@ -277,15 +277,15 @@ class UsersController extends Controller
 
   public function getReporterStudentOffer()
   {
-    return Input::all();
+    return request()->all();
   }
 
   public function postProfileStudent()
   {
     try {
-      $user_id = (int) decrypt(Input::get("student"));
+      $user_id = (int) decrypt(request()->get("student"));
 
-      foreach (Input::get("offers") as $offer) {
+      foreach (request()->get("offers") as $offer) {
         $units = Unit::where("offer_id", decrypt($offer))->get();
         foreach ($units as $unit) {
           $attend = Attend::where("user_id", $user_id)->where("unit_id", $unit->id)->first();
@@ -298,7 +298,7 @@ class UsersController extends Controller
         }
       }
 
-      foreach (Input::get("offers") as $offer) {
+      foreach (request()->get("offers") as $offer) {
         $units = Unit::where("offer_id", decrypt($offer))->get();
         foreach ($units as $unit) {
           $attend = new Attend;
@@ -332,16 +332,16 @@ class UsersController extends Controller
    */
   public function postAttest()
   {
-    $idStudent = decrypt(Input::get("student"));
+    $idStudent = decrypt(request()->get("student"));
     $relation = Relationship::where("user_id", $this->user_id)->where("idFriend", $idStudent)->whereType(1)->whereStatus("E")->first();
 
     if ($relation) {
       $attest = new Attest;
       $attest->institution_id = $this->user_id;
       $attest->idStudent = $idStudent;
-      $attest->date = Input::get("date-year") . "-" . Input::get("date-month") . "-" . Input::get("date-day");
-      $attest->days = Input::get("days");
-      $attest->description = Input::get("description");
+      $attest->date = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
+      $attest->days = request()->get("days");
+      $attest->description = request()->get("description");
       $attest->save();
 
       return Redirect::back()->with("success", "Operação realizada com sucesso.");
@@ -354,7 +354,7 @@ class UsersController extends Controller
   public function getProfileTeacher()
   {
     $user = User::find($this->user_id);
-    $profile = decrypt(Input::get("u"));
+    $profile = decrypt(request()->get("u"));
     if ($profile) {
       $profile = User::find($profile);
       $relationship = Relationship::where('user_id', $this->user_id)->where('idFriend', $profile->id)->first();
@@ -389,16 +389,16 @@ class UsersController extends Controller
     if ($id) {
       $guest = User::find($id);
     } else {
-      $guest = User::find(decrypt(Input::has("teacher") ? Input::get("teacher") : Input::get("guest")));
+      $guest = User::find(decrypt(request()->has("teacher") ? request()->get("teacher") : request()->get("guest")));
     }
 
     if (($guest->type == "M" or $guest->type == "N") and Relationship::where("user_id", $this->user_id)->where("idFriend", $guest->id)->first()) {
-      if (User::whereEmail(Input::get("email"))->first()) {
-        return Redirect::back()->with("error", "O email " . Input::get("email") . " já está cadastrado.");
+      if (User::whereEmail(request()->get("email"))->first()) {
+        return Redirect::back()->with("error", "O email " . request()->get("email") . " já está cadastrado.");
       }
       try
       {
-        $guest->email = Input::get("email");
+        $guest->email = request()->get("email");
         $password = substr(md5(microtime()), 1, rand(4, 7));
         $guest->password = Hash::make($password);
         Mail::send('email.invite', [
@@ -407,7 +407,7 @@ class UsersController extends Controller
           "email" => $guest->email,
           "password" => $password,
         ], function ($message) use ($guest) {
-          $message->to(Input::get("email"), $guest->name)
+          $message->to(request()->get("email"), $guest->name)
             ->subject("Seja bem-vindo");
         });
         $guest->save();
@@ -424,8 +424,8 @@ class UsersController extends Controller
   {
     if ($this->user_id) {
       $block = 30;
-      $search = Input::has("search") ? Input::get("search") : "";
-      $current = (int) Input::has("current") ? Input::get("current") : 0;
+      $search = request()->has("search") ? request()->get("search") : "";
+      $current = (int) request()->has("current") ? request()->get("current") : 0;
       $user = User::find($this->user_id);
       $courses = Course::where("institution_id", $this->user_id)
         ->whereStatus("E")
@@ -472,23 +472,23 @@ class UsersController extends Controller
 
   public function postStudent()
   {
-		if(Input::has('student_id')) {
-			$user = User::find(decrypt(Input::get('student_id')));
+		if(request()->has('student_id')) {
+			$user = User::find(decrypt(request()->get('student_id')));
 			$message = "Os dados do aluno foram atualizados com sucesso.";
 		} else {
 			$user = new User;
 			$user->type = "N";
 			$message = "Aluno cadastrado com sucesso.";
 		}
-    $user->enrollment = Input::get("enrollment");
-    $user->name = Input::get("name");
-    $user->email = strlen(Input::get("email")) ? Input::get("email") : null;
-		$user->course = Input::get("course");
-		$user->gender = Input::get("gender");
-    $user->birthdate = Input::get("date-year") . "-" . Input::get("date-month") . "-" . Input::get("date-day");
+    $user->enrollment = request()->get("enrollment");
+    $user->name = request()->get("name");
+    $user->email = strlen(request()->get("email")) ? request()->get("email") : null;
+		$user->course = request()->get("course");
+		$user->gender = request()->get("gender");
+    $user->birthdate = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
     $user->save();
 
-		if(!Input::has('student_id')) {
+		if(!request()->has('student_id')) {
 			$relationship = new Relationship;
 			$relationship->user_id = $this->user_id;
 			$relationship->idFriend = $user->id;
@@ -502,7 +502,7 @@ class UsersController extends Controller
 
   public function postUnlink()
   {
-    $idTeacher = decrypt(Input::get("input-trash"));
+    $idTeacher = decrypt(request()->get("input-trash"));
 
     $offers = DB::select("SELECT Courses.name AS course, Periods.name AS period, Classes.class as class, Disciplines.name AS discipline "
       . "FROM Courses, Periods, Classes, Offers, Lectures, Disciplines "
@@ -532,7 +532,7 @@ class UsersController extends Controller
 
   public function getInfouser()
   {
-    $user = User::find(decrypt(Input::get("user")));
+    $user = User::find(decrypt(request()->get("user")));
     $user->enrollment = DB::table('Relationships')->where('user_id', $this->user_id)->where('idFriend', $user->id)->pluck('enrollment');
     $user->password = null;
     return $user;
@@ -573,7 +573,7 @@ class UsersController extends Controller
     $data['institution'] = User::find($this->user_id);
 
     // Obtém dados do aluno
-    $data['student'] = User::find(decrypt(Input::get('u')));
+    $data['student'] = User::find(decrypt(request()->get('u')));
 
     // Obtém número de matrícula do aluno na instituição
     $e = Relationship::where('user_id', $this->user_id)->where('idFriend', $data['student']->id)->first();
@@ -602,7 +602,7 @@ class UsersController extends Controller
 				and Classes.status = 'E'
 				and Courses.id = ?
       GROUP BY Offers.id",
-      [$this->user_id, Input::get('schoolYear'), $data['student']->id, implode(',', Input::get('unit_value')), Input::get('course')]
+      [$this->user_id, request()->get('schoolYear'), $data['student']->id, implode(',', request()->get('unit_value')), request()->get('course')]
     );
 
     if (!$disciplines) {
@@ -621,7 +621,7 @@ class UsersController extends Controller
 			$pareceres->disciplines[$key]->units = [];
 			$pareceres->disciplines[$key]->hasParecer = false;
 
-      $units = Offer::find($data['disciplines'][$key]['offer'])->units()->whereIn('value', Input::get('unit_value'))->orderBy('created_at')->get();
+      $units = Offer::find($data['disciplines'][$key]['offer'])->units()->whereIn('value', request()->get('unit_value'))->orderBy('created_at')->get();
       foreach ($units as $key2 => $unit) {
 				$pareceres->disciplines[$key]->units[] = $unit;
         // Obtém quantidade de aulas realizadas

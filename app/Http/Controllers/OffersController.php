@@ -17,7 +17,7 @@ class OffersController extends Controller
 
   public function getUser()
   {
-    $user = decrypt(Input::get("u"));
+    $user = decrypt(request()->get("u"));
     if ($user) {
       $user = User::find($user);
       return $user;
@@ -30,7 +30,7 @@ class OffersController extends Controller
   {
     if ($this->user_id) {
       $user = User::find($this->user_id);
-      $classe = Classe::find(decrypt(Input::get("t")));
+      $classe = Classe::find(decrypt(request()->get("t")));
       $period = Period::find($classe->period_id);
       $course = Course::find($period->course_id);
       $offers = Offer::where("class_id", $classe->id)->get();
@@ -98,16 +98,16 @@ class OffersController extends Controller
 
   public function postTeacher()
   {
-    $offer = Offer::find(decrypt(Input::get("offer")));
-    $offer->classroom = Input::get("classroom");
-    $offer->day_period = Input::get("day_period");
-    $offer->maxlessons = Input::get("maxlessons");
+    $offer = Offer::find(decrypt(request()->get("offer")));
+    $offer->classroom = request()->get("classroom");
+    $offer->day_period = request()->get("day_period");
+    $offer->maxlessons = request()->get("maxlessons");
     $offer->save();
     $lectures = $offer->getAllLectures();
 
     $teachers = [];
-    if (Input::has("teachers")) {
-      $teachers = Input::get("teachers");
+    if (request()->has("teachers")) {
+      $teachers = request()->get("teachers");
       for ($i = 0; $i < count($teachers); $i++) {
         $teachers[$i] = base64_decode($teachers[$i]);
       }
@@ -135,13 +135,13 @@ class OffersController extends Controller
       $lecture->save();
     }
 
-    return redirect(Input::get("prev"))->with("success", "Modificado com sucesso!");
+    return redirect(request()->get("prev"))->with("success", "Modificado com sucesso!");
   }
 
   public function postStatus()
   {
-    $status = Input::get("status");
-    $id = decrypt(Input::get("unit"));
+    $status = request()->get("status");
+    $id = decrypt(request()->get("unit"));
 
     $unit = Unit::find($id);
     if (!strcmp($status, 'true')) {
@@ -181,33 +181,33 @@ class OffersController extends Controller
   public function postStatusStudent()
   {
 
-    //~ return Input::all();
-    $offer = decrypt(Input::get("offer"));
-    $student = decrypt(Input::get("student"));
+    //~ return request()->all();
+    $offer = decrypt(request()->get("offer"));
+    $student = decrypt(request()->get("student"));
     $units = Unit::where("offer_id", $offer)->get();
 
-    if (Input::get("status") == 'M') {
+    if (request()->get("status") == 'M') {
       foreach ($units as $unit) {
         Attend::where('unit_id', $unit->id)->where('user_id', $student)->update(["status" => 'M']);
       }
 
     }
 
-    if (Input::get("status") == 'D') {
+    if (request()->get("status") == 'D') {
       foreach ($units as $unit) {
         Attend::where('unit_id', $unit->id)->where('user_id', $student)->update(["status" => 'D']);
       }
 
     }
 
-    if (Input::get("status") == 'T') {
+    if (request()->get("status") == 'T') {
       foreach ($units as $unit) {
         Attend::where('unit_id', $unit->id)->where('user_id', $student)->update(["status" => 'T']);
       }
 
     }
 
-    if (Input::get("status") == 'R') {
+    if (request()->get("status") == 'R') {
       foreach ($units as $unit) {
         Attend::where("unit_id", $unit->id)->where("user_id", $student)->delete();
       }
@@ -228,11 +228,11 @@ class OffersController extends Controller
   }
 
 	public function postOffersGrouped() {
-		if(!Input::has('group_id')) {
+		if(!request()->has('group_id')) {
 			return ['status'=> 0];
 		}
 
-		$groupId = Input::get('group_id');
+		$groupId = request()->get('group_id');
 		$offers = Offer::where('offer_id', decrypt($groupId))->where('grouping', 'S')->get();
 		foreach ($offers as $key => $offer) {
 			$offer->id = encrypt($offer->id);

@@ -8,8 +8,8 @@ class UnitsController extends Controller
 
   public function __construct()
   {
-    if (Input::has("u")) {
-      $this->unit = Unit::find(decrypt(Input::get("u")));
+    if (request()->has("u")) {
+      $this->unit = Unit::find(decrypt(request()->get("u")));
     }
 
     $id = session("user");
@@ -23,9 +23,9 @@ class UnitsController extends Controller
 
   public function getIndex()
   {
-    if ($this->user_id && Input::has("u")) {
+    if ($this->user_id && request()->has("u")) {
       $user = User::find($this->user_id);
-      $unit_current = Unit::find(decrypt(Input::get("u")));
+      $unit_current = Unit::find(decrypt(request()->get("u")));
 
       if ($unit_current->status == "D") {
         return redirect("lectures")->with("error", "Esta unidade está desativada");
@@ -63,7 +63,7 @@ class UnitsController extends Controller
   {
     try
     {
-      $this->unit->calculation = Input::get("calculation");
+      $this->unit->calculation = request()->get("calculation");
       $this->unit->save();
       return Response::json(true);
     } catch (Exception $e) {
@@ -73,8 +73,8 @@ class UnitsController extends Controller
 
   public function getNew()
   {
-    if (Input::has("offer")) {
-      $offer = decrypt(Input::get("offer"));
+    if (request()->has("offer")) {
+      $offer = decrypt(request()->get("offer"));
       $old = Unit::where("offer_id", $offer)->orderBy("value", "desc")->first();
 
       $unit = new Unit;
@@ -117,31 +117,31 @@ class UnitsController extends Controller
 
   public function postRmstudent()
   {
-    //~ return Input::all();
-    $unit = decrypt(Input::get("unit"));
-    $student = decrypt(Input::get("student"));
+    //~ return request()->all();
+    $unit = decrypt(request()->get("unit"));
+    $student = decrypt(request()->get("student"));
 
     Attend::where("unit_id", $unit)->where("user_id", $student)->delete();
 
-    return redirect("lectures/units/student?u=" . Input::get("unit"))
+    return redirect("lectures/units/student?u=" . request()->get("unit"))
       ->with("success", "Aluno removido com sucesso");
   }
 
   public function postAddstudent()
   {
-    $unit = decrypt(Input::get("unit"));
-    $student = decrypt(Input::get("student"));
+    $unit = decrypt(request()->get("unit"));
+    $student = decrypt(request()->get("student"));
 
     $attend = Attend::where("unit_id", $unit)->where("user_id", $student)->first();
     if ($attend) {
-      return redirect("lectures/units/student?u=" . Input::get("unit"))
+      return redirect("lectures/units/student?u=" . request()->get("unit"))
         ->with("error", "Aluno já cadastrado");
     } else {
       $attend = new Attend;
       $attend->unit_id = $unit;
       $attend->user_id = $student;
       $attend->save();
-      return redirect("lectures/units/student?u=" . Input::get("unit"))
+      return redirect("lectures/units/student?u=" . request()->get("unit"))
         ->with("success", "Aluno cadastrado com sucesso");
     }
   }
@@ -159,7 +159,7 @@ class UnitsController extends Controller
       $students = DB::select("select Users.id, Users.name "
         . "from Users, Attends, Units "
         . "where Units.id=? and Attends.unit_id=Units.id and Attends.user_id=Users.id "
-        . "group by Users.id order by Users.name", [decrypt(Input::get("u"))]);
+        . "group by Users.id order by Users.name", [decrypt(request()->get("u"))]);
 
       return $students;
 

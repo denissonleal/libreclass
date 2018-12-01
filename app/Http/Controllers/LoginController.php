@@ -23,7 +23,7 @@ class LoginController extends Controller
 				// $url = url("/check/") . "/" . encrypt($user->id);
 				// Mail::send('email.welcome', ["url" => $url, "name" => $user->name ], function($message)
 				// {
-				//   $user = User::whereEmail(Input::get("email"))->first();
+				//   $user = User::whereEmail(request()->get("email"))->first();
 				//   $message->to( $user->email, $user->name )
 				//           ->subject("Seja bem-vindo");
 				// });

@@ -22,7 +22,7 @@ class AvaliableController extends Controller
   public function getIndex()
   {
     $user = User::find($this->user_id);
-    $exam = Exam::find(decrypt(Input::get("e")));
+    $exam = Exam::find(decrypt(request()->get("e")));
     $students = null;
     if ($exam->aval == "A") {
       $students = Attend::where("unit_id", $exam->unit_id)->get();
@@ -32,24 +32,24 @@ class AvaliableController extends Controller
 
   public function postSave()
   {
-    if (Input::has("exam")) {
-      $exam = Exam::find(decrypt(Input::get("exam")));
+    if (request()->has("exam")) {
+      $exam = Exam::find(decrypt(request()->get("exam")));
     } else {
       $exam = new Exam;
-      $exam->unit_id = decrypt(Input::get("unit"));
+      $exam->unit_id = decrypt(request()->get("unit"));
       $exam->aval = "A";
     }
-    $exam->date = Input::get("date-year") . "-" . Input::get("date-month") . "-" . Input::get("date-day");
-    $exam->title = Input::get("title");
+    $exam->date = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
+    $exam->title = request()->get("title");
 
-    if (Input::get("weight") != "") {
-      $exam->weight = Input::get("weight");
+    if (request()->get("weight") != "") {
+      $exam->weight = request()->get("weight");
     }
-    $exam->type = Input::get("type");
-    $exam->comments = Input::get("comment");
+    $exam->type = request()->get("type");
+    $exam->comments = request()->get("comment");
     $exam->save();
 
-    if (!Input::has("exam")) {
+    if (!request()->has("exam")) {
       $this->createExamsValues($exam);
     }
     return redirect("/lectures/units?u=" . encrypt($exam->unit_id))->with("success", "Avaliação atualizada com sucesso.");
@@ -83,7 +83,7 @@ class AvaliableController extends Controller
   public function getNew()
   {
     $user = User::find($this->user_id);
-    $unit = Unit::find(decrypt(Input::get("u")));
+    $unit = Unit::find(decrypt(request()->get("u")));
     $exam = new Exam;
     $exam->unit_id = $unit->id;
     $exam->date = date("Y-m-d");
@@ -98,9 +98,9 @@ class AvaliableController extends Controller
   public function postExam()
   {
     try {
-      $exam = decrypt(Input::get("exam"));
-      $attend = decrypt(Input::get("student"));
-      $value = (float) str_replace(",", ".", Input::get("value"));
+      $exam = decrypt(request()->get("exam"));
+      $attend = decrypt(request()->get("student"));
+      $value = (float) str_replace(",", ".", request()->get("value"));
 
       $a = Attend::find($attend);
       $average = $a->getUnit()->getOffer()->getClass()->getPeriod()->getCourse()->average;
@@ -130,17 +130,17 @@ class AvaliableController extends Controller
   public function postExamDescriptive()
   {
     try {
-      $exam = decrypt(Input::get("exam"));
-      $attend = decrypt(Input::get("student"));
+      $exam = decrypt(request()->get("exam"));
+      $attend = decrypt(request()->get("student"));
       $examsvalue = DescriptiveExam::where("attend_id", $attend)->where("exam_id", $exam)->first();
       if ($examsvalue) {
-        DescriptiveExam::where("attend_id", $attend)->where("exam_id", $exam)->update(["description" => Input::get("description"), "approved" => Input::get("approved")]);
+        DescriptiveExam::where("attend_id", $attend)->where("exam_id", $exam)->update(["description" => request()->get("description"), "approved" => request()->get("approved")]);
       } else {
         $examsvalue = new DescriptiveExam;
         $examsvalue->attend_id = $attend;
         $examsvalue->exam_id = $exam;
-        $examsvalue->description = Input::get("description");
-        $examsvalue->approved = Input::get("approved");
+        $examsvalue->description = request()->get("description");
+        $examsvalue->approved = request()->get("approved");
         $examsvalue->save();
       }
       return Response::json([
@@ -186,9 +186,9 @@ class AvaliableController extends Controller
       $exam->unit_id = $cUnit->id;
     }
     $exam->title = "Recuperação da Unidade $cUnit->value";
-    $exam->date = Input::get("date-year") . "-" . Input::get("date-month") . "-" . Input::get("date-day");
-    $exam->type = Input::get("type");
-    $exam->comments = Input::get("comment");
+    $exam->date = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
+    $exam->type = request()->get("type");
+    $exam->comments = request()->get("comment");
     $exam->save();
     return redirect("/lectures/units?u=$unit")->with("success", "Avaliação atualizada com sucesso.");
 //  return redirect("avaliable/finalunit/$unit")->with("message", "Avaliação atualizada com sucesso.");
@@ -197,9 +197,9 @@ class AvaliableController extends Controller
   public function postFinaldiscipline($id = "")
   {
     $offer = Offer::find(decrypt($id));
-    $offer->dateFinal = Input::get("date-year") . "-" . Input::get("date-month") . "-" . Input::get("date-day");
-    $offer->typeFinal = Input::get("type");
-    $offer->comments = Input::get("comment");
+    $offer->dateFinal = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
+    $offer->typeFinal = request()->get("type");
+    $offer->comments = request()->get("comment");
     $offer->save();
     return redirect("avaliable/finaldiscipline/$id")->with("success", "Recuperação Final atualizada com sucesso");
   }
@@ -207,9 +207,9 @@ class AvaliableController extends Controller
   public function postOffer()
   {
     try {
-      $offer = decrypt(Input::get("offer"));
-      $student = decrypt(Input::get("student"));
-      $value = (float) str_replace(",", ".", Input::get("value"));
+      $offer = decrypt(request()->get("offer"));
+      $student = decrypt(request()->get("student"));
+      $value = (float) str_replace(",", ".", request()->get("value"));
 
       $average = Offer::find($offer)->getClass()->getPeriod()->getCourse()->average;
 
@@ -325,7 +325,7 @@ class AvaliableController extends Controller
 
   public function postDelete()
   {
-    $exam = Exam::find(decrypt(Input::get("input-trash")));
+    $exam = Exam::find(decrypt(request()->get("input-trash")));
 
     $unit = DB::select("SELECT Units.id, Units.status
                           FROM Units, Exams

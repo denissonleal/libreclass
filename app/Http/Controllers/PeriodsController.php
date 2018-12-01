@@ -33,7 +33,7 @@ class PeriodsController extends Controller
 
 	public function anyList() {
 		if ($this->user_id) {
-			$periods = Period::where('course_id', Input::get('course_id'))->where('status', 'E')->get();
+			$periods = Period::where('course_id', request()->get('course_id'))->where('status', 'E')->get();
 			if($periods) {
 	      return view("social.periods.list", [ "periods" => $periods ]);
 	    }
@@ -44,13 +44,13 @@ class PeriodsController extends Controller
 		if ($this->user_id) {
 
 			$period = new Period;
-			if(Input::has('period_id')) {
-				$period = Period::find(Input::get('period_id'));
+			if(request()->has('period_id')) {
+				$period = Period::find(request()->get('period_id'));
 			}
-			$period->name = Input::get('name');
-			$period->course_id = Input::get('course_id');
-			// $period->progression_value = Input::get('progression_value');
-			// dd(Input::all());
+			$period->name = request()->get('name');
+			$period->course_id = request()->get('course_id');
+			// $period->progression_value = request()->get('progression_value');
+			// dd(request()->all());
 			$period->save();
 
 			return Redirect::back()->with("success", "Período salvo com sucesso!");
@@ -59,7 +59,7 @@ class PeriodsController extends Controller
 
 	public function anyRead() {
 		if ($this->user_id) {
-			$period = Period::find(Input::get('period_id'));
+			$period = Period::find(request()->get('period_id'));
 			if($period) {
 	      return ['period' => $period];
 	    }

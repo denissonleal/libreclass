@@ -21,7 +21,7 @@ class ClassesController extends Controller
       $courses = Course::where("institution_id", $this->user_id)->where("status", "E")->orderBy("name")->get();
       $listPeriod = [];
 			$listPeriodLetivo = [];
-			$year = Input::has('year') ? (int) Input::get('year') : (int) date('Y');
+			$year = request()->has('year') ? (int) request()->get('year') : (int) date('Y');
       foreach ($courses as $course) {
         $periods = Period::where("course_id", $course->id)->orderBy("name")->get();
         //~ $listPeriod[$course->name] = [];
@@ -61,7 +61,7 @@ class ClassesController extends Controller
 	{
 		if ($this->user_id) {
 			$user = User::find($this->user_id);
-			$year = Input::has('year') ? (int) Input::get('year') : (int) date('Y');
+			$year = request()->has('year') ? (int) request()->get('year') : (int) date('Y');
 			// $year_previous = $year - 1;
 
 			$classes = DB::select(
@@ -100,15 +100,15 @@ class ClassesController extends Controller
 
   public function postListdisciplines()
   {
-    if (Input::has("flag")) {
-      $offers = Offer::where("class_id", decrypt(Input::get("classe_id")))->get();
+    if (request()->has("flag")) {
+      $offers = Offer::where("class_id", decrypt(request()->get("classe_id")))->get();
       $registered_disciplines_ids = [];
       foreach ($offers as $offer) {
         $registered_disciplines_ids[] = $offer->discipline_id;
       }
-      $disciplines = Discipline::where("period_id", decrypt(Input::get("period_id")))->whereStatus('E')->whereNotIn('id', $registered_disciplines_ids)->get();
+      $disciplines = Discipline::where("period_id", decrypt(request()->get("period_id")))->whereStatus('E')->whereNotIn('id', $registered_disciplines_ids)->get();
     } else {
-      $disciplines = Discipline::where("period_id", decrypt(Input::get("period")))->whereStatus('E')->get();
+      $disciplines = Discipline::where("period_id", decrypt(request()->get("period")))->whereStatus('E')->get();
     }
     return view("modules.disciplines.listOffer", ["disciplines" => $disciplines]);
   }
@@ -116,12 +116,12 @@ class ClassesController extends Controller
   public function postNew()
   {
     $class = new Classe;
-    $class->period_id = decrypt(Input::get("period"));
-    $class->name = Input::get("name");
-    $class->class = Input::get("class");
+    $class->period_id = decrypt(request()->get("period"));
+    $class->name = request()->get("name");
+    $class->class = request()->get("class");
     $class->status = 'E';
     $class->save();
-    foreach (Input::all() as $key => $value) {
+    foreach (request()->all() as $key => $value) {
       if (strstr($key, "discipline_") != false) {
         $offer = new Offer;
         $offer->class_id = $class->id;
@@ -140,7 +140,7 @@ class ClassesController extends Controller
 
   public function getInfo()
   {
-    $class = Classe::find(decrypt(Input::get("classe")));
+    $class = Classe::find(decrypt(request()->get("classe")));
     $class->period_idCrypt = encrypt($class->period_id);
     $class->course = Course::find(Period::find($class->period_id)->course_id);
 
@@ -149,11 +149,11 @@ class ClassesController extends Controller
 
   public function postEdit()
   {
-    $class = Classe::find(decrypt(Input::get("classId")));
+    $class = Classe::find(decrypt(request()->get("classId")));
     if ($class) {
-      $class->name = Input::get("class");
+      $class->name = request()->get("class");
       $class->save();
-      foreach (Input::all() as $key => $value) {
+      foreach (request()->all() as $key => $value) {
         if (strstr($key, "discipline_") != false) {
           $offer = new Offer;
           $offer->class_id = $class->id;
@@ -175,7 +175,7 @@ class ClassesController extends Controller
 
   public function postDelete()
   {
-    $class = Classe::find(decrypt(Input::get("input-trash")));
+    $class = Classe::find(decrypt(request()->get("input-trash")));
     if ($class) {
       $class->status = "D";
       $class->save();
@@ -187,11 +187,11 @@ class ClassesController extends Controller
 
   public function postChangeStatus()
   {
-    $id = decrypt(Input::get("key"));
+    $id = decrypt(request()->get("key"));
 
     $class = Classe::find($id);
     if ($class) {
-      $class->status = Input::get("status");
+      $class->status = request()->get("status");
       $class->save();
       if ($class->status == "E") {
         return Redirect::back()->with("success", "Turma ativada com sucesso!");
@@ -210,8 +210,8 @@ class ClassesController extends Controller
 
   public function anyListOffers()
   {
-    $offers = Offer::where("class_id", decrypt(Input::get("class")))->get();
-    $idStudent = decrypt(Input::get("student"));
+    $offers = Offer::where("class_id", decrypt(request()->get("class")))->get();
+    $idStudent = decrypt(request()->get("student"));
 
     foreach ($offers as $offer) {
       $offer->status = DB::select("SELECT count(*) as qtd FROM Units, Attends " .
@@ -255,7 +255,7 @@ class ClassesController extends Controller
 
   public function postBlockUnit()
   {
-    $course = Course::find(decrypt(Input::get("course")));
+    $course = Course::find(decrypt(request()->get("course")));
     if ($course->institution_id != $this->user_id) {
       throw new Exception('Usuário inválido');
     }
@@ -266,7 +266,7 @@ class ClassesController extends Controller
       foreach ($classes as $class) {
         $offers = Offer::where("class_id", $class->id)->get();
         foreach ($offers as $offer) {
-          Unit::where("offer_id", $offer->id)->whereValue(Input::get("unit"))->whereStatus("E")->update(array('status' => "D"));
+          Unit::where("offer_id", $offer->id)->whereValue(request()->get("unit"))->whereStatus("E")->update(array('status' => "D"));
         }
 
       }
@@ -275,7 +275,7 @@ class ClassesController extends Controller
 
   public function postUnblockUnit()
   {
-    $course = Course::find(decrypt(Input::get("course")));
+    $course = Course::find(decrypt(request()->get("course")));
     if ($course->institution_id != $this->user_id) {
       throw new Exception('Usuário inválido');
     }
@@ -286,7 +286,7 @@ class ClassesController extends Controller
       foreach ($classes as $class) {
         $offers = Offer::where("class_id", $class->id)->get();
         foreach ($offers as $offer) {
-          Unit::where("offer_id", $offer->id)->whereValue(Input::get("unit"))->whereStatus("D")->update(array('status' => "E"));
+          Unit::where("offer_id", $offer->id)->whereValue(request()->get("unit"))->whereStatus("D")->update(array('status' => "E"));
         }
 
       }
@@ -296,7 +296,7 @@ class ClassesController extends Controller
   public function anyCreateUnits()
   {
     $s_attends = false;
-    $course = Course::find(decrypt(Input::get("course")));
+    $course = Course::find(decrypt(request()->get("course")));
     if ($course->institution_id != $this->user_id) {
       throw new Exception("Você não tem permissão para realizar essa operação");
     }
@@ -341,8 +341,8 @@ class ClassesController extends Controller
 
 	public function postCopyToYear()
   {
-		if(Input::has('classes')) {
-			foreach(Input::get('classes') as $in) {
+		if(request()->has('classes')) {
+			foreach(request()->get('classes') as $in) {
 				$classe = Classe::find($in['classe_id']);
 
 				$new_classe = new Classe();

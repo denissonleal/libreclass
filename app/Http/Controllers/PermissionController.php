@@ -54,15 +54,15 @@ class PermissionController extends Controller
 	}
 
 	public function postIndex() {
-		// return Input::all();
-		$user = decrypt(Input::get("id"));
+		// return request()->all();
+		$user = decrypt(request()->get("id"));
 
 		$ctrls = Ctrl::where("user_id", $this->user_id)->get();
 		foreach( $ctrls as $ctrl )
 			Adminer::where("user_id", $user)->where("idController", $ctrl->id)->delete();
 
-		if (Input::has("ctrl"))
-			foreach( Input::get("ctrl") as $ctrl) {
+		if (request()->has("ctrl"))
+			foreach( request()->get("ctrl") as $ctrl) {
 				$adminer = new Adminer;
 				$adminer->user_id = $user;
 				$adminer->idController = $ctrl;
@@ -74,7 +74,7 @@ class PermissionController extends Controller
 
 	public function postFind()
 	{
-		$user = User::find(decrypt(Input::get("id")));
+		$user = User::find(decrypt(request()->get("id")));
 
 		$modules = DB::select("SELECT Modules.id, Modules.name "
 										."FROM Controllers, Adminers, Modules "

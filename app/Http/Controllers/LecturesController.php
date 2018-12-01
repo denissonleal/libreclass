@@ -134,7 +134,7 @@ class LecturesController extends Controller
 
   public function postSort()
   {
-    foreach (Input::get("order") as $key => $value) {
+    foreach (request()->get("order") as $key => $value) {
       Lecture::where('offer_id', decrypt($value))->where('user_id', $this->user_id)->update(["order" => $key + 1]);
     }
   }

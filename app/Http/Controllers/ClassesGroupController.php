@@ -60,7 +60,7 @@ class ClassesGroupController extends Controller
   public function jsonOffers()
   {
     try {
-      return Response::json(['status' => 1, 'disciplines' => $this->getOffers(Input::get('class_id'))]);
+      return Response::json(['status' => 1, 'disciplines' => $this->getOffers(request()->get('class_id'))]);
     } catch (Exception $e) {
       return Response::json(['status' => 0, 'message' => 'Erro: ' . $e->getMessage() . ' (' . $e->getLine() . ')']);
     }
@@ -73,12 +73,12 @@ class ClassesGroupController extends Controller
   public function createMasterOffer()
   {
     try {
-      if (!Input::has('offers') || !Input::has('classe') || !Input::has('name')) {
+      if (!request()->has('offers') || !request()->has('classe') || !request()->has('name')) {
         throw new Exception('Informações incompletas.');
       }
-      $master_discipline = Discipline::create(['name' => Input::get('name')]);
+      $master_discipline = Discipline::create(['name' => request()->get('name')]);
       $master_offer = Offer::create([
-        'class_id' => decrypt(Input::get('classe')),
+        'class_id' => decrypt(request()->get('classe')),
         'discipline_id' => $master_discipline->id,
         'grouping' => 'M',
       ]);
@@ -87,7 +87,7 @@ class ClassesGroupController extends Controller
       $unit->value = "1";
       $unit->calculation = "A";
       $unit->save();
-      foreach (Input::get('offers') as $offer_id) {
+      foreach (request()->get('offers') as $offer_id) {
         $id = decrypt($offer_id);
         $offer = Offer::find($id);
         $offer->offer_id = $master_offer->id;
