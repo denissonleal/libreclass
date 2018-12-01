@@ -1,15 +1,15 @@
 <?php
 
 class SocialController extends \BaseController {
-  private $idUser;
+  private $user_id;
 
   public function __construct()
   {
     $id = Session::get("user");
     if ( $id == null || $id == "" )
-      $this->idUser = false;
+      $this->user_id = false;
     else
-      $this->idUser = decrypt($id);
+      $this->user_id = decrypt($id);
   }
 
   public function getIndex()
@@ -17,7 +17,7 @@ class SocialController extends \BaseController {
     if ( Session::has("redirect") )
       return Redirect::to(Session::get("redirect"));
 
-    $user = User::find($this->idUser);
+    $user = User::find($this->user_id);
     Session::put("type", $user->type);
 
     return View::make("social.home", ["user" => $user]);
@@ -27,19 +27,19 @@ class SocialController extends \BaseController {
   {
     //~ print_r(Input::all());
     foreach( Input::all() as $key => $value )
-      return User::whereId($this->idUser)->update([$key => $value]);
+      return User::whereId($this->user_id)->update([$key => $value]);
   }
 
   public function postSuggestion()
   {
     $suggestion = new Suggestion;
-    $suggestion->idUser      = $this->idUser;
+    $suggestion->user_id      = $this->user_id;
     $suggestion->title       = Input::get("title");
     $suggestion->value       = Input::get("value");
     $suggestion->description = Input::get("description");
     $suggestion->save();
 
-    $user = User::find($this->idUser);
+    $user = User::find($this->user_id);
 
     Mail::send('email.suporte', ["descricao" => Input::get("description"), "email" => $user->email, "title" => Input::get("title")], function($message)
     {

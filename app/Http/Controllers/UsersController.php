@@ -3,15 +3,15 @@
 class UsersController extends \BaseController
 {
 
-  private $idUser;
+  private $user_id;
 
   public function UsersController()
   {
     $id = Session::get("user");
     if ($id == null || $id == "") {
-      $this->idUser = false;
+      $this->user_id = false;
     } else {
-      $this->idUser = decrypt($id);
+      $this->user_id = decrypt($id);
     }
   }
 
@@ -20,7 +20,7 @@ class UsersController extends \BaseController
     $teacher = User::where('email', Input::get('str'))->first();
     \Log::info('post search teacher', [$teacher]);
     if ($teacher) {
-      $relationship = Relationship::where('idUser', $this->idUser)->where('idFriend', $teacher->id)->first();
+      $relationship = Relationship::where('user_id', $this->user_id)->where('idFriend', $teacher->id)->first();
       if (!$relationship) {
         return Response::json([
           'status' => 1,
@@ -54,13 +54,13 @@ class UsersController extends \BaseController
   {
     $teachers = DB::select("SELECT Users.id, Users.name, Users.photo, Relationships.enrollment as 'comment'"
       . "FROM Users, Relationships "
-      . "WHERE Relationships.idUser=? AND Relationships.type='2' "
+      . "WHERE Relationships.user_id=? AND Relationships.type='2' "
       . "AND Relationships.idFriend=Users.id "
       . "AND Relationships.status='E'"
       . " ORDER BY name",
-      [$this->idUser]);
+      [$this->user_id]);
     foreach ($teachers as $teacher) {
-      //  $teacher->selected = Lecture::where("idUser", $teacher->id)->where("idOffer", $offer)->count();
+      //  $teacher->selected = Lecture::where("user_id", $teacher->id)->where("idOffer", $offer)->count();
       $teacher->id = base64_encode($teacher->id);
     }
 
@@ -69,12 +69,12 @@ class UsersController extends \BaseController
 
   public function getTeacher()
   {
-    if ($this->idUser) {
+    if ($this->user_id) {
       $block = 30;
       $search = Input::has("search") ? Input::get("search") : "";
       $current = (int) Input::has("current") ? Input::get("current") : 0;
-      $user = User::find($this->idUser);
-      $courses = Course::where("institution_id", $this->idUser)
+      $user = User::find($this->user_id);
+      $courses = Course::where("institution_id", $this->user_id)
         ->whereStatus("E")
         ->orderBy("name")
         ->get();
@@ -85,15 +85,15 @@ class UsersController extends \BaseController
 
       $relationships = DB::select("SELECT Users.id, Users.name, Relationships.enrollment, Users.type "
         . "FROM Users, Relationships "
-        . "WHERE Relationships.idUser=? AND Relationships.type='2' AND Relationships.idFriend=Users.id "
+        . "WHERE Relationships.user_id=? AND Relationships.type='2' AND Relationships.idFriend=Users.id "
         . "AND Relationships.status='E' AND (Users.name LIKE ? OR Relationships.enrollment=?) "
         . " ORDER BY name LIMIT ? OFFSET ?",
-        [$this->idUser, "%$search%", $search, $block, $current * $block]);
+        [$this->user_id, "%$search%", $search, $block, $current * $block]);
 
       $length = DB::select("SELECT count(*) as 'length' "
         . "FROM Users, Relationships "
-        . "WHERE Relationships.idUser=? AND Relationships.type='2' AND Relationships.idFriend=Users.id "
-        . "AND (Users.name LIKE ? OR Relationships.enrollment=?) ", [$this->idUser, "%$search%", $search]);
+        . "WHERE Relationships.user_id=? AND Relationships.type='2' AND Relationships.idFriend=Users.id "
+        . "AND (Users.name LIKE ? OR Relationships.enrollment=?) ", [$this->user_id, "%$search%", $search]);
 
       return View::make(
         "modules.addTeachers",
@@ -119,10 +119,10 @@ class UsersController extends \BaseController
     if (strlen(Input::get("teacher"))) {
       $user = User::find(decrypt(Input::get("teacher")));
       if (strlen(Input::get("registered"))) {
-        $relationship = Relationship::where('idUser', $this->idUser)->where('idFriend', $user->id)->first();
+        $relationship = Relationship::where('user_id', $this->user_id)->where('idFriend', $user->id)->first();
         if (!$relationship) {
           $relationship = new Relationship;
-          $relationship->idUser = $this->idUser;
+          $relationship->user_id = $this->user_id;
           $relationship->idFriend = $user->id;
           $relationship->enrollment = Input::get('enrollment');
           $relationship->status = "E";
@@ -144,7 +144,7 @@ class UsersController extends \BaseController
       $user->save();
       return Redirect::guest("/user/teacher")->with("success", "Professor editado com sucesso!");
     } else {
-      $verify = Relationship::whereEnrollment(Input::get("enrollment"))->where('idUser', $this->idUser)->first();
+      $verify = Relationship::whereEnrollment(Input::get("enrollment"))->where('user_id', $this->user_id)->first();
       if (isset($verify) || $verify != null) {
         return Redirect::guest("/user/teacher")->with("error", "Este número de inscrição já está cadastrado!");
       }
@@ -163,7 +163,7 @@ class UsersController extends \BaseController
       $user->save();
 
       $relationship = new Relationship;
-      $relationship->idUser = $this->idUser;
+      $relationship->user_id = $this->user_id;
       $relationship->idFriend = $user->id;
       $relationship->enrollment = Input::get("enrollment");
       $relationship->status = "E";
@@ -179,13 +179,13 @@ class UsersController extends \BaseController
   public function updateEnrollment()
   {
     $user = User::find(decrypt(Input::get("teacher")));
-    Relationship::where('idUser', $this->idUser)->where('idFriend', $user->id)->update(['enrollment' => Input::get('enrollment')]);
+    Relationship::where('user_id', $this->user_id)->where('idFriend', $user->id)->update(['enrollment' => Input::get('enrollment')]);
     return Redirect::guest("/user/teacher")->with("success", "Matrícula editada com sucesso!");
   }
 
   public function getProfileStudent()
   {
-    $user = User::find($this->idUser);
+    $user = User::find($this->user_id);
     $profile = decrypt(Input::get("u"));
     $classes = DB::select("SELECT Classes.id, Classes.name, Classes.class FROM Classes, Periods, Courses "
       . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.status='E'",
@@ -201,7 +201,7 @@ class UsersController extends \BaseController
     if ($profile) {
       $profile = User::find($profile);
 			// $courses = DB::select("SELECT Courses.id, Courses.name FROM Users, Courses, Periods, Disciplines, Attends, Units, Offers "
-			// . "WHERE Users.id=? AND Users.id = Attends.idUser AND Units.id = Attends.idUnit AND Offers.id = Units.idOffer "
+			// . "WHERE Users.id=? AND Users.id = Attends.user_id AND Units.id = Attends.idUnit AND Offers.id = Units.idOffer "
 			// . "AND Disciplines.id = Offers.idDiscipline AND Disciplines.period_id = Periods.id AND Periods.course_id = Courses.id", [$profile]);
 			$courses = DB::select("SELECT Courses.id, Courses.name, Courses.quantUnit FROM Attends, Units, Offers, Disciplines, Periods, Courses, Classes "
 			. " WHERE Units.id = Attends.idUnit "
@@ -210,7 +210,7 @@ class UsersController extends \BaseController
 			. " AND Periods.id = Disciplines.period_id "
 			// . " AND Classes.period_id = Periods.id "
 			. " AND Courses.id = Periods.course_id "
-			. " AND Attends.idUser = ? "
+			. " AND Attends.user_id = ? "
 			. " GROUP BY Courses.id", [$profile->id]);
 
 			$listCourses = [];
@@ -242,9 +242,9 @@ class UsersController extends \BaseController
     $student = decrypt(Input::get("student"));
     $disciplines = DB::select("SELECT  Courses.id as course, Disciplines.name, Offers.id as offer, Attends.id as attend, Classes.status as statusclasse "
       . "FROM Classes, Periods, Courses, Disciplines, Offers, Units, Attends "
-      . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.schoolYear=? AND Classes.id=Offers.idClass AND Offers.idDiscipline=Disciplines.id AND Offers.id=Units.idOffer AND Units.id=Attends.idUnit AND Attends.idUser=? "
+      . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.schoolYear=? AND Classes.id=Offers.idClass AND Offers.idDiscipline=Disciplines.id AND Offers.id=Units.idOffer AND Units.id=Attends.idUnit AND Attends.user_id=? "
       . "group by Offers.id",
-      [$this->idUser, Input::get("class"), $student]);
+      [$this->user_id, Input::get("class"), $student]);
 
     foreach ($disciplines as $discipline) {
       $sum = 0;
@@ -260,7 +260,7 @@ class UsersController extends \BaseController
         $sum += isset($value[1]) ? $value[1] : $value[0];
       }
       $discipline->average = sprintf("%.2f", ($sum + .0) / count($discipline->units));
-      $discipline->final = FinalExam::where("idUser", $student)->where("idOffer", $discipline->offer)->first();
+      $discipline->final = FinalExam::where("user_id", $student)->where("idOffer", $discipline->offer)->first();
       $offer = Offer::find($discipline->offer);
       $discipline->absencese = sprintf("%.1f", (100. * ($offer->maxlessons - $offer->qtdAbsences($student))) / $offer->maxlessons);
 
@@ -290,12 +290,12 @@ class UsersController extends \BaseController
   public function postProfileStudent()
   {
     try {
-      $idUser = (int) decrypt(Input::get("student"));
+      $user_id = (int) decrypt(Input::get("student"));
 
       foreach (Input::get("offers") as $offer) {
         $units = Unit::where("idOffer", decrypt($offer))->get();
         foreach ($units as $unit) {
-          $attend = Attend::where("idUser", $idUser)->where("idUnit", $unit->id)->first();
+          $attend = Attend::where("user_id", $user_id)->where("idUnit", $unit->id)->first();
           if ($attend) {
             $disc = Offer::find(decrypt($offer))->getDiscipline();
             //$status = ["E" => "Cursando", "D" => "Disabilitado"];
@@ -310,7 +310,7 @@ class UsersController extends \BaseController
         $units = Unit::where("idOffer", decrypt($offer))->get();
         foreach ($units as $unit) {
           $attend = new Attend;
-          $attend->idUser = $idUser;
+          $attend->user_id = $user_id;
           $attend->idUnit = $unit->id;
           $attend->save();
           $exams = Exam::where("idUnit", $unit->id)->get();
@@ -341,11 +341,11 @@ class UsersController extends \BaseController
   public function postAttest()
   {
     $idStudent = decrypt(Input::get("student"));
-    $relation = Relationship::where("idUser", $this->idUser)->where("idFriend", $idStudent)->whereType(1)->whereStatus("E")->first();
+    $relation = Relationship::where("user_id", $this->user_id)->where("idFriend", $idStudent)->whereType(1)->whereStatus("E")->first();
 
     if ($relation) {
       $attest = new Attest;
-      $attest->institution_id = $this->idUser;
+      $attest->institution_id = $this->user_id;
       $attest->idStudent = $idStudent;
       $attest->date = Input::get("date-year") . "-" . Input::get("date-month") . "-" . Input::get("date-day");
       $attest->days = Input::get("days");
@@ -361,11 +361,11 @@ class UsersController extends \BaseController
 
   public function getProfileTeacher()
   {
-    $user = User::find($this->idUser);
+    $user = User::find($this->user_id);
     $profile = decrypt(Input::get("u"));
     if ($profile) {
       $profile = User::find($profile);
-      $relationship = Relationship::where('idUser', $this->idUser)->where('idFriend', $profile->id)->first();
+      $relationship = Relationship::where('user_id', $this->user_id)->where('idFriend', $profile->id)->first();
       $profile->enrollment = $relationship->enrollment;
       switch ($profile->formation) {
         case '0':$profile->formation = "Não quero informar";
@@ -393,14 +393,14 @@ class UsersController extends \BaseController
 
   public function postInvite($id = null)
   {
-    $user = User::find($this->idUser);
+    $user = User::find($this->user_id);
     if ($id) {
       $guest = User::find($id);
     } else {
       $guest = User::find(decrypt(Input::has("teacher") ? Input::get("teacher") : Input::get("guest")));
     }
 
-    if (($guest->type == "M" or $guest->type == "N") and Relationship::where("idUser", $this->idUser)->where("idFriend", $guest->id)->first()) {
+    if (($guest->type == "M" or $guest->type == "N") and Relationship::where("user_id", $this->user_id)->where("idFriend", $guest->id)->first()) {
       if (User::whereEmail(Input::get("email"))->first()) {
         return Redirect::back()->with("error", "O email " . Input::get("email") . " já está cadastrado.");
       }
@@ -430,12 +430,12 @@ class UsersController extends \BaseController
 
   public function getStudent()
   {
-    if ($this->idUser) {
+    if ($this->user_id) {
       $block = 30;
       $search = Input::has("search") ? Input::get("search") : "";
       $current = (int) Input::has("current") ? Input::get("current") : 0;
-      $user = User::find($this->idUser);
-      $courses = Course::where("institution_id", $this->idUser)
+      $user = User::find($this->user_id);
+      $courses = Course::where("institution_id", $this->user_id)
         ->whereStatus("E")
         ->orderBy("name")
         ->get();
@@ -447,15 +447,15 @@ class UsersController extends \BaseController
 
       $relationships = DB::select("SELECT Users.id, Users.name, Users.enrollment "
         . "FROM Users, Relationships "
-        . "WHERE Relationships.idUser=? AND Relationships.type='1' AND Relationships.idFriend=Users.id "
+        . "WHERE Relationships.user_id=? AND Relationships.type='1' AND Relationships.idFriend=Users.id "
         . "AND (Users.name LIKE ? OR Users.enrollment=?) "
         . " ORDER BY name LIMIT ? OFFSET ?",
-        [$this->idUser, "%$search%", $search, $block, $current * $block]);
+        [$this->user_id, "%$search%", $search, $block, $current * $block]);
 
       $length = DB::select("SELECT count(*) as 'length' "
         . "FROM Users, Relationships "
-        . "WHERE Relationships.idUser=? AND Relationships.type='1' AND Relationships.idFriend=Users.id "
-        . "AND (Users.name LIKE ? OR Users.enrollment=?) ", [$this->idUser, "%$search%", $search]);
+        . "WHERE Relationships.user_id=? AND Relationships.type='1' AND Relationships.idFriend=Users.id "
+        . "AND (Users.name LIKE ? OR Users.enrollment=?) ", [$this->user_id, "%$search%", $search]);
 
       return View::make("modules.addStudents",
         [
@@ -498,7 +498,7 @@ class UsersController extends \BaseController
 
 		if(!Input::has('student_id')) {
 			$relationship = new Relationship;
-			$relationship->idUser = $this->idUser;
+			$relationship->user_id = $this->user_id;
 			$relationship->idFriend = $user->id;
 			$relationship->status = "E";
 			$relationship->type = "1";
@@ -517,7 +517,7 @@ class UsersController extends \BaseController
       . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND "
       . "Periods.id=Classes.period_id AND Classes.id=Offers.idClass AND "
       . "Offers.idDiscipline=Disciplines.id AND "
-      . "Offers.id=Lectures.idOffer AND Lectures.idUser=?", [$this->idUser, $idTeacher]);
+      . "Offers.id=Lectures.idOffer AND Lectures.user_id=?", [$this->user_id, $idTeacher]);
 
     if (count($offers)) {
       $str = "Erro ao desvincular professor, ele está associado a(s) disciplina(s): <br><br>";
@@ -529,7 +529,7 @@ class UsersController extends \BaseController
 
       return Redirect::back()->with("error", $str);
     } else {
-      Relationship::where('idUser', $this->idUser)
+      Relationship::where('user_id', $this->user_id)
         ->where('idFriend', $idTeacher)
         ->whereType(2)
         ->update(["status" => "D"]);
@@ -541,7 +541,7 @@ class UsersController extends \BaseController
   public function getInfouser()
   {
     $user = User::find(decrypt(Input::get("user")));
-    $user->enrollment = DB::table('Relationships')->where('idUser', $this->idUser)->where('idFriend', $user->id)->pluck('enrollment');
+    $user->enrollment = DB::table('Relationships')->where('user_id', $this->user_id)->where('idFriend', $user->id)->pluck('enrollment');
     $user->password = null;
     return $user;
   }
@@ -557,14 +557,14 @@ class UsersController extends \BaseController
     }
     $user = decrypt($user);
 
-    $r = Relationship::where("idUser", $this->idUser)->where("idFriend", $user)->whereType($type)->first();
+    $r = Relationship::where("user_id", $this->user_id)->where("idFriend", $user)->whereType($type)->first();
     if ($r and $r->status == "E") {
       return Redirect::back()->with("error", "Já possui esse relacionamento.");
     } elseif ($r) {
       $r->status = "E";
     } else {
       $r = new Relationship;
-      $r->idUser = $this->idUser;
+      $r->user_id = $this->user_id;
       $r->idFriend = $user;
       $r->type = $type;
     }
@@ -578,13 +578,13 @@ class UsersController extends \BaseController
     $data = [];
 		$data['units'] = [];
     // Obtém dados da instituição
-    $data['institution'] = User::find($this->idUser);
+    $data['institution'] = User::find($this->user_id);
 
     // Obtém dados do aluno
     $data['student'] = User::find(decrypt(Input::get('u')));
 
     // Obtém número de matrícula do aluno na instituição
-    $e = Relationship::where('idUser', $this->idUser)->where('idFriend', $data['student']->id)->first();
+    $e = Relationship::where('user_id', $this->user_id)->where('idFriend', $data['student']->id)->first();
     $data['student']['enrollment'] = $e['enrollment'];
 
     $disciplines = DB::select("
@@ -605,12 +605,12 @@ class UsersController extends \BaseController
         and Classes.id = Offers.idClass
         and Offers.idDiscipline = Disciplines.id
         and Offers.id = Units.idOffer
-        and Units.id = Attends.idUnit and Attends.idUser =  ?
+        and Units.id = Attends.idUnit and Attends.user_id =  ?
 				and Units.value IN (?)
 				and Classes.status = 'E'
 				and Courses.id = ?
       GROUP BY Offers.id",
-      [$this->idUser, Input::get('schoolYear'), $data['student']->id, implode(',', Input::get('unit_value')), Input::get('course')]
+      [$this->user_id, Input::get('schoolYear'), $data['student']->id, implode(',', Input::get('unit_value')), Input::get('course')]
     );
 
 		// dd(Input::get('course'));
@@ -660,7 +660,7 @@ class UsersController extends \BaseController
 
 					$pareceres->disciplines[$key]->units[$key2]->pareceres = [];
 					//Obtém os pareceres
-					$attend = Attend::where('idUnit', $unit->id)->where('idUser', $data['student']->id)->first();
+					$attend = Attend::where('idUnit', $unit->id)->where('user_id', $data['student']->id)->first();
 					$pareceresTmp = DescriptiveExam::where('idAttend', $attend->id)->get();
 
 					foreach ($pareceresTmp as $parecer) {
@@ -681,7 +681,7 @@ class UsersController extends \BaseController
 
         // Verifica se há prova de recuperação
         if ($examRecovery) {
-          $attend = Attend::where('idUnit', $unit->id)->where('idUser', $data['student']['id'])->first();
+          $attend = Attend::where('idUnit', $unit->id)->where('user_id', $data['student']['id'])->first();
           $recovery = ExamsValue::where('idAttend', $attend->id)->where('idExam', $examRecovery->id)->first();
           $data['disciplines'][$key][$unit->value]['recovery'] = isset($recovery) && $recovery->value ? $recovery->value : '--';
         }

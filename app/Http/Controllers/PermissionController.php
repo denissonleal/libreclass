@@ -6,16 +6,16 @@ class PermissionController extends \BaseController {
   {
     $id = Session::get("user");
     if ( $id == null || $id == "" )
-      $this->idUser = false;
+      $this->user_id = false;
     else
-      $this->idUser = decrypt($id);
+      $this->user_id = decrypt($id);
   }
 
 	public function getIndex() {
 		if ( Session::has("redirect") )
 			return Redirect::to(Session::get("redirect"));
 
-		$friends = DB::select("SELECT Users.id, Users.name, Users.enrollment FROM Relationships, Users WHERE Relationships.idUser=? AND Relationships.idFriend=Users.id", [$this->idUser]);
+		$friends = DB::select("SELECT Users.id, Users.name, Users.enrollment FROM Relationships, Users WHERE Relationships.user_id=? AND Relationships.idFriend=Users.id", [$this->user_id]);
 
 		$listfriends = [];
 		$keys = [];
@@ -24,18 +24,18 @@ class PermissionController extends \BaseController {
 			$listfriends[$keys[$friend->id]] = $friend->name;
 		}
 
-		$ctrls = Ctrl::where("idUser", $this->idUser)->get();
+		$ctrls = Ctrl::where("user_id", $this->user_id)->get();
 		$listmodules = [];
 		foreach($ctrls as $ctrl)
 			$listmodules[$ctrl->idModule] = Module::find($ctrl->idModule)->name;
 
-		$user = User::find($this->idUser);
+		$user = User::find($this->user_id);
 		Session::put("type", $user->type);
 
 		$adminers = DB::select("SELECT Users.id, Users.name, Users.email, Users.enrollment "
 									."FROM Controllers, Adminers, Users "
-									."WHERE Controllers.idUser=? AND Controllers.id=Adminers.idController AND Adminers.idUser=Users.id "
-									."GROUP BY Users.id", [$this->idUser]);
+									."WHERE Controllers.user_id=? AND Controllers.id=Adminers.idController AND Adminers.user_id=Users.id "
+									."GROUP BY Users.id", [$this->user_id]);
 
 		foreach($adminers as $adminer )
 		{
@@ -44,7 +44,7 @@ class PermissionController extends \BaseController {
 
 			$adminer->modules = DB::select("SELECT Modules.id, Modules.name "
 											."FROM Controllers, Adminers, Modules "
-											."WHERE Controllers.idUser=? AND Controllers.idModule=Modules.id AND Controllers.id=Adminers.idController AND Adminers.idUser=? ", [$this->idUser, $adminer->id]);
+											."WHERE Controllers.user_id=? AND Controllers.idModule=Modules.id AND Controllers.id=Adminers.idController AND Adminers.user_id=? ", [$this->user_id, $adminer->id]);
 			$adminer->id = $keys[$adminer->id];
 		}
 
@@ -56,14 +56,14 @@ class PermissionController extends \BaseController {
 		// return Input::all();
 		$user = decrypt(Input::get("id"));
 
-		$ctrls = Ctrl::where("idUser", $this->idUser)->get();
+		$ctrls = Ctrl::where("user_id", $this->user_id)->get();
 		foreach( $ctrls as $ctrl )
-			Adminer::where("idUser", $user)->where("idController", $ctrl->id)->delete();
+			Adminer::where("user_id", $user)->where("idController", $ctrl->id)->delete();
 
 		if (Input::has("ctrl"))
 			foreach( Input::get("ctrl") as $ctrl) {
 				$adminer = new Adminer;
-				$adminer->idUser = $user;
+				$adminer->user_id = $user;
 				$adminer->idController = $ctrl;
 				$adminer->save();
 			}
@@ -77,7 +77,7 @@ class PermissionController extends \BaseController {
 
 		$modules = DB::select("SELECT Modules.id, Modules.name "
 										."FROM Controllers, Adminers, Modules "
-										."WHERE Controllers.idUser=? AND Controllers.idModule=Modules.id AND Controllers.id=Adminers.idController AND Adminers.idUser=? ", [$this->idUser, $user->id]);
+										."WHERE Controllers.user_id=? AND Controllers.idModule=Modules.id AND Controllers.id=Adminers.idController AND Adminers.user_id=? ", [$this->user_id, $user->id]);
 		$usermodules = [];
 		foreach($modules as $module)
 			$usermodules[] = $module->id;

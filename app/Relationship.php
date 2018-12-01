@@ -2,10 +2,10 @@
 
 class Relationship extends \Moloquent {
 
-  protected $fillable = ['idUser', 'idFriend', 'type'];
+  protected $fillable = ['user_id', 'idFriend', 'type'];
 
   public function getUser() {
-    return User::find($this->idUser);
+    return User::find($this->user_id);
   }
 
   public function getFriend() {

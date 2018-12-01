@@ -100,7 +100,7 @@ class CSVController extends \BaseController {
 //            return $cols;
           $cols[5] = $cols[5][2] . "-" . $cols[5][1] . "-" . $cols[5][0];
           $student = DB::select("SELECT Users.id FROM Relationships, Users
-                                 WHERE Relationships.idUser=? AND
+                                 WHERE Relationships.user_id=? AND
                                  Relationships.idFriend=Users.id AND
                                  Users.enrollment=?", [ $this->user->id, $cols[1] ]);
           $result[] = [
@@ -187,7 +187,7 @@ class CSVController extends \BaseController {
         if (!$attend[4])
         {
           $student = DB::select("SELECT Users.id FROM Relationships, Users
-                                 WHERE Relationships.idUser=? AND
+                                 WHERE Relationships.user_id=? AND
                                  Relationships.idFriend=Users.id AND
                                  Users.enrollment=?", [ $this->user->id, $attend[0] ]);
           if (count($student))
@@ -206,11 +206,11 @@ class CSVController extends \BaseController {
             $attend[4] = $student->id;
 
             if( !$s_relations )
-              $s_relations = "INSERT IGNORE INTO Relationships (idUser, idFriend, type ) VALUES (".$this->user->id.", $student->id, '1')";
+              $s_relations = "INSERT IGNORE INTO Relationships (user_id, idFriend, type ) VALUES (".$this->user->id.", $student->id, '1')";
             else
               $s_relations .= ", (".$this->user->id.", $student->id, '1')";
 //            $relationship = new Relationship;
-//            $relationship->idUser = $this->user->id;
+//            $relationship->user_id = $this->user->id;
 //            $relationship->idFriend = $student->id;
 //            $relationship->type = "1";
 //            $relationship->save();
@@ -235,16 +235,16 @@ class CSVController extends \BaseController {
 //          return DB::getQueryLog();
         }
         foreach ($units as $unit) {
-          if (!Attend::where("idUnit", $unit->id)->where("idUser", $attend[4])->first())
+          if (!Attend::where("idUnit", $unit->id)->where("user_id", $attend[4])->first())
           {
             if( !$s_attends )
-              $s_attends = "INSERT IGNORE INTO Attends (idUnit, idUser) VALUES ($unit->id, ".$attend[4].")";
+              $s_attends = "INSERT IGNORE INTO Attends (idUnit, user_id) VALUES ($unit->id, ".$attend[4].")";
             else
               $s_attends .= ", ($unit->id, ".$attend[4].")";
 
 //            $novo = new Attend;
 //            $novo->idUnit = $unit->id;
-//            $novo->idUser = $attend[4];
+//            $novo->user_id = $attend[4];
 //            $novo->save();
           }
           else
@@ -373,7 +373,7 @@ class CSVController extends \BaseController {
         $teachers[$offer[0]] = [
           $offer[1],
           DB::select("SELECT count(*) as 'qtd' FROM Relationships, Users
-                      WHERE Relationships.idUser=? AND
+                      WHERE Relationships.user_id=? AND
                       Relationships.idFriend=Users.id AND
                       Relationships.type='2' AND
                       Users.enrollment=?", [$this->user->id, $offer[0]])[0]->qtd
@@ -400,7 +400,7 @@ class CSVController extends \BaseController {
 //        $discipline = Discipline::where("period_id", $period->id)->where("name", $disc)->first();
 //      }
         $status = DB::select("SELECT count(*) as 'qtd' FROM Relationships, Users
-                              WHERE Relationships.idUser=? AND
+                              WHERE Relationships.user_id=? AND
                               Relationships.idFriend=Users.id AND
                               Relationships.type='2' AND
                               Users.enrollment=?",[$this->user->id, $offer[0]])[0]->qtd;
@@ -412,11 +412,11 @@ class CSVController extends \BaseController {
           $user->enrollment = $offer[0];
           $user->save();
           if( !$s_relations )
-            $s_relations = "INSERT IGNORE INTO Relationships (idUser, idFriend, type ) VALUES (".$this->user->id.", $user->id, '2')";
+            $s_relations = "INSERT IGNORE INTO Relationships (user_id, idFriend, type ) VALUES (".$this->user->id.", $user->id, '2')";
           else
             $s_relations .= ", (".$this->user->id.", $user->id, '2')";
 //          $relationship = new Relationship;
-//          $relationship->idUser = $this->user->id;
+//          $relationship->user_id = $this->user->id;
 //          $relationship->idFriend = $user->id;
 //          $relationship->type = '2';
 //          $relationship->save();
@@ -445,7 +445,7 @@ class CSVController extends \BaseController {
       foreach ($class[1] as $offer_aux)
       {
         $teacher = DB::select("SELECT Users.id FROM Relationships, Users
-                               WHERE Relationships.idUser=? AND
+                               WHERE Relationships.user_id=? AND
                                Relationships.idFriend=Users.id AND
                                Relationships.type='2' AND
                                Users.enrollment=?",[$this->user->id, $offer_aux[0]])[0];
@@ -458,7 +458,7 @@ class CSVController extends \BaseController {
           $offer->idClass = $classe->id;
           $offer->save();
           $lecture = new Lecture;
-          $lecture->idUser = $teacher->id;
+          $lecture->user_id = $teacher->id;
           $lecture->idOffer = $offer->id;
           $lecture->save();
           $unit = new Unit;

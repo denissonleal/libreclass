@@ -159,7 +159,7 @@
                   <tbody id='{{ encrypt($exam->id) }}'>
 
   @foreach($attends as $attend )
-    <?php $media = $attend->getUnit()->getAverage($attend->idUser) ?>
+    <?php $media = $attend->getUnit()->getAverage($attend->user_id) ?>
     @if(  $media[0] < $average)
                     <tr id='{{ encrypt($attend->id) }}'>
                       <td>{{ $attend->getUser()->name }}</td>

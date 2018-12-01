@@ -7,10 +7,10 @@ class CensoController extends \BaseController {
 	{
 		$id = Session::get("user");
 		if ($id == null || $id == "") {
-			$this->idUser = false;
+			$this->user_id = false;
 		}
 		else {
-			$this->idUser = decrypt($id);
+			$this->user_id = decrypt($id);
 		}
 	}
 
@@ -22,7 +22,7 @@ class CensoController extends \BaseController {
 	 */
 	public function getStudent()
 	{
-		return View::make("censo.formStudent", ['user' => User::find($this->idUser)]);//
+		return View::make("censo.formStudent", ['user' => User::find($this->user_id)]);//
 	}
 
 	/**

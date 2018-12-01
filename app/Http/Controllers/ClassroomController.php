@@ -2,14 +2,14 @@
 
 class ClassroomController extends \BaseController {
 
-  private $idUser;
+  private $user_id;
 
   public function __construct() {
     $id = Session::get("user");
     if ($id == null || $id == "") {
-      $this->idUser = false;
+      $this->user_id = false;
     } else {
-      $this->idUser = decrypt($id);
+      $this->user_id = decrypt($id);
     }
   }
 
@@ -17,13 +17,13 @@ class ClassroomController extends \BaseController {
     if (Session::has("redirect")) {
       return Redirect::to(Session::get("redirect"));
     }
-    $user = User::find($this->idUser);
+    $user = User::find($this->user_id);
     Session::put("type", $user->type);
     return View::make("classrooms.home", ["user" => $user]);
   }
 
   public function getCampus() {
-    $user = User::find($this->idUser);
+    $user = User::find($this->user_id);
     return View::make("classrooms.campus", ["user" => $user]);
   }
 

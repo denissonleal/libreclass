@@ -3,11 +3,11 @@
 class Attend extends \Moloquent
 {
 
-  protected $fillable = ['idUser', 'idUnit'];
+  protected $fillable = ['user_id', 'idUnit'];
 
   public function getUser()
   {
-    return User::find($this->idUser);
+    return User::find($this->user_id);
   }
 
   public function getExamsValue($exam)

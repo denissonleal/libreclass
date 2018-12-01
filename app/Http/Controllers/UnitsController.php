@@ -3,7 +3,7 @@
 class UnitsController extends \BaseController
 {
 
-  private $idUser;
+  private $user_id;
   private $unit;
 
   public function __construct()
@@ -14,17 +14,17 @@ class UnitsController extends \BaseController
 
     $id = Session::get("user");
     if ($id == null || $id == "") {
-      $this->idUser = false;
+      $this->user_id = false;
     } else {
-      $this->idUser = decrypt($id);
+      $this->user_id = decrypt($id);
     }
 
   }
 
   public function getIndex()
   {
-    if ($this->idUser && Input::has("u")) {
-      $user = User::find($this->idUser);
+    if ($this->user_id && Input::has("u")) {
+      $user = User::find($this->user_id);
       $unit_current = Unit::find(decrypt(Input::get("u")));
 
       if ($unit_current->status == "D") {
@@ -88,7 +88,7 @@ class UnitsController extends \BaseController
       foreach ($attends as $attend) {
         $new = new Attend;
         $new->idUnit = $unit->id;
-        $new->idUser = $attend->idUser;
+        $new->user_id = $attend->user_id;
         $new->save();
       }
 
@@ -98,8 +98,8 @@ class UnitsController extends \BaseController
 
   public function getStudent()
   {
-    if ($this->idUser) {
-      $user = User::find($this->idUser);
+    if ($this->user_id) {
+      $user = User::find($this->user_id);
 
       $students = User::whereType("N")->orderby("name")->get();
       $list_students = [];
@@ -107,7 +107,7 @@ class UnitsController extends \BaseController
         $list_students[encrypt($student->id)] = $student->name;
       }
 
-      $students = DB::select("SELECT Users.name as name, Users.id as id FROM Users, Attends WHERE Users.id=Attends.idUser AND Attends.idUnit = " . $this->unit->id . " ORDER BY Users.name");
+      $students = DB::select("SELECT Users.name as name, Users.id as id FROM Users, Attends WHERE Users.id=Attends.user_id AND Attends.idUnit = " . $this->unit->id . " ORDER BY Users.name");
 
       return View::make("modules.units", ["user" => $user, "list_students" => $list_students, "students" => $students]);
     } else {
@@ -121,7 +121,7 @@ class UnitsController extends \BaseController
     $unit = decrypt(Input::get("unit"));
     $student = decrypt(Input::get("student"));
 
-    Attend::where("idUnit", $unit)->where("idUser", $student)->delete();
+    Attend::where("idUnit", $unit)->where("user_id", $student)->delete();
 
     return Redirect::to("lectures/units/student?u=" . Input::get("unit"))
       ->with("success", "Aluno removido com sucesso");
@@ -132,14 +132,14 @@ class UnitsController extends \BaseController
     $unit = decrypt(Input::get("unit"));
     $student = decrypt(Input::get("student"));
 
-    $attend = Attend::where("idUnit", $unit)->where("idUser", $student)->first();
+    $attend = Attend::where("idUnit", $unit)->where("user_id", $student)->first();
     if ($attend) {
       return Redirect::to("lectures/units/student?u=" . Input::get("unit"))
         ->with("error", "Aluno já cadastrado");
     } else {
       $attend = new Attend;
       $attend->idUnit = $unit;
-      $attend->idUser = $student;
+      $attend->user_id = $student;
       $attend->save();
       return Redirect::to("lectures/units/student?u=" . Input::get("unit"))
         ->with("success", "Aluno cadastrado com sucesso");
@@ -153,12 +153,12 @@ class UnitsController extends \BaseController
 
   public function getReportunitz()
   {
-    if ($this->idUser) {
-      $user = User::find($this->idUser);
+    if ($this->user_id) {
+      $user = User::find($this->user_id);
 
       $students = DB::select("select Users.id, Users.name "
         . "from Users, Attends, Units "
-        . "where Units.id=? and Attends.idUnit=Units.id and Attends.idUser=Users.id "
+        . "where Units.id=? and Attends.idUnit=Units.id and Attends.user_id=Users.id "
         . "group by Users.id order by Users.name", [decrypt(Input::get("u"))]);
 
       return $students;
@@ -216,7 +216,7 @@ class UnitsController extends \BaseController
       $students = DB::select(""
         . " SELECT Users.id, Users.name "
         . " FROM Users, Attends, Units "
-        . " WHERE Units.idOffer=? AND Attends.idUnit=Units.id AND Attends.idUser=Users.id AND Attends.status = 'M' "
+        . " WHERE Units.idOffer=? AND Attends.idUnit=Units.id AND Attends.user_id=Users.id AND Attends.status = 'M' "
         . " GROUP BY Users.id "
         . " ORDER BY Users.name ASC", [$offer->id]
       );
@@ -340,7 +340,7 @@ class UnitsController extends \BaseController
       $students = DB::select(""
         . " SELECT Users.id, Users.name "
         . " FROM Users, Attends, Units "
-        . " WHERE Units.idOffer=? AND Attends.idUnit=Units.id AND Attends.idUser=Users.id AND Attends.status = 'M'"
+        . " WHERE Units.idOffer=? AND Attends.idUnit=Units.id AND Attends.user_id=Users.id AND Attends.status = 'M'"
         . " GROUP BY Users.id "
         . " ORDER BY Users.name ASC", [$offer->id]
       );

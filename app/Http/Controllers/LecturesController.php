@@ -3,23 +3,23 @@
 class LecturesController extends \BaseController
 {
 
-  private $idUser;
+  private $user_id;
 
   public function LecturesController()
   {
     $id = Session::get("user");
     if ($id == null || $id == "") {
-      $this->idUser = false;
+      $this->user_id = false;
     } else {
-      $this->idUser = decrypt($id);
+      $this->user_id = decrypt($id);
     }
   }
 
   public function getIndex()
   {
-    if ($this->idUser) {
-      $user = User::find($this->idUser);
-      $lectures = Lecture::where("idUser", $this->idUser)->orderBy("order")->get();
+    if ($this->user_id) {
+      $user = User::find($this->user_id);
+      $lectures = Lecture::where("user_id", $this->user_id)->orderBy("order")->get();
 			$lectures = array_where($lectures, function($key, $value) {
 				return $value->offer->classe->status != 'F';
 			});
@@ -31,8 +31,8 @@ class LecturesController extends \BaseController
 
   public function getFinalreport($offer = "")
   {
-    if ($this->idUser) {
-      $user = User::find($this->idUser);
+    if ($this->user_id) {
+      $user = User::find($this->user_id);
     }
     $offer = Offer::find(decrypt($offer));
     $course = $offer->getDiscipline()->getPeriod()->getCourse();
@@ -42,9 +42,9 @@ class LecturesController extends \BaseController
 
     $alunos = DB::select("SELECT Users.id, Users.name
                           FROM Attends, Units, Users
-                          WHERE Units.idOffer=? AND Units.id=Attends.idUnit AND Attends.idUser=Users.id
+                          WHERE Units.idOffer=? AND Units.id=Attends.idUnit AND Attends.user_id=Users.id
 													AND Attends.status = 'M'
-                          GROUP BY Attends.idUser
+                          GROUP BY Attends.user_id
                           ORDER BY Users.name", [$offer->id]);
 
     $units = Unit::where("idOffer", $offer->id)->get();
@@ -88,7 +88,7 @@ class LecturesController extends \BaseController
         $aluno->result = "Ap. por nota";
         $aluno->status = "label-success";
       } else {
-        $rec = FinalExam::where("idOffer", $offer->id)->where("idUser", $aluno->id)->first();
+        $rec = FinalExam::where("idOffer", $offer->id)->where("user_id", $aluno->id)->first();
         $aluno->rec = $rec ? $rec->value : "0.00";
         if ($aluno->rec >= $course->average_final) {
           $aluno->result = "Aprovado";
@@ -117,15 +117,15 @@ class LecturesController extends \BaseController
 
   public function getFrequency($offer)
   {
-    $user = User::find($this->idUser);
+    $user = User::find($this->user_id);
     $offer = Offer::find(decrypt($offer));
-    if ($offer->getLectures()->idUser != $this->idUser) {
+    if ($offer->getLectures()->user_id != $this->user_id) {
       return Redirect::to("/lectures")->with("error", "Você não tem acesso a essa página");
     }
     $units = Unit::where("idOffer", $offer->id)->get();
     $students = DB::select("select Users.id, Users.name "
       . "from Users, Attends, Units "
-      . "where Units.idOffer=? and Attends.idUnit=Units.id and Attends.idUser=Users.id and Attends.status = 'M'"
+      . "where Units.idOffer=? and Attends.idUnit=Units.id and Attends.user_id=Users.id and Attends.status = 'M'"
       . "group by Users.id order by Users.name", [$offer->id]);
 
     return View::make("modules.frequency", ["user" => $user, "offer" => $offer, "units" => $units, "students" => $students]);
@@ -135,7 +135,7 @@ class LecturesController extends \BaseController
   public function postSort()
   {
     foreach (Input::get("order") as $key => $value) {
-      Lecture::where('idOffer', decrypt($value))->where('idUser', $this->idUser)->update(["order" => $key + 1]);
+      Lecture::where('idOffer', decrypt($value))->where('user_id', $this->user_id)->update(["order" => $key + 1]);
     }
   }
 }

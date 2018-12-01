@@ -7,21 +7,21 @@ class AvaliableController extends \BaseController
    * Armazena o ID do usuário
    * @var type num
    */
-  private $idUser;
+  private $user_id;
 
   public function AvaliableController()
   {
     $id = Session::get("user");
     if ($id == null || $id == "") {
-      $this->idUser = false;
+      $this->user_id = false;
     } else {
-      $this->idUser = decrypt($id);
+      $this->user_id = decrypt($id);
     }
   }
 
   public function getIndex()
   {
-    $user = User::find($this->idUser);
+    $user = User::find($this->user_id);
     $exam = Exam::find(decrypt(Input::get("e")));
     $students = null;
     if ($exam->aval == "A") {
@@ -31,7 +31,7 @@ class AvaliableController extends \BaseController
     //    $students = Attend::where("idUnit", $exam->idUnit)->where->get();
     //    $students = DB::select("SELECT Users.name AS name, Attends.id AS idAttend, Frequencies.value AS value
     //                            FROM Frequencies, Attends, Users
-    //                            WHERE Frequencies.idAttend=Attends.id AND Attends.idUser=Users.id AND Frequencies.idLesson=?
+    //                            WHERE Frequencies.idAttend=Attends.id AND Attends.user_id=Users.id AND Frequencies.idLesson=?
     //                            ORDER BY Users.name", [$lesson->id]);
     return View::make("modules.avaliable", ["user" => $user, "exam" => $exam, "students" => $students, "unit" => Unit::find($exam->idUnit)]);
 //  return View::make("modules.avaliable", ["user" => $user, "students" => $students]);
@@ -89,7 +89,7 @@ class AvaliableController extends \BaseController
 
   public function getNew()
   {
-    $user = User::find($this->idUser);
+    $user = User::find($this->user_id);
     $unit = Unit::find(decrypt(Input::get("u")));
     $exam = new Exam;
     $exam->idUnit = $unit->id;
@@ -174,7 +174,7 @@ class AvaliableController extends \BaseController
   {
     try
     {
-      $user = User::find($this->idUser);
+      $user = User::find($this->user_id);
       $unit = decrypt($unit);
       $final = Exam::whereAval("R")->where("idUnit", $unit)->first();
       if (!$final) {
@@ -238,11 +238,11 @@ class AvaliableController extends \BaseController
         }
       }
 
-      if (FinalExam::where("idUser", $student)->where("idOffer", $offer)->first()) {
-        FinalExam::where("idUser", $student)->where("idOffer", $offer)->update(["value" => $value]);
+      if (FinalExam::where("user_id", $student)->where("idOffer", $offer)->first()) {
+        FinalExam::where("user_id", $student)->where("idOffer", $offer)->update(["value" => $value]);
       } else {
         $offervalue = new FinalExam;
-        $offervalue->idUser = $student;
+        $offervalue->user_id = $student;
         $offervalue->idOffer = $offer;
         $offervalue->value = $value;
         $offervalue->save();
@@ -255,7 +255,7 @@ class AvaliableController extends \BaseController
 
   public function getFinaldiscipline($offer = "")
   {
-    $user = User::find($this->idUser);
+    $user = User::find($this->user_id);
     $offer = Offer::find(decrypt($offer));
 
     /* caso não tenha data marcada, coloque a data de hoje */
@@ -263,16 +263,16 @@ class AvaliableController extends \BaseController
       $offer->dateFinal = date("Y-m-d");
     }
 
-    if (!Lecture::where("idUser", $user->id)->where("idOffer", $offer->id)->first()) {
+    if (!Lecture::where("user_id", $user->id)->where("idOffer", $offer->id)->first()) {
       return Redirect::to("/logout");
     }
     $units = Unit::where("idOffer", $offer->id)->get();
     $course = Offer::find($offer->id)->getDiscipline()->getPeriod()->getCourse();
     $alunos = DB::select("select Users.id, Users.name
                           from Attends, Units, Users
-                          where Units.idOffer=? AND Units.id=Attends.idUnit AND Attends.idUser=Users.id
+                          where Units.idOffer=? AND Units.id=Attends.idUnit AND Attends.user_id=Users.id
 													AND Attends.status = 'M'
-                          group by Attends.idUser
+                          group by Attends.user_id
                           order by Users.name", [$offer->id]);
     foreach ($alunos as $aluno) {
       $aluno->absence = $offer->qtdAbsences($aluno->id);
@@ -284,7 +284,7 @@ class AvaliableController extends \BaseController
         $sum += $aluno->averages[$unit->value];
       }
       $aluno->med = $sum / count($units);
-      $final = FinalExam::where("idUser", $aluno->id)->where("idOffer", $offer->id)->first();
+      $final = FinalExam::where("user_id", $aluno->id)->where("idOffer", $offer->id)->first();
       $aluno->final = $final ? $final->value : "";
     }
     return View::make("modules.disciplines.retrieval", ["user" => $user, "alunos" => $alunos, "course" => $course, "offer" => $offer]);
@@ -309,9 +309,9 @@ class AvaliableController extends \BaseController
         $sum += $value->value * Exam::find($value->idExam)->weight;
       }
       $attend->media = $sum / $sumWeight;
-      $attend->name = User::find($attend->idUser)->name;
+      $attend->name = User::find($attend->user_id)->name;
 //    $result = $media < $course->average ? "FINAL" : "APROVADO";
-      //    echo User::find($attend->idUser)->name . " | $sumWeight | $sum | $media | $result<br>";
+      //    echo User::find($attend->user_id)->name . " | $sumWeight | $sum | $media | $result<br>";
     }
 //  echo "Total de avaliações: $qtdExam<br>";
     //  echo "Peso: $sumWeight<br>";
@@ -321,7 +321,7 @@ class AvaliableController extends \BaseController
 
   public function getListstudentsexam($exam = "")
   {
-    $user = User::find($this->idUser);
+    $user = User::find($this->user_id);
     $exam = Exam::find(decrypt($exam));
     $students = null;
 

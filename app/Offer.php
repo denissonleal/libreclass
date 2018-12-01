@@ -75,7 +75,7 @@ class Offer extends \Moloquent
                               Lessons.deleted_at IS NULL AND
                               Frequencies.idAttend=Attends.id AND
                               Frequencies.value='F' AND
-                              Attends.idUser=?", [$this->id, $idStudent])[0]->qtd;
+                              Attends.user_id=?", [$this->id, $idStudent])[0]->qtd;
   }
 
   public function qtdUnitAbsences($idStudent, $unitValue)
@@ -89,7 +89,7 @@ class Offer extends \Moloquent
                               Lessons.deleted_at IS NULL AND
                               Frequencies.idAttend = Attends.id AND
                               Frequencies.value = 'F' AND
-                              Attends.idUser = ?", [$this->id, $unitValue, $idStudent])[0]->qtd;
+                              Attends.user_id = ?", [$this->id, $unitValue, $idStudent])[0]->qtd;
   }
 
   public function qtdLessons()

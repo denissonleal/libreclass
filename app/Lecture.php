@@ -2,10 +2,10 @@
 
 class Lecture extends \Moloquent {
 
-	protected $fillable = ['idUser', 'idOffer'];
+	protected $fillable = ['user_id', 'idOffer'];
 
   public function getUser() {
-    return User::find($this->idUser);
+    return User::find($this->user_id);
   }
 
   public function getOffer() {

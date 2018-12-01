@@ -120,11 +120,11 @@ class CreateOfferCommand extends Command {
 									$offer = Offer::create(['idClass'=>$class->id, 'idDiscipline'=>$discipline->id, 'classroom'=>$classroom, 'day_period'=>$day_period]);
 									$unit = Unit::create(['idOffer'=>$offer->id]);
 									foreach ($students as $student) {
-										Attend::create(['idUser'=>$student->id, 'idUnit'=>$unit->id]);
+										Attend::create(['user_id'=>$student->id, 'idUnit'=>$unit->id]);
 									}
 								}
 
-								Lecture::create(['idUser'=>$professor->id, 'idOffer'=>$offer->id]);
+								Lecture::create(['user_id'=>$professor->id, 'idOffer'=>$offer->id]);
 							}
 						}
 					}

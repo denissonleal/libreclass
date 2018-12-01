@@ -3,15 +3,15 @@
 class ProgressionController extends \BaseController
 {
 
-  private $idUser;
+  private $user_id;
 
   public function __construct()
   {
     $id = Session::get("user");
     if ($id == null || $id == "") {
-      $this->idUser = false;
+      $this->user_id = false;
     } else {
-      $this->idUser = decrypt($id);
+      $this->user_id = decrypt($id);
     }
   }
 
@@ -52,7 +52,7 @@ class ProgressionController extends \BaseController
 			WHERE Classes.id = Offers.idClass
 				AND Offers.id = Units.idOffer
 				AND Units.id = Attends.idUnit
-				AND Users.id = Attends.idUser
+				AND Users.id = Attends.user_id
 				AND Classes.id = $classe_id
 				AND Attends.status = 'M'
 			GROUP BY Users.id
@@ -71,7 +71,7 @@ class ProgressionController extends \BaseController
 				AND Offers.id = Units.idOffer
 				AND Units.id = Attends.idUnit ".
 				(!empty($students) ? "AND Users.id NOT IN ($students) " : "").
-				"AND Users.id = Attends.idUser
+				"AND Users.id = Attends.user_id
 				AND Classes.id = $previous_classe_id
 				AND Attends.status = 'M'
 			GROUP BY Users.id
@@ -109,7 +109,7 @@ class ProgressionController extends \BaseController
 		foreach($offers as $offer) {
 			foreach($offer->units as $unit) {
 				foreach($students_ids as $student_id) {
-					Attend::create(['idUser' => decrypt($student_id), 'idUnit' => $unit->id]);
+					Attend::create(['user_id' => decrypt($student_id), 'idUnit' => $unit->id]);
 				}
 			}
 		}

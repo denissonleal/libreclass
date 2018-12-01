@@ -3,23 +3,23 @@
 class ClassesController extends \BaseController
 {
 
-  private $idUser;
+  private $user_id;
 
   public function ClassesController()
   {
     $id = Session::get("user");
     if ($id == null || $id == "") {
-      $this->idUser = false;
+      $this->user_id = false;
     } else {
-      $this->idUser = decrypt($id);
+      $this->user_id = decrypt($id);
     }
   }
 
   public function getIndex()
   {
-    if ($this->idUser) {
-      $user = User::find($this->idUser);
-      $courses = Course::where("institution_id", $this->idUser)->where("status", "E")->orderBy("name")->get();
+    if ($this->user_id) {
+      $user = User::find($this->user_id);
+      $courses = Course::where("institution_id", $this->user_id)->where("status", "E")->orderBy("name")->get();
       $listPeriod = [];
 			$listPeriodLetivo = [];
 			$year = Input::has('year') ? (int) Input::get('year') : (int) date('Y');
@@ -60,8 +60,8 @@ class ClassesController extends \BaseController
 
 	public function postClassesByYear()
 	{
-		if ($this->idUser) {
-			$user = User::find($this->idUser);
+		if ($this->user_id) {
+			$user = User::find($this->user_id);
 			$year = Input::has('year') ? (int) Input::get('year') : (int) date('Y');
 			// $year_previous = $year - 1;
 
@@ -86,9 +86,9 @@ class ClassesController extends \BaseController
 
   public function getPanel()
   {
-    if ($this->idUser) {
-      $user = User::find($this->idUser);
-      $courses = Course::where("institution_id", $this->idUser)->where("status", "E")->orderBy("name")->get();
+    if ($this->user_id) {
+      $user = User::find($this->user_id);
+      $courses = Course::where("institution_id", $this->user_id)->where("status", "E")->orderBy("name")->get();
       $listCourses = [];
       foreach ($courses as $course) {
         $listCourses[encrypt($course->id)] = $course->name;
@@ -214,7 +214,7 @@ class ClassesController extends \BaseController
 
     foreach ($offers as $offer) {
       $offer->status = DB::select("SELECT count(*) as qtd FROM Units, Attends " .
-        "WHERE Units.idOffer=? AND Units.id=Attends.idUnit AND Attends.idUser=?",
+        "WHERE Units.idOffer=? AND Units.id=Attends.idUnit AND Attends.user_id=?",
         [$offer->id, $idStudent])[0]->qtd;
 
       $offer->name = Discipline::find($offer->idDiscipline)->name;
@@ -234,7 +234,7 @@ class ClassesController extends \BaseController
   {
     $status = ((int) $status ? "E" : "D");
 
-    $courses = Course::where("institution_id", $this->idUser)->whereStatus("E")->get();
+    $courses = Course::where("institution_id", $this->user_id)->whereStatus("E")->get();
     foreach ($courses as $course) {
       $course->units = DB::select("SELECT Units.value
 																		 FROM Periods, Classes, Offers, Units
@@ -255,7 +255,7 @@ class ClassesController extends \BaseController
   public function postBlockUnit()
   {
     $course = Course::find(decrypt(Input::get("course")));
-    if ($course->institution_id != $this->idUser) {
+    if ($course->institution_id != $this->user_id) {
       throw new Exception('Usuário inválido');
     }
 
@@ -275,7 +275,7 @@ class ClassesController extends \BaseController
   public function postUnblockUnit()
   {
     $course = Course::find(decrypt(Input::get("course")));
-    if ($course->institution_id != $this->idUser) {
+    if ($course->institution_id != $this->user_id) {
       throw new Exception('Usuário inválido');
     }
 
@@ -296,7 +296,7 @@ class ClassesController extends \BaseController
   {
     $s_attends = false;
     $course = Course::find(decrypt(Input::get("course")));
-    if ($course->institution_id != $this->idUser) {
+    if ($course->institution_id != $this->user_id) {
       throw new Exception("Você não tem permissão para realizar essa operação");
     }
 
@@ -321,14 +321,14 @@ class ClassesController extends \BaseController
       $s_attends = false;
       foreach ($attends as $attend) {
         if (!$s_attends) {
-          $s_attends = "INSERT IGNORE INTO Attends (idUnit, idUser) VALUES ($unit->id, $attend->idUser)";
+          $s_attends = "INSERT IGNORE INTO Attends (idUnit, user_id) VALUES ($unit->id, $attend->user_id)";
         } else {
-          $s_attends .= ", ($unit->id, $attend->idUser)";
+          $s_attends .= ", ($unit->id, $attend->user_id)";
         }
 
         //  $new = new Attend;
         //  $new->idUnit = $unit->id;
-        //  $new->idUser = $attend->idUser;
+        //  $new->user_id = $attend->user_id;
         //  $new->save();
       }
       if ($s_attends) {

@@ -1,24 +1,24 @@
 <?php
 
 class PeriodsController extends \BaseController {
-	private $idUser;
+	private $user_id;
 
 	public function __construct()
 	{
 		$id = Session::get("user");
 		if ($id == null || $id == "" ) {
-			$this->idUser = false;
+			$this->user_id = false;
 		}
 		else {
-			$this->idUser = decrypt($id);
+			$this->user_id = decrypt($id);
 		}
 	}
 
 	public function getIndex()
 	{
-		if ($this->idUser) {
-			$user = User::find($this->idUser);
-			$courses = Course::where("institution_id", $this->idUser)->whereStatus("E")->orderBy("name")->get();
+		if ($this->user_id) {
+			$user = User::find($this->user_id);
+			$courses = Course::where("institution_id", $this->user_id)->whereStatus("E")->orderBy("name")->get();
 			$listCourses = [];
 			foreach ($courses as $course) {
 				$listCourses[$course->id] = $course->name;
@@ -31,7 +31,7 @@ class PeriodsController extends \BaseController {
 	}
 
 	public function anyList() {
-		if ($this->idUser) {
+		if ($this->user_id) {
 			$periods = Period::where('course_id', Input::get('course_id'))->where('status', 'E')->get();
 			if($periods) {
 	      return View::make("social.periods.list", [ "periods" => $periods ]);
@@ -40,7 +40,7 @@ class PeriodsController extends \BaseController {
 	}
 
 	public function anySave() {
-		if ($this->idUser) {
+		if ($this->user_id) {
 
 			$period = new Period;
 			if(Input::has('period_id')) {
@@ -57,7 +57,7 @@ class PeriodsController extends \BaseController {
 	}
 
 	public function anyRead() {
-		if ($this->idUser) {
+		if ($this->user_id) {
 			$period = Period::find(Input::get('period_id'));
 			if($period) {
 	      return ['period' => $period];

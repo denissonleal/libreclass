@@ -3,15 +3,15 @@
 class ClassesGroupController extends \BaseController
 {
 
-  private $idUser;
+  private $user_id;
 
   public function __construct()
   {
     $id = Session::get("user");
     if ($id == null || $id == "") {
-      $this->idUser = false;
+      $this->user_id = false;
     } else {
-      $this->idUser = decrypt($id);
+      $this->user_id = decrypt($id);
     }
   }
 
@@ -26,7 +26,7 @@ class ClassesGroupController extends \BaseController
     $classe->disciplines = $this->getOffers($idClass);
     $classe->id = encrypt($classe->id);
 
-    $user = User::find($this->idUser);
+    $user = User::find($this->user_id);
     return View::make("modules.classesGroup", ['user' => $user, 'classe' => $classe]);
   }
 

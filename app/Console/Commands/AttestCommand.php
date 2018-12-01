@@ -54,7 +54,7 @@ class AttestCommand extends Command {
                     AND Units.id=Lessons.idUnit
                     AND Lessons.id=Frequencies.idLesson
                     AND Frequencies.idAttend=Attends.id
-                    AND Attends.idUser=Attests.idStudent
+                    AND Attends.user_id=Attests.idStudent
                     AND Units.status='E'
                     AND Frequencies.value='F'
                     AND Lessons.date BETWEEN Attests.date AND ADDDATE(Attests.date, Attests.days-1)");

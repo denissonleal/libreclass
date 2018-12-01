@@ -18,7 +18,7 @@ class Unit extends \Moloquent
   public function getAverage($student)
   {
     $exams = Exam::where("idUnit", $this->id)->whereAval("A")->whereStatus("E")->get();
-    $attend = Attend::where("idUnit", $this->id)->where("idUser", $student)->first();
+    $attend = Attend::where("idUnit", $this->id)->where("user_id", $student)->first();
     if (!$attend) {
       return null;
     }

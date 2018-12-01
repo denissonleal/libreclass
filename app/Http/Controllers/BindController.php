@@ -8,13 +8,13 @@ class BindController extends \BaseController {
 		$discipline = decrypt(Input::get("discipline"));
 		if ( Input::get("bind") == "true"){
 			$bind = new Bind;
-			$bind->idUser = $user;
+			$bind->user_id = $user;
 			$bind->idDiscipline = $discipline;
 			$bind->save();
 			return "new";
 		}
 		else
-			Bind::where("idUser", $user)->where("idDiscipline", $discipline)->delete();
+			Bind::where("user_id", $user)->where("idDiscipline", $discipline)->delete();
 
 		return "del";
 	}

@@ -7,7 +7,7 @@ class ExamsValue extends \Moloquent {
   {
     $out = DB::select("select ExamsValues.value "
                       . "from ExamsValues, Attends "
-                      . "where ExamsValues.idExam=? and ExamsValues.idAttend=Attends.id and Attends.idUser=?",
+                      . "where ExamsValues.idExam=? and ExamsValues.idAttend=Attends.id and Attends.user_id=?",
                         [$exam, $user]);
 
     return count($out) ? $out[0]->value : "";

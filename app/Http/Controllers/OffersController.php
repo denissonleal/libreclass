@@ -3,15 +3,15 @@
 class OffersController extends \BaseController
 {
 
-  private $idUser;
+  private $user_id;
 
   public function OffersController()
   {
     $id = Session::get("user");
     if ($id == null || $id == "") {
-      $this->idUser = false;
+      $this->user_id = false;
     } else {
-      $this->idUser = decrypt($id);
+      $this->user_id = decrypt($id);
     }
   }
 
@@ -28,8 +28,8 @@ class OffersController extends \BaseController
 
   public function getIndex()
   {
-    if ($this->idUser) {
-      $user = User::find($this->idUser);
+    if ($this->user_id) {
+      $user = User::find($this->user_id);
       $classe = Classe::find(decrypt(Input::get("t")));
       $period = Period::find($classe->period_id);
       $course = Course::find($period->course_id);
@@ -39,7 +39,7 @@ class OffersController extends \BaseController
         $teachers = [];
         $list = Lecture::where("idOffer", $offer->id)->get();
         foreach ($list as $value) {
-          $teachers[] = base64_encode($value->idUser);
+          $teachers[] = base64_encode($value->user_id);
         }
         $offer->teachers = $teachers;
         if (isset($offer->idOffer) && !empty($offer->idOffer)) {
@@ -62,7 +62,7 @@ class OffersController extends \BaseController
   public function getUnit($offer)
   {
     $offer = Offer::find(decrypt($offer));
-    if ($this->idUser != $offer->getClass()->getPeriod()->getCourse()->institution_id) {
+    if ($this->user_id != $offer->getClass()->getPeriod()->getCourse()->institution_id) {
       return Redirect::to("/classes/offers?t=" . encrypt($offer->idClass))->with("error", "Você não tem permissão para criar unidade");
     }
 
@@ -87,7 +87,7 @@ class OffersController extends \BaseController
 			foreach ($attends as $attend) {
 				$new = new Attend;
 				$new->idUnit = $unit->id;
-				$new->idUser = $attend->idUser;
+				$new->user_id = $attend->user_id;
 				$new->save();
 			}
 		}
@@ -117,9 +117,9 @@ class OffersController extends \BaseController
     }
     // return $teachers;
     foreach ($lectures as $lecture) {
-      $find = array_search($lecture->idUser, $teachers);
+      $find = array_search($lecture->user_id, $teachers);
       if ($find === false) {
-        Lecture::where('idOffer', $offer->id)->where('idUser', $lecture->idUser)->delete();
+        Lecture::where('idOffer', $offer->id)->where('user_id', $lecture->user_id)->delete();
       } else {
         unset($teachers[$find]);
       }
@@ -127,34 +127,34 @@ class OffersController extends \BaseController
     }
 
     foreach ($teachers as $teacher) {
-      $last = Lecture::where("idUser", $teacher)->orderBy("order", "desc")->first();
+      $last = Lecture::where("user_id", $teacher)->orderBy("order", "desc")->first();
       $last = $last ? $last->order + 1 : 1;
 
       $lecture = new Lecture;
-      $lecture->idUser = $teacher;
+      $lecture->user_id = $teacher;
       $lecture->idOffer = $offer->id;
       $lecture->order = $last;
       $lecture->save();
     }
 
     //   $idTeacher = decrypt(Input::get("teacher"));
-    //   $last = Lecture::where("idUser", $idTeacher)->orderBy("order", "desc")->first();
+    //   $last = Lecture::where("user_id", $idTeacher)->orderBy("order", "desc")->first();
     //   $last = $last ? $last->order+1 : 1;
     //
     //   if (!$lecture) {
     //     $lecture = new Lecture;
-    //     $lecture->idUser = $idTeacher;
+    //     $lecture->user_id = $idTeacher;
     //     $lecture->idOffer = $offer->id;
     //     $lecture->order = $last;
     //     $lecture->save();
     //   }
-    //   else if($lecture->idUser != $idTeacher) {
-    //     Lecture::where('idOffer', $offer->id)->where('idUser', $lecture->idUser)->update(["idUser" => $idTeacher, "order" => $last]);
+    //   else if($lecture->user_id != $idTeacher) {
+    //     Lecture::where('idOffer', $offer->id)->where('user_id', $lecture->user_id)->update(["user_id" => $idTeacher, "order" => $last]);
     //   }
     // }
     // else if ($lecture)
     // {
-    //   Lecture::where('idOffer', $offer->id)->where('idUser', $lecture->idUser)->delete();
+    //   Lecture::where('idOffer', $offer->id)->where('user_id', $lecture->user_id)->delete();
     // }
 
     return Redirect::guest(Input::get("prev"))->with("success", "Modificado com sucesso!");
@@ -178,8 +178,8 @@ class OffersController extends \BaseController
 
   public function getStudents($offer)
   {
-    if ($this->idUser) {
-      $user = User::find($this->idUser);
+    if ($this->user_id) {
+      $user = User::find($this->user_id);
 
       //$students = User::whereType("N")->orderby("name")->get();
       //$list_students = [];
@@ -194,7 +194,7 @@ class OffersController extends \BaseController
                           ");
       $students = DB::select("SELECT Users.name as name, Users.id as id, Attends.status as status
                               FROM Users, Attends, Units
-                              WHERE Users.id=Attends.idUser
+                              WHERE Users.id=Attends.user_id
                               AND Attends.idUnit = Units.id
                               AND Units.idOffer = " . decrypt($offer) . " GROUP BY Users.id ORDER BY Users.name");
 
@@ -214,28 +214,28 @@ class OffersController extends \BaseController
 
     if (Input::get("status") == 'M') {
       foreach ($units as $unit) {
-        Attend::where('idUnit', $unit->id)->where('idUser', $student)->update(["status" => 'M']);
+        Attend::where('idUnit', $unit->id)->where('user_id', $student)->update(["status" => 'M']);
       }
 
     }
 
     if (Input::get("status") == 'D') {
       foreach ($units as $unit) {
-        Attend::where('idUnit', $unit->id)->where('idUser', $student)->update(["status" => 'D']);
+        Attend::where('idUnit', $unit->id)->where('user_id', $student)->update(["status" => 'D']);
       }
 
     }
 
     if (Input::get("status") == 'T') {
       foreach ($units as $unit) {
-        Attend::where('idUnit', $unit->id)->where('idUser', $student)->update(["status" => 'T']);
+        Attend::where('idUnit', $unit->id)->where('user_id', $student)->update(["status" => 'T']);
       }
 
     }
 
     if (Input::get("status") == 'R') {
       foreach ($units as $unit) {
-        Attend::where("idUnit", $unit->id)->where("idUser", $student)->delete();
+        Attend::where("idUnit", $unit->id)->where("user_id", $student)->delete();
       }
 
       return Redirect::back()->with("success", "Aluno removido com sucesso");

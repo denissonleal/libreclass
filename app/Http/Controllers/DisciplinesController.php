@@ -6,16 +6,16 @@ class DisciplinesController extends \BaseController {
    * Armazena o ID do usuário
    * @var type num
    */
-  private $idUser;
+  private $user_id;
 
   public function __construct()
   {
     $id = Session::get("user");
     if ($id == null || $id == "") {
-      $this->idUser = false;
+      $this->user_id = false;
     }
     else {
-      $this->idUser = decrypt($id);
+      $this->user_id = decrypt($id);
     }
   }
 
@@ -25,9 +25,9 @@ class DisciplinesController extends \BaseController {
    */
   public function getIndex()
   {
-    if ($this->idUser) {
-      $user = User::find($this->idUser);
-      $courses = Course::where("institution_id", $this->idUser)->whereStatus("E")->orderBy("name")->get();
+    if ($this->user_id) {
+      $user = User::find($this->user_id);
+      $courses = Course::where("institution_id", $this->user_id)->whereStatus("E")->orderBy("name")->get();
       $listCourses = [];
       foreach ($courses as $course) {
         $listCourses[encrypt($course->id)] = $course->name;
@@ -42,7 +42,7 @@ class DisciplinesController extends \BaseController {
   public function postSave()
   {
     $course = Course::find(decrypt(Input::get("course")));
-    if ($this->idUser == $course->institution_id) {
+    if ($this->user_id == $course->institution_id) {
       $period = Period::where("course_id", $course->id )->whereId(decrypt(Input::get("period")))->first();
       $discipline = null;
       if (strlen(Input::get("discipline"))) {

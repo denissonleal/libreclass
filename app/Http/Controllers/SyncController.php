@@ -31,7 +31,7 @@ class SyncController extends \BaseController {
       if ($user->type == "P")
       {
         /*Getting professor's offers*/
-        $lectures = Lecture::where('idUser', decrypt($user->id))->orderBy("order")->get();
+        $lectures = Lecture::where('user_id', decrypt($user->id))->orderBy("order")->get();
 
         $keyAttend = []; /* array para salvar chave, para
          * que seja igual em Attends e em ExamsValues.
@@ -42,7 +42,7 @@ class SyncController extends \BaseController {
           $units = Unit::where('idOffer', $offer->id)->get();
           $offer->id = encrypt($offer->id); //crypt offer
           $lecture->idOffer = $offer->id;
-          $lecture->idUser = $data->id;
+          $lecture->user_id = $data->id;
           foreach ( $units as $unit ) {
             $exams = Exam::where('idUnit', $unit->id)->get();
             $lessons = Lesson::where('idUnit', $unit->id)->get();
@@ -54,9 +54,9 @@ class SyncController extends \BaseController {
               $keyAttend[$attend->id] = encrypt($attend->id);
               $attend->id = $keyAttend[$attend->id]; //crypt attend
               $attend->idUnit = $unit->id;
-              $attend->user = User::find($attend->idUser);
+              $attend->user = User::find($attend->user_id);
               $attend->user->id = encrypt($attend->user->id);
-              $attend->idUser = $attend->user->id;
+              $attend->user_id = $attend->user->id;
               unset($attend->user->password);
               unset($attend->user->email);
               unset($attend->user->photo);
@@ -166,7 +166,7 @@ class SyncController extends \BaseController {
       {
         $unit->id = decrypt($unit->id);
         $valid = DB::select("SELECT COUNT(*) as valid FROM Lectures, Offers, Units "
-                            . "WHERE Lectures.idUser=? AND Lectures.idOffer=Units.idOffer AND Units.id=?",
+                            . "WHERE Lectures.user_id=? AND Lectures.idOffer=Units.idOffer AND Units.id=?",
                             [$this->user->id, $unit->id])[0]->valid;
         if($valid == 0)
           return Redirect::to("/sync/error")

@@ -6,7 +6,7 @@ class ConfigController extends \BaseController {
 	 *
 	 * @var type
 	 */
-	private $idUser;
+	private $user_id;
 
 	private $select = ["gender" => [ "M" => "Masculino", "F" => "Feminino"],
 										 "formation" => [ "Não quero informar",
@@ -27,15 +27,15 @@ class ConfigController extends \BaseController {
 	{
 		$id = Session::get("user");
 		if ( $id == null || $id == "" )
-			$this->idUser = false;
+			$this->user_id = false;
 		else
-			$this->idUser = decrypt($id);
+			$this->user_id = decrypt($id);
 	}
 
 	public function getIndex()
 	{
-		if ( $this->idUser ) {
-			return View::make("user.config", [ "user" => User::find($this->idUser), "select" => $this->select ]);
+		if ( $this->user_id ) {
+			return View::make("user.config", [ "user" => User::find($this->user_id), "select" => $this->select ]);
 		}
 		else {
 			return Redirect::guest("/");
@@ -44,14 +44,14 @@ class ConfigController extends \BaseController {
 
 	public function postIndex()
 	{
-		return View::make("user.config", [ "user" => User::find($this->idUser), "select" => $this->select ]);
+		return View::make("user.config", [ "user" => User::find($this->user_id), "select" => $this->select ]);
 	}
 
 	public function postPhoto()
 	{
 		if ( Input::hasFile("photo") && Input::file("photo")->isValid() )
 		{
-			$fileName = "/uploads/" . sha1($this->idUser) . "_" . microtime(true) . ".jpg";
+			$fileName = "/uploads/" . sha1($this->user_id) . "_" . microtime(true) . ".jpg";
 
 			switch(Input::file("photo")->getMimeType())
 			{
@@ -77,7 +77,7 @@ class ConfigController extends \BaseController {
 			//~ Input::file("imageproduct")->move("uploads", $fileName);
 			$image->writeImage(__DIR__ . "/../../public" . $fileName);
 
-			return User::whereId($this->idUser)->update(["photo" => $fileName ]) ?
+			return User::whereId($this->user_id)->update(["photo" => $fileName ]) ?
 														Redirect::to("/config")->with("success", "Modificado com sucesso!") :
 														Redirect::to("/config")->with("error", "Não pode ser modificado!");
 		}
@@ -87,7 +87,7 @@ class ConfigController extends \BaseController {
 
 	public function postBirthdate()
 	{
-		$user = User::find($this->idUser);
+		$user = User::find($this->user_id);
 		$user->birthdate = Input::get("birthdate-year") . "-" .
 											 Input::get("birthdate-month") . "-" .
 											 Input::get("birthdate-day");
@@ -106,9 +106,9 @@ class ConfigController extends \BaseController {
 			if ($key == "_token" || $key == "q") {
 				continue;
 			}
-			User::whereId($this->idUser)->update([$key => $value]) ? $value: "error";
+			User::whereId($this->user_id)->update([$key => $value]) ? $value: "error";
 		}
-//    return View::make("user.config", [ "user" => User::find($this->idUser), "select" => $this->select ]);
+//    return View::make("user.config", [ "user" => User::find($this->user_id), "select" => $this->select ]);
 		return Redirect::to("/config")->with("success", "Modificado com sucesso!");
 	}
 
@@ -118,7 +118,7 @@ class ConfigController extends \BaseController {
 		foreach( Input::all() as $key => $value ) {
 			if ( $key == "_token" || $key == "q") continue;
 
-			return User::whereId($this->idUser)->update([$key => $value]) ?
+			return User::whereId($this->user_id)->update([$key => $value]) ?
 								Redirect::to("/config")->with("success", "Modificado com sucesso!"):
 								Redirect::to("/config")->with("erro", "Erro ao modificar!");
 		}
@@ -126,7 +126,7 @@ class ConfigController extends \BaseController {
 
 	public function postGender()
 	{
-		$user = User::find($this->idUser);
+		$user = User::find($this->user_id);
 		$user->gender = Input::get("gender");
 		$user->save();
 
@@ -136,7 +136,7 @@ class ConfigController extends \BaseController {
 
 	public function postType()
 	{
-		$user = User::find($this->idUser);
+		$user = User::find($this->user_id);
 		$user->type = Input::get("type");
 		$user->save();
 
@@ -147,7 +147,7 @@ class ConfigController extends \BaseController {
 
 	public function postPassword()
 	{
-		$user = User::find($this->idUser);
+		$user = User::find($this->user_id);
 		if ( Hash::check(Input::get("password"), $user->password) )
 		{
 			$user->password = Hash::make(Input::get("newpassword"));
@@ -184,7 +184,7 @@ class ConfigController extends \BaseController {
 			$city->save();
 		}
 
-		$user = User::find($this->idUser);
+		$user = User::find($this->user_id);
 		$user->idCity = $city->id;
 		$user->save();
 
@@ -195,7 +195,7 @@ class ConfigController extends \BaseController {
 	public function postStreet()
 	{
 		try {
-			$user = User::find($this->idUser);
+			$user = User::find($this->user_id);
 			$user->street = Input::get("street");
 			$user->save();
 			return Redirect::to("/config")->with("success", "Modificado com sucesso!");
@@ -208,7 +208,7 @@ class ConfigController extends \BaseController {
 	public function postUee()
 	{
 		try {
-			$user = User::find($this->idUser);
+			$user = User::find($this->user_id);
 			$user->uee = Input::get("uee");
 			$user->save();
 			return Redirect::to("/config")->with("success", "Modificado com sucesso!");
