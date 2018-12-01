@@ -90,7 +90,7 @@ class LecturesController extends \BaseController
       } else {
         $rec = FinalExam::where("idOffer", $offer->id)->where("idUser", $aluno->id)->first();
         $aluno->rec = $rec ? $rec->value : "0.00";
-        if ($aluno->rec >= $course->averageFinal) {
+        if ($aluno->rec >= $course->average_final) {
           $aluno->result = "Aprovado";
           $aluno->status = "label-success";
         } else {

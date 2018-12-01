@@ -70,7 +70,7 @@
 										<li><b>Trimestres/Unidades: </b>{{ $course->quantUnit }}</li>
 										<li><b>Faltas (Reprovação): </b>{{ $course->absentPercent . "%" }}</li>
 										<li><b>Média do Curso: </b>{{ $course->average }}</li>
-										<li><b>Média da Final: </b>{{ $course->averageFinal }}</li>
+										<li><b>Média da Final: </b>{{ $course->average_final }}</li>
 										<li><b>Perfil Curricular: </b>
 											@if($course->curricularProfile != "")
 												<a href="{{"/uploads/curricularProfile/".$course->curricularProfile }}" target="_blank">Abrir arquivo</a>

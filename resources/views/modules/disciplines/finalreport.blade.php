@@ -77,7 +77,7 @@
 														<td><span class="text-success">{{ sprintf("%.2f", $student->med) }}</span></td>
 													@endif
 
-													@if ( $student->rec < $course->averageFinal )
+													@if ( $student->rec < $course->average_final )
 														@if($student->rec == '-')
 															<td><b><span>{{ $student->rec }}</span></b></td>
 														@else

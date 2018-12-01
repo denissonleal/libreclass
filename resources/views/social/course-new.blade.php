@@ -43,7 +43,7 @@
 					<div class="form-group">
 						<label class="control-label">Média final</label>
 						<span class="help-block text-muted">Informe o valor da média final de aprovação do seu curso.</span>
-						<input type="text" name="averageFinal" value="5.0" class="form-control grade">
+						<input type="text" name="average_final" value="5.0" class="form-control grade">
 					</div>
 					<div class="form-group">
 						<label class="control-label">Perfil curricular</label>

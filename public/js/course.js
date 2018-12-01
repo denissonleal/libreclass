@@ -10,7 +10,7 @@ $(document).ready(function(){
 //      $("#form-course input[name='ementa']").val(data.ementa);
     $("#form-course input[name='absentPercent']").val("25.0");
     $("#form-course input[name='average']").val("7.00");
-    $("#form-course input[name='averageFinal']").val("5.00");
+    $("#form-course input[name='average_final']").val("5.00");
     $("#modalCourse").modal();
   });
 
@@ -40,7 +40,7 @@ $(document).ready(function(){
 //      $("#form-course input[name='ementa']").val(data.ementa);
       $("#form-course input[name='absentPercent']").val(data.absentPercent);
       $("#form-course input[name='average']").val(data.average);
-      $("#form-course input[name='averageFinal']").val(data.averageFinal);
+      $("#form-course input[name='average_final']").val(data.average_final);
       $("#block-add").fadeIn();
     });
   });

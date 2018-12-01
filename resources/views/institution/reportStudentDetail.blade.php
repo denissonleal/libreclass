@@ -48,7 +48,7 @@
         @if($discipline->final)
           <tr>
             <td>Recuperação Final</td>
-            <td class="text-md text-success text-right {{ $discipline->final->value >= $discipline->course->averageFinal ? "text-success" : "text-danger" }}">
+            <td class="text-md text-success text-right {{ $discipline->final->value >= $discipline->course->average_final ? "text-success" : "text-danger" }}">
               {{ $discipline->final->value }}
             </td>
           </tr>

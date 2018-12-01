@@ -17,7 +17,7 @@
       <img src="{{ strlen($teacher->photo) ? $teacher->photo : "/images/user-photo-default.jpg" }}" class="icon-user-min img-circle">
       <span >{{ $teacher->name }}</span>
     @endforeach
-    <i id="average" average="{{ $course->average }}" averageFinal="{{ $course->averageFinal }}" hidden></i>
+    <i id="average" average="{{ $course->average }}" average_final="{{ $course->average_final }}" hidden></i>
   </div>
 
   <div class="panel-body">

@@ -273,7 +273,7 @@ class UsersController extends \BaseController
           $discipline->aproved = "Reprovado";
         }
 
-        if ($discipline->average < $course->average and (!$discipline->final or $discipline->final->value < $course->averageFinal)) {
+        if ($discipline->average < $course->average and (!$discipline->final or $discipline->final->value < $course->average_final)) {
           $discipline->aproved = "Reprovado";
         }
 

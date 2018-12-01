@@ -350,7 +350,7 @@ class CSVController extends \BaseController {
         $course->idInstitution = $this->user->id;
         $course->absentPercent = 25;
         $course->average = 7;
-        $course->averageFinal = 5;
+        $course->average_final = 5;
         $course->save();
       }
       $period = Period::where("idCourse", $course->id)->where("name", $class[0][1])->first();

@@ -16,7 +16,7 @@ $(function () {
         number:true,
         range: [0.01, 99.99]
       },
-      "averageFinal": {
+      "average_final": {
         required: true,
         number:true,
         range: [0.01, 99.99]
@@ -37,7 +37,7 @@ $(function () {
         number: "Apenas números entre 0 e 10",
         range: "O número deve ser maior que 0 e menor que 10"
       },
-      "averageFinal": {
+      "average_final": {
         required: "Este campo deve ser preenchido",
         number: "Apenas números entre 0 e 10",
         range: "O número deve ser maior que 0 e menor que 10"

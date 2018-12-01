@@ -68,7 +68,7 @@ class CoursesController extends Controller {
 		$course->modality  = $request->get("modality");
 		$course->absent_percent = $request->get("absentPercent");
 		$course->average = $request->get("average");
-		$course->average_final = $request->get("averageFinal");
+		$course->average_final = $request->get("average_final");
 		$course->curricular_profile = "";
 		$course->status = 'E';
 		$course->save();
