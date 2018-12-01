@@ -5,7 +5,7 @@ $(function () {
       "name": {
         required: true
       },
-      "absentPercent": {
+      "absent_percent": {
         required: true,
         number: true,
         min: 0,
@@ -26,7 +26,7 @@ $(function () {
       "name": {
         required: "Este campo deve ser preenchido"
       },
-      "absentPercent": {
+      "absent_percent": {
         required: "Este campo deve ser preenchido",
         number: "Apenas números inteiros entre 0 e 100",
         max: "O valor não pode ser maior do que 100",

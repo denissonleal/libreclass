@@ -269,7 +269,7 @@ class UsersController extends \BaseController
       $discipline->aproved = "-";
       if ($discipline->statusclasse == "C") {
         $discipline->aproved = "Aprovado";
-        if ($discipline->absencese + $course->absentPercent < 100) {
+        if ($discipline->absencese + $course->absent_percent < 100) {
           $discipline->aproved = "Reprovado";
         }
 

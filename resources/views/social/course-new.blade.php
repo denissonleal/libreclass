@@ -33,7 +33,7 @@
 					<div class="form-group">
 						<label class="control-label">Percentual de faltas para reprovação (%)</label>
 						<span class="help-block text-muted">Informe um percentual de faltas para reprovação do seu curso.</span>
-						<input type="text" name="absentPercent" value="25" class="form-control error">
+						<input type="text" name="absent_percent" value="25" class="form-control error">
 					</div>
 					<div class="form-group">
 						<label class="control-label">Média para aprovação</label>

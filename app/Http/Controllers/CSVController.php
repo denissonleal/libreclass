@@ -348,7 +348,7 @@ class CSVController extends \BaseController {
         $course = new Course;
         $course->name = $class[0][2];
         $course->idInstitution = $this->user->id;
-        $course->absentPercent = 25;
+        $course->absent_percent = 25;
         $course->average = 7;
         $course->average_final = 5;
         $course->save();

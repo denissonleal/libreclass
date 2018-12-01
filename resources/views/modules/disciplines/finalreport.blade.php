@@ -87,7 +87,7 @@
 														<td><b><span class="badge badge-primary">{{ $student->rec }}</span></b></td>
 													@endif
 
-													@if ( $student->absence/$qtdLessons*100 > $course->absentPercent )
+													@if ( $student->absence/$qtdLessons*100 > $course->absent_percent )
 														<td><span class="badge badge-danger">{{ sprintf("%.1f", $student->absence/$qtdLessons*100)." %"}}</span></td>
 													@else
 														<td><span class="badge badge-primary">{{ sprintf("%.1f", $student->absence/$qtdLessons*100)." %"}}</span></td>

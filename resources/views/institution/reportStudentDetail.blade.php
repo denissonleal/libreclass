@@ -35,7 +35,7 @@
       <tbody>
         <tr>
           <td>Frequência</td>
-          <td class="text-md text-right {{ $discipline->absencese >= $discipline->course->absentPercent ? "text-success" : "text-danger" }}">
+          <td class="text-md text-right {{ $discipline->absencese >= $discipline->course->absent_percent ? "text-success" : "text-danger" }}">
             {{ $discipline->absencese }} %
           </td>
         </tr>

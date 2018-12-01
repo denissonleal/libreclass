@@ -99,7 +99,7 @@ class LecturesController extends \BaseController
         }
       }
       $qtdLessons = $qtdLessons ? $qtdLessons : 1; /* evitar divisão por zero */
-      if ($aluno->absence / $qtdLessons * 100. > $course->absentPercent) {
+      if ($aluno->absence / $qtdLessons * 100. > $course->absent_percent) {
         $aluno->result = "Rep. por falta";
         $aluno->status = "label-danger";
       }
