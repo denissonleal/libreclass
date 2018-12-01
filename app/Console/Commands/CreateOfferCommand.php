@@ -64,7 +64,7 @@ class CreateOfferCommand extends Command {
 					$institution = User::where('type', 'I')->where('name', $cols[1])->first();
 				}
 				elseif ($cols[0] == 'Tipo de Ensino') {//Course
-					$course = Course::where('idInstitution', $institution->id)->where('name', $cols[1])->first();
+					$course = Course::where('institution_id', $institution->id)->where('name', $cols[1])->first();
 				}
 				elseif (!empty($cols[2]) && $cols[2] == 'Sala de Aula') {
 					$classroom = $cols[3];

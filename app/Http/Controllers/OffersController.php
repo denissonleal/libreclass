@@ -62,7 +62,7 @@ class OffersController extends \BaseController
   public function getUnit($offer)
   {
     $offer = Offer::find(decrypt($offer));
-    if ($this->idUser != $offer->getClass()->getPeriod()->getCourse()->idInstitution) {
+    if ($this->idUser != $offer->getClass()->getPeriod()->getCourse()->institution_id) {
       return Redirect::to("/classes/offers?t=" . encrypt($offer->idClass))->with("error", "Você não tem permissão para criar unidade");
     }
 

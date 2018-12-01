@@ -24,7 +24,7 @@ class BindController extends \BaseController {
 		$teacher = decrypt(Input::get("teacher"));
 
 		return View::make("modules.addTeacherDisciplineForm",
-								["courses" => Course::where("idInstitution", decrypt(Session::get("user")))->get(),
+								["courses" => Course::where("institution_id", decrypt(Session::get("user")))->get(),
 								 "teacher" => $teacher]);
 	}
 

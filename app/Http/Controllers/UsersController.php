@@ -74,7 +74,7 @@ class UsersController extends \BaseController
       $search = Input::has("search") ? Input::get("search") : "";
       $current = (int) Input::has("current") ? Input::get("current") : 0;
       $user = User::find($this->idUser);
-      $courses = Course::where("idInstitution", $this->idUser)
+      $courses = Course::where("institution_id", $this->idUser)
         ->whereStatus("E")
         ->orderBy("name")
         ->get();
@@ -188,7 +188,7 @@ class UsersController extends \BaseController
     $user = User::find($this->idUser);
     $profile = decrypt(Input::get("u"));
     $classes = DB::select("SELECT Classes.id, Classes.name, Classes.class FROM Classes, Periods, Courses "
-      . "WHERE Courses.idInstitution=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.status='E'",
+      . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.status='E'",
       [$user->id]);
     $listclasses = [];
     $listidsclasses = [];
@@ -221,7 +221,7 @@ class UsersController extends \BaseController
 	    }
 			// dd($listCourses);
 
-      $attests = Attest::where("idStudent", $profile->id)->where("idInstitution", $user->id)->orderBy("date", "desc")->get();
+      $attests = Attest::where("idStudent", $profile->id)->where("institution_id", $user->id)->orderBy("date", "desc")->get();
       return View::make("modules.profilestudent", ["user" => $user, "profile" => $profile, "listclasses" => $listclasses, "attests" => $attests, "listidsclasses" => $listidsclasses, "listCourses" => $listCourses, 'courses' => $courses]);
     } else {
       return Redirect::guest("/");
@@ -242,7 +242,7 @@ class UsersController extends \BaseController
     $student = decrypt(Input::get("student"));
     $disciplines = DB::select("SELECT  Courses.id as course, Disciplines.name, Offers.id as offer, Attends.id as attend, Classes.status as statusclasse "
       . "FROM Classes, Periods, Courses, Disciplines, Offers, Units, Attends "
-      . "WHERE Courses.idInstitution=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.schoolYear=? AND Classes.id=Offers.idClass AND Offers.idDiscipline=Disciplines.id AND Offers.id=Units.idOffer AND Units.id=Attends.idUnit AND Attends.idUser=? "
+      . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.schoolYear=? AND Classes.id=Offers.idClass AND Offers.idDiscipline=Disciplines.id AND Offers.id=Units.idOffer AND Units.id=Attends.idUnit AND Attends.idUser=? "
       . "group by Offers.id",
       [$this->idUser, Input::get("class"), $student]);
 
@@ -345,7 +345,7 @@ class UsersController extends \BaseController
 
     if ($relation) {
       $attest = new Attest;
-      $attest->idInstitution = $this->idUser;
+      $attest->institution_id = $this->idUser;
       $attest->idStudent = $idStudent;
       $attest->date = Input::get("date-year") . "-" . Input::get("date-month") . "-" . Input::get("date-day");
       $attest->days = Input::get("days");
@@ -435,7 +435,7 @@ class UsersController extends \BaseController
       $search = Input::has("search") ? Input::get("search") : "";
       $current = (int) Input::has("current") ? Input::get("current") : 0;
       $user = User::find($this->idUser);
-      $courses = Course::where("idInstitution", $this->idUser)
+      $courses = Course::where("institution_id", $this->idUser)
         ->whereStatus("E")
         ->orderBy("name")
         ->get();
@@ -514,7 +514,7 @@ class UsersController extends \BaseController
 
     $offers = DB::select("SELECT Courses.name AS course, Periods.name AS period, Classes.class as class, Disciplines.name AS discipline "
       . "FROM Courses, Periods, Classes, Offers, Lectures, Disciplines "
-      . "WHERE Courses.idInstitution=? AND Courses.id=Periods.course_id AND "
+      . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND "
       . "Periods.id=Classes.period_id AND Classes.id=Offers.idClass AND "
       . "Offers.idDiscipline=Disciplines.id AND "
       . "Offers.id=Lectures.idOffer AND Lectures.idUser=?", [$this->idUser, $idTeacher]);
@@ -598,7 +598,7 @@ class UsersController extends \BaseController
       FROM
         Classes, Periods, Courses, Disciplines, Offers, Units, Attends
       WHERE
-        Courses.idInstitution =  ?
+        Courses.institution_id =  ?
         and Courses.id = Periods.course_id
         and Periods.id = Classes.period_id
         and Classes.schoolYear =  ?

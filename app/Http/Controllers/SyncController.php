@@ -106,9 +106,9 @@ class SyncController extends \BaseController {
           $offer->period->course = Course::find($offer->period->course_id);
           $offer->period->course->id = encrypt($offer->period->course->id); //crypt course
           $offer->period->course_id = $offer->period->course->id;
-          $offer->period->course->institution = User::find($offer->period->course->idInstitution);
+          $offer->period->course->institution = User::find($offer->period->course->institution_id);
           $offer->period->course->institution->id = encrypt($offer->period->course->institution->id); //crypt institution
-          $offer->period->course->idInstitution =  $offer->period->course->institution->id;
+          $offer->period->course->institution_id =  $offer->period->course->institution->id;
           /*crypt offer left*/
           $offer->units = $units;
           $offer->idDiscipline = $offer->discipline->id;

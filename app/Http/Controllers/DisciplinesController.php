@@ -27,7 +27,7 @@ class DisciplinesController extends \BaseController {
   {
     if ($this->idUser) {
       $user = User::find($this->idUser);
-      $courses = Course::where("idInstitution", $this->idUser)->whereStatus("E")->orderBy("name")->get();
+      $courses = Course::where("institution_id", $this->idUser)->whereStatus("E")->orderBy("name")->get();
       $listCourses = [];
       foreach ($courses as $course) {
         $listCourses[encrypt($course->id)] = $course->name;
@@ -42,7 +42,7 @@ class DisciplinesController extends \BaseController {
   public function postSave()
   {
     $course = Course::find(decrypt(Input::get("course")));
-    if ($this->idUser == $course->idInstitution) {
+    if ($this->idUser == $course->institution_id) {
       $period = Period::where("course_id", $course->id )->whereId(decrypt(Input::get("period")))->first();
       $discipline = null;
       if (strlen(Input::get("discipline"))) {

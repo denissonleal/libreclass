@@ -18,7 +18,7 @@ class PeriodsController extends \BaseController {
 	{
 		if ($this->idUser) {
 			$user = User::find($this->idUser);
-			$courses = Course::where("idInstitution", $this->idUser)->whereStatus("E")->orderBy("name")->get();
+			$courses = Course::where("institution_id", $this->idUser)->whereStatus("E")->orderBy("name")->get();
 			$listCourses = [];
 			foreach ($courses as $course) {
 				$listCourses[$course->id] = $course->name;

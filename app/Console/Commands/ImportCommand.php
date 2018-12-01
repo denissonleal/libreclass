@@ -64,8 +64,8 @@ class ImportCommand extends Command {
 					$institution = User::where('type', 'I')->where('name', $cols[1])->first();
 				}
 				elseif ($cols[0] == 'Tipo de Ensino') {//Course
-					if (!$course = Course::where('idInstitution', $institution->id)->where('name', $cols[1])->first()){
-						$course = Course::create(['idInstitution'=>$institution->id, 'name'=>$cols[1]]);
+					if (!$course = Course::where('institution_id', $institution->id)->where('name', $cols[1])->first()){
+						$course = Course::create(['institution_id'=>$institution->id, 'name'=>$cols[1]]);
 					}
 				}
 				elseif (!empty($cols[2]) && $cols[2] == 'Sala de Aula') {

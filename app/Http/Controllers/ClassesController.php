@@ -19,7 +19,7 @@ class ClassesController extends \BaseController
   {
     if ($this->idUser) {
       $user = User::find($this->idUser);
-      $courses = Course::where("idInstitution", $this->idUser)->where("status", "E")->orderBy("name")->get();
+      $courses = Course::where("institution_id", $this->idUser)->where("status", "E")->orderBy("name")->get();
       $listPeriod = [];
 			$listPeriodLetivo = [];
 			$year = Input::has('year') ? (int) Input::get('year') : (int) date('Y');
@@ -35,7 +35,7 @@ class ClassesController extends \BaseController
 															Classes.name AS classe_name, Classes.schoolYear AS schoolYear, Classes.class AS classe,
 															Courses.name AS name, Classes.status AS status
 														 FROM Courses, Periods, Classes
-														 WHERE Courses.idInstitution=? AND
+														 WHERE Courses.institution_id=? AND
 															Courses.status = 'E' AND
 															Classes.status <> 'D' AND
 															Classes.schoolYear IN ($year, $year-1) AND
@@ -69,7 +69,7 @@ class ClassesController extends \BaseController
 				"SELECT Classes.id AS id, Periods.name AS period,
 				CONCAT('[', Classes.class, '] ', Classes.name) AS classe, Classes.status AS status
 				FROM Courses, Periods, Classes
-				WHERE Courses.idInstitution=? AND
+				WHERE Courses.institution_id=? AND
 				Courses.status = 'E' AND
 				Classes.status <> 'D' AND
 				Classes.schoolYear=$year AND
@@ -88,7 +88,7 @@ class ClassesController extends \BaseController
   {
     if ($this->idUser) {
       $user = User::find($this->idUser);
-      $courses = Course::where("idInstitution", $this->idUser)->where("status", "E")->orderBy("name")->get();
+      $courses = Course::where("institution_id", $this->idUser)->where("status", "E")->orderBy("name")->get();
       $listCourses = [];
       foreach ($courses as $course) {
         $listCourses[encrypt($course->id)] = $course->name;
@@ -234,7 +234,7 @@ class ClassesController extends \BaseController
   {
     $status = ((int) $status ? "E" : "D");
 
-    $courses = Course::where("idInstitution", $this->idUser)->whereStatus("E")->get();
+    $courses = Course::where("institution_id", $this->idUser)->whereStatus("E")->get();
     foreach ($courses as $course) {
       $course->units = DB::select("SELECT Units.value
 																		 FROM Periods, Classes, Offers, Units
@@ -255,7 +255,7 @@ class ClassesController extends \BaseController
   public function postBlockUnit()
   {
     $course = Course::find(decrypt(Input::get("course")));
-    if ($course->idInstitution != $this->idUser) {
+    if ($course->institution_id != $this->idUser) {
       throw new Exception('Usuário inválido');
     }
 
@@ -275,7 +275,7 @@ class ClassesController extends \BaseController
   public function postUnblockUnit()
   {
     $course = Course::find(decrypt(Input::get("course")));
-    if ($course->idInstitution != $this->idUser) {
+    if ($course->institution_id != $this->idUser) {
       throw new Exception('Usuário inválido');
     }
 
@@ -296,7 +296,7 @@ class ClassesController extends \BaseController
   {
     $s_attends = false;
     $course = Course::find(decrypt(Input::get("course")));
-    if ($course->idInstitution != $this->idUser) {
+    if ($course->institution_id != $this->idUser) {
       throw new Exception("Você não tem permissão para realizar essa operação");
     }
 
