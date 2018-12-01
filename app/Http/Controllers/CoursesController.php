@@ -14,7 +14,6 @@ class CoursesController extends Controller {
 
 	public function index()
 	{
-		// dd(Course::all());
 		$courses = Course::where("institution_id", auth()->id())
 			->whereStatus("E")
 			->orderBy("name")

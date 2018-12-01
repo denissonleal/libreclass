@@ -27,14 +27,7 @@ class AvaliableController extends \BaseController
     if ($exam->aval == "A") {
       $students = Attend::where("idUnit", $exam->idUnit)->get();
     }
-//  elseif (  ) /* gerar recuperação */
-    //    $students = Attend::where("idUnit", $exam->idUnit)->where->get();
-    //    $students = DB::select("SELECT Users.name AS name, Attends.id AS idAttend, Frequencies.value AS value
-    //                            FROM Frequencies, Attends, Users
-    //                            WHERE Frequencies.idAttend=Attends.id AND Attends.user_id=Users.id AND Frequencies.idLesson=?
-    //                            ORDER BY Users.name", [$lesson->id]);
     return View::make("modules.avaliable", ["user" => $user, "exam" => $exam, "students" => $students, "unit" => Unit::find($exam->idUnit)]);
-//  return View::make("modules.avaliable", ["user" => $user, "students" => $students]);
   }
 
   public function postSave()
@@ -48,7 +41,7 @@ class AvaliableController extends \BaseController
     }
     $exam->date = Input::get("date-year") . "-" . Input::get("date-month") . "-" . Input::get("date-day");
     $exam->title = Input::get("title");
-    //  $exam->weight = Input::get("weight");
+
     if (Input::get("weight") != "") {
       $exam->weight = Input::get("weight");
     }
@@ -98,18 +91,8 @@ class AvaliableController extends \BaseController
     $exam->aval = "A";
     $exam->weight = "1";
     $exam->type = 2;
-    //  $exam->save();
-    //
-    //  $attends = Attend::where("idUnit", $unit->id)->get();
-    //  foreach( $attends as $attend ) {
-    //    $frequency = new Frequency;
-    //    $frequency->idAttend = $attend->id;
-    //    $frequency->idLesson = $lesson->id;
-    //    $frequency->value = "P";
-    //    $frequency->save();
-    //  }
+
     return View::make("modules.avaliable", ["user" => $user, "exam" => $exam, "students" => [], "unit" => $unit]);
-//  return Redirect::to("/avaliable?e=" . encrypt($exam->id))->with("message", "Click em salvar para criar .");;
   }
 
   public function postExam()

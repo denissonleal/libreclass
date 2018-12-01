@@ -91,8 +91,6 @@ class DisciplinesController extends \BaseController {
   public function getDiscipline()
   {
     $discipline = Discipline::find(decrypt(Input::get("discipline")));
-//    $discipline->course = encrypt(Course::find(Period::find($discipline->period_id)->id)->id);
-//    $discipline->period = $discipline->period_id;
     return $discipline;
   }
 
@@ -135,13 +133,7 @@ class DisciplinesController extends \BaseController {
 
       $discipline = Discipline::find(decrypt(Input::get("offer")));
 
-//
-//      if(!$ementa) {
-//        $ementa = "false";
-//      }
-
       return $discipline;
-
   }
 
 }

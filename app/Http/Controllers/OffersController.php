@@ -98,8 +98,6 @@ class OffersController extends \BaseController
 
   public function postTeacher()
   {
-    // return Input::all();
-
     $offer = Offer::find(decrypt(Input::get("offer")));
     $offer->classroom = Input::get("classroom");
     $offer->day_period = Input::get("day_period");
@@ -115,7 +113,7 @@ class OffersController extends \BaseController
       }
 
     }
-    // return $teachers;
+
     foreach ($lectures as $lecture) {
       $find = array_search($lecture->user_id, $teachers);
       if ($find === false) {

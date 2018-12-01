@@ -114,7 +114,6 @@ class ConfigController extends \BaseController {
 
 	public function postCommonselect()
 	{
-		//~ return Input::all();
 		foreach( Input::all() as $key => $value ) {
 			if ( $key == "_token" || $key == "q") continue;
 
@@ -131,7 +130,6 @@ class ConfigController extends \BaseController {
 		$user->save();
 
 		return Redirect::to("/config")->with("success", "Modificado com sucesso!");
-//    return $user->gender == "M" ? "Masculino" : "Feminino";
 	}
 
 	public function postType()
@@ -142,7 +140,6 @@ class ConfigController extends \BaseController {
 
 		Session::put("type", $user->type);
 		return Redirect::to("/config")->with("success", "Modificado com sucesso!");
-//    return $this->select["type"][$user->type];
 	}
 
 	public function postPassword()
@@ -188,7 +185,6 @@ class ConfigController extends \BaseController {
 		$user->idCity = $city->id;
 		$user->save();
 
-//    return Redirect::to("/config")->with("success", "Modificado com sucesso!");
 		return Input::get("city") . ", " . Input::get("state") . ", " . Input::get("country");
 	}
 

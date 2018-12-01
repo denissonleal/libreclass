@@ -394,10 +394,6 @@ class UnitsController extends \BaseController
       $institution = $unit->offer->classe->period->course->institution()->first();
       $institution->local = $institution->printCityState();
 
-      // if (!isset($institution->photo) || empty($institution->photo)) {
-      //   throw new Exception('A Instituição não concluiu o cadastro, pois não identificamos a <b>foto de perfil</b> que é utilizada para construir o relatório.');
-      // }
-
       $exams = $unit->getExams();
       if (count($exams) == 0) {
         $data['exams'] = null;

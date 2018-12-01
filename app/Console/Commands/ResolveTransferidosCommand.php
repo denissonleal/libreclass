@@ -38,7 +38,6 @@ class ResolveTransferidosCommand extends Command {
 	public function fire()
 	{
 		$attends = Attend::whereStatus('T')->groupBy('user_id')->get();
-		// $attends = Attend::whereStatus('T')->where('user_id', 5358)->groupBy('user_id')->get();
 
 		foreach($attends as $attend) {
 			echo $attend->status;
@@ -49,8 +48,6 @@ class ResolveTransferidosCommand extends Command {
 			foreach($offers as $offer) {
 				$units = array_merge($units, array_pluck($offer->units, 'id'));
 			}
-			// $offer->units = array_pluck($offer->units, 'id');
-			// echo "$attend->id | $attend->user_id | $offer->id\n";
 			$attends_change = Attend::whereIn('idUnit', $units)->where('user_id', $attend->user_id)->get();
 			foreach($attends_change as $attend_change) {
 				echo "CHANGE: User: $attend->user_id | Attend: $attend_change->id | Status: $attend_change->status | To: 'T'\n";
