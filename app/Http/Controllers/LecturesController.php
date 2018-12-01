@@ -1,6 +1,6 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class LecturesController extends \BaseController
+class LecturesController extends Controller
 {
 
   private $user_id;

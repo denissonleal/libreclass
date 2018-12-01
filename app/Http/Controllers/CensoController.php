@@ -1,8 +1,7 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class CensoController extends \BaseController {
-
-
+class CensoController extends Controller
+{
 	public function __construct()
 	{
 		$id = Session::get("user");

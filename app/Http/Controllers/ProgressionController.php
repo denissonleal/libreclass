@@ -1,6 +1,6 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class ProgressionController extends \BaseController
+class ProgressionController extends Controller
 {
 
   private $user_id;

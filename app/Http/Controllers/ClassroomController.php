@@ -1,10 +1,11 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class ClassroomController extends \BaseController {
-
+class ClassroomController extends Controller
+{
   private $user_id;
 
-  public function __construct() {
+  public function __construct()
+  {
     $id = Session::get("user");
     if ($id == null || $id == "") {
       $this->user_id = false;
@@ -13,7 +14,8 @@ class ClassroomController extends \BaseController {
     }
   }
 
-  public function getIndex() {
+  public function getIndex()
+  {
     if (Session::has("redirect")) {
       return redirect(Session::get("redirect"));
     }
@@ -22,7 +24,8 @@ class ClassroomController extends \BaseController {
     return view("classrooms.home", ["user" => $user]);
   }
 
-  public function getCampus() {
+  public function getCampus()
+  {
     $user = User::find($this->user_id);
     return view("classrooms.campus", ["user" => $user]);
   }

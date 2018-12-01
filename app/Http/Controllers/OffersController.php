@@ -1,6 +1,6 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class OffersController extends \BaseController
+class OffersController extends Controller
 {
 
   private $user_id;

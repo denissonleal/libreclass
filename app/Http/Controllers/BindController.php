@@ -1,7 +1,7 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class BindController extends \BaseController {
-
+class BindController extends Controller
+{
 	public function anyLink()
 	{
 		$user = decrypt(Input::get("user"));

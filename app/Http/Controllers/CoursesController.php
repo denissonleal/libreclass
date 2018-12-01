@@ -5,7 +5,8 @@ use App\Course;
 use App\Period;
 use Exception;
 
-class CoursesController extends Controller {
+class CoursesController extends Controller
+{
 
 	public function __construct()
 	{

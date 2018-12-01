@@ -1,6 +1,7 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class PeriodsController extends \BaseController {
+class PeriodsController extends Controller
+{
 	private $user_id;
 
 	public function __construct()

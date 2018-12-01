@@ -1,6 +1,7 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class DisciplinesController extends \BaseController {
+class DisciplinesController extends Controller
+{
 
   /**
    * Armazena o ID do usuário

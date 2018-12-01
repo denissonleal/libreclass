@@ -1,6 +1,7 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class ConfigController extends \BaseController {
+class ConfigController extends Controller
+{
 
 	/**
 	 *

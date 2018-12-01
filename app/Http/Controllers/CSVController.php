@@ -1,6 +1,7 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class CSVController extends \BaseController {
+class CSVController extends Controller
+{
 
   /**
    * Armazena o ID do usuário

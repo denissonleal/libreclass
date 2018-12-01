@@ -1,6 +1,7 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class SocialController extends \BaseController {
+class SocialController extends Controller
+{
   private $user_id;
 
   public function __construct()

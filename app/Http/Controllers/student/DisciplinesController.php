@@ -1,9 +1,10 @@
-<?php namespace student;
+<?php namespace App\Http\Controllers\Student;
 
+use App\Http\Controllers\Controller;
 use DB, Session, Exception, User, Crypt, View, Offer, Discipline, Unit;
 
-class DisciplinesController extends \BaseController {
-
+class DisciplinesController extends Controller
+{
   public function __construct()
   {
     if ( !Session::has("user") )

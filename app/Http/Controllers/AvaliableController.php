@@ -1,6 +1,6 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class AvaliableController extends \BaseController
+class AvaliableController extends Controller
 {
 
   /**

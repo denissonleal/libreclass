@@ -1,6 +1,7 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class SyncController extends \BaseController {
+class SyncController extends Controller
+{
 
   public function __construct()
   {
