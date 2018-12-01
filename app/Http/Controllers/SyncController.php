@@ -44,16 +44,16 @@ class SyncController extends \BaseController {
           $lecture->offer_id = $offer->id;
           $lecture->user_id = $data->id;
           foreach ( $units as $unit ) {
-            $exams = Exam::where('idUnit', $unit->id)->get();
-            $lessons = Lesson::where('idUnit', $unit->id)->get();
-            $attends = Attend::where('idUnit', $unit->id)->get();
+            $exams = Exam::where('unit_id', $unit->id)->get();
+            $lessons = Lesson::where('unit_id', $unit->id)->get();
+            $attends = Attend::where('unit_id', $unit->id)->get();
             $unit->id = encrypt($unit->id); //crypt unit
             $unit->offer_id = $offer->id;
 
             foreach ( $attends as $attend ) {
               $keyAttend[$attend->id] = encrypt($attend->id);
               $attend->id = $keyAttend[$attend->id]; //crypt attend
-              $attend->idUnit = $unit->id;
+              $attend->unit_id = $unit->id;
               $attend->user = User::find($attend->user_id);
               $attend->user->id = encrypt($attend->user->id);
               $attend->user_id = $attend->user->id;
@@ -73,7 +73,7 @@ class SyncController extends \BaseController {
             foreach ( $exams as $exam ) {
               $examsValues = ExamsValue::where('idExam', $exam->id)->get();
               $exam->id = encrypt($exam->id);
-              $exam->idUnit = $unit->id;
+              $exam->unit_id = $unit->id;
               foreach ( $examsValues as $examValue) {
                 $examValue->idAttend = $keyAttend[$examValue->idAttend];
                 $examValue->idExam = $exam->id;
@@ -85,7 +85,7 @@ class SyncController extends \BaseController {
             foreach ( $lessons as $lesson ) {
               $frequencies = Frequency::where('idLesson', $lesson->id)->get();
               $lesson->id = encrypt($lesson->id);
-              $lesson->idUnit = $unit->id;
+              $lesson->unit_id = $unit->id;
               foreach ( $frequencies as $frequency ) {
                 $frequency->idAttend = $keyAttend[$frequency->idAttend];
                 $frequency->idLesson = $lesson->id;
@@ -179,12 +179,12 @@ class SyncController extends \BaseController {
           if(is_numeric($json_lesson->id))
           {
             $lesson = new Lesson;
-            $lesson->idUnit = $unit->id;
+            $lesson->unit_id = $unit->id;
           }
           else
             $lesson = Lesson::find(decrypt($json_lesson->id));
 
-          if ( $lesson->idUnit != $unit->id )
+          if ( $lesson->unit_id != $unit->id )
             return Redirect::to("/sync/error")
                            ->with("error", "Erro ao syncronizar. Arquivo foi modificado de forma maliciosa. [lesson]")
                            ->with("email", $this->user->email);
@@ -220,12 +220,12 @@ class SyncController extends \BaseController {
           if(is_numeric($json_exam->id))
           {
             $exam = new Exam;
-            $exam->idUnit = $unit->id;
+            $exam->unit_id = $unit->id;
           }
           else
             $exam = Exam::find(decrypt($json_exam->id));
 
-          if ( $exam->idUnit != $unit->id )
+          if ( $exam->unit_id != $unit->id )
             return Redirect::to("/sync/error")
                            ->with("error", "Erro ao syncronizar. Arquivo foi modificado de forma maliciosa. [exam]")
                            ->with("email", $this->user->email);

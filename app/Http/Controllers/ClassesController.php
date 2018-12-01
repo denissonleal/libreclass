@@ -214,7 +214,7 @@ class ClassesController extends \BaseController
 
     foreach ($offers as $offer) {
       $offer->status = DB::select("SELECT count(*) as qtd FROM Units, Attends " .
-        "WHERE Units.offer_id=? AND Units.id=Attends.idUnit AND Attends.user_id=?",
+        "WHERE Units.offer_id=? AND Units.id=Attends.unit_id AND Attends.user_id=?",
         [$offer->id, $idStudent])[0]->qtd;
 
       $offer->name = Discipline::find($offer->discipline_id)->name;
@@ -316,18 +316,18 @@ class ClassesController extends \BaseController
       $unit->calculation = $old->calculation;
       $unit->save();
 
-      $attends = Attend::where("idUnit", $old->id)->get();
+      $attends = Attend::where("unit_id", $old->id)->get();
 
       $s_attends = false;
       foreach ($attends as $attend) {
         if (!$s_attends) {
-          $s_attends = "INSERT IGNORE INTO Attends (idUnit, user_id) VALUES ($unit->id, $attend->user_id)";
+          $s_attends = "INSERT IGNORE INTO Attends (unit_id, user_id) VALUES ($unit->id, $attend->user_id)";
         } else {
           $s_attends .= ", ($unit->id, $attend->user_id)";
         }
 
         //  $new = new Attend;
-        //  $new->idUnit = $unit->id;
+        //  $new->unit_id = $unit->id;
         //  $new->user_id = $attend->user_id;
         //  $new->save();
       }

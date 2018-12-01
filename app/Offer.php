@@ -70,7 +70,7 @@ class Offer extends \Moloquent
     return DB::select("SELECT COUNT(*) as 'qtd'
                         FROM Units, Attends, Lessons, Frequencies
                         WHERE Units.offer_id=? AND
-                              Units.id=Lessons.idUnit AND
+                              Units.id=Lessons.unit_id AND
                               Lessons.id=Frequencies.idLesson AND
                               Lessons.deleted_at IS NULL AND
                               Frequencies.idAttend=Attends.id AND
@@ -84,7 +84,7 @@ class Offer extends \Moloquent
                         FROM Units, Attends, Lessons, Frequencies
                         WHERE Units.offer_id = ? AND
                               Units.value = ? AND
-                              Units.id = Lessons.idUnit AND
+                              Units.id = Lessons.unit_id AND
                               Lessons.id = Frequencies.idLesson AND
                               Lessons.deleted_at IS NULL AND
                               Frequencies.idAttend = Attends.id AND
@@ -97,7 +97,7 @@ class Offer extends \Moloquent
     return DB::select("SELECT COUNT(*) as 'qtd'
                         FROM Units, Lessons
                         WHERE Units.offer_id=? AND
-                              Units.id=Lessons.idUnit AND
+                              Units.id=Lessons.unit_id AND
                               Lessons.deleted_at IS NULL", [$this->id])[0]->qtd;
   }
 
@@ -106,7 +106,7 @@ class Offer extends \Moloquent
 		return DB::select("SELECT *
                         FROM Units, Lessons
                         WHERE Units.offer_id=? AND
-                              Units.id=Lessons.idUnit AND
+                              Units.id=Lessons.unit_id AND
                               Lessons.deleted_at IS NULL", [$this->id]);
 	}
 
@@ -116,7 +116,7 @@ class Offer extends \Moloquent
                         FROM Units, Lessons
                         WHERE Units.offer_id=? AND
                               Units.value=? AND
-                              Units.id=Lessons.idUnit AND
+                              Units.id=Lessons.unit_id AND
                               Lessons.deleted_at IS NULL", [$this->id, $unitValue])[0]->qtd;
   }
 

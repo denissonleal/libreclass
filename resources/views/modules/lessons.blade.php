@@ -37,7 +37,7 @@
           </div>
         </div>
         <div class="col-md-2 col-sm-2 text-right">
-          <a href="{{ URL::to("/lectures/units?u=" . encrypt($lesson->idUnit)) }}" class="btn btn-default btn-block">Voltar</a>
+          <a href="{{ URL::to("/lectures/units?u=" . encrypt($lesson->unit_id)) }}" class="btn btn-default btn-block">Voltar</a>
         </div>
 
       </div>

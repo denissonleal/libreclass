@@ -199,10 +199,10 @@ class CSVController extends \BaseController {
                                WHERE Offers.class_id=? AND Units.offer_id=Offers.id ORDER BY Units.value DESC", [$attend[6]]);
         }
         foreach ($units as $unit) {
-          if (!Attend::where("idUnit", $unit->id)->where("user_id", $attend[4])->first())
+          if (!Attend::where("unit_id", $unit->id)->where("user_id", $attend[4])->first())
           {
             if( !$s_attends )
-              $s_attends = "INSERT IGNORE INTO Attends (idUnit, user_id) VALUES ($unit->id, ".$attend[4].")";
+              $s_attends = "INSERT IGNORE INTO Attends (unit_id, user_id) VALUES ($unit->id, ".$attend[4].")";
             else
               $s_attends .= ", ($unit->id, ".$attend[4].")";
           }

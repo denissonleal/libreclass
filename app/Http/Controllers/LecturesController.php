@@ -42,7 +42,7 @@ class LecturesController extends \BaseController
 
     $alunos = DB::select("SELECT Users.id, Users.name
                           FROM Attends, Units, Users
-                          WHERE Units.offer_id=? AND Units.id=Attends.idUnit AND Attends.user_id=Users.id
+                          WHERE Units.offer_id=? AND Units.id=Attends.unit_id AND Attends.user_id=Users.id
 													AND Attends.status = 'M'
                           GROUP BY Attends.user_id
                           ORDER BY Users.name", [$offer->id]);
@@ -125,7 +125,7 @@ class LecturesController extends \BaseController
     $units = Unit::where("offer_id", $offer->id)->get();
     $students = DB::select("select Users.id, Users.name "
       . "from Users, Attends, Units "
-      . "where Units.offer_id=? and Attends.idUnit=Units.id and Attends.user_id=Users.id and Attends.status = 'M'"
+      . "where Units.offer_id=? and Attends.unit_id=Units.id and Attends.user_id=Users.id and Attends.status = 'M'"
       . "group by Users.id order by Users.name", [$offer->id]);
 
     return View::make("modules.frequency", ["user" => $user, "offer" => $offer, "units" => $units, "students" => $students]);

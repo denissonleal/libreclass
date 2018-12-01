@@ -56,7 +56,7 @@ if (Session::get("user") == null) {
     Route::get('/user/scholar-report', "UsersController@printScholarReport");
     Route::post('user/teacher/delete', "UsersController@postUnlink");
     Route::post('user/teacher/update-enrollment', "UsersController@updateEnrollment");
-    Route::get('classes/units/report-unit/{idUnit}', "UnitsController@getReportUnit");
+    Route::get('classes/units/report-unit/{unit_id}', "UnitsController@getReportUnit");
 
     Route::post('classes/group/create', "ClassesGroupController@createMasterOffer");
     Route::post('classes/group/offers', 'ClassesGroupController@jsonOffers');

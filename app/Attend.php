@@ -3,7 +3,7 @@
 class Attend extends \Moloquent
 {
 
-  protected $fillable = ['user_id', 'idUnit'];
+  protected $fillable = ['user_id', 'unit_id'];
 
   public function getUser()
   {
@@ -32,6 +32,6 @@ class Attend extends \Moloquent
 
   public function getUnit()
   {
-    return Unit::find($this->idUnit);
+    return Unit::find($this->unit_id);
   }
 }

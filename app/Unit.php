@@ -17,8 +17,8 @@ class Unit extends \Moloquent
 
   public function getAverage($student)
   {
-    $exams = Exam::where("idUnit", $this->id)->whereAval("A")->whereStatus("E")->get();
-    $attend = Attend::where("idUnit", $this->id)->where("user_id", $student)->first();
+    $exams = Exam::where("unit_id", $this->id)->whereAval("A")->whereStatus("E")->get();
+    $attend = Attend::where("unit_id", $this->id)->where("user_id", $student)->first();
     if (!$attend) {
       return null;
     }
@@ -47,7 +47,7 @@ class Unit extends \Moloquent
       $out[0] = $sum;
     }
 
-    $final = Exam::where("idUnit", $this->id)->whereAval("R")->first();
+    $final = Exam::where("unit_id", $this->id)->whereAval("R")->first();
     if ($final) {
       $value = ExamsValue::where("idExam", $final->id)->where("idAttend", $attend->id)->first();
       if ($value) {
@@ -62,27 +62,27 @@ class Unit extends \Moloquent
 
   public function getLessons()
   {
-    return Lesson::where("idUnit", $this->id)->whereStatus("E")->get();
+    return Lesson::where("unit_id", $this->id)->whereStatus("E")->get();
   }
 
   public function getLessonsToPdf()
   {
-    return Lesson::where("idUnit", $this->id)->whereStatus("E")->orderBy("date", "asc")->orderBy("id", "asc")->get();
+    return Lesson::where("unit_id", $this->id)->whereStatus("E")->orderBy("date", "asc")->orderBy("id", "asc")->get();
   }
 
   public function countLessons()
   {
-    return Lesson::where("idUnit", $this->id)->whereStatus("E")->count();
+    return Lesson::where("unit_id", $this->id)->whereStatus("E")->count();
   }
 
   public function getExams()
   {
-    return Exam::where("idUnit", $this->id)->whereStatus("E")->whereAval("A")->get();
+    return Exam::where("unit_id", $this->id)->whereStatus("E")->whereAval("A")->get();
   }
 
   public function getRecovery()
   {
-    return Exam::where("idUnit", $this->id)->whereStatus("E")->whereAval("R")->first();
+    return Exam::where("unit_id", $this->id)->whereStatus("E")->whereAval("R")->first();
   }
 
 }

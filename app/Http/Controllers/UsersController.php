@@ -200,7 +200,7 @@ class UsersController extends \BaseController
     if ($profile) {
       $profile = User::find($profile);
 			$courses = DB::select("SELECT Courses.id, Courses.name, Courses.quantUnit FROM Attends, Units, Offers, Disciplines, Periods, Courses, Classes "
-			. " WHERE Units.id = Attends.idUnit "
+			. " WHERE Units.id = Attends.unit_id "
 			. " AND Offers.id = Units.offer_id "
 			. " AND Disciplines.id = Offers.discipline_id "
 			. " AND Periods.id = Disciplines.period_id "
@@ -235,7 +235,7 @@ class UsersController extends \BaseController
     $student = decrypt(Input::get("student"));
     $disciplines = DB::select("SELECT  Courses.id as course, Disciplines.name, Offers.id as offer, Attends.id as attend, Classes.status as statusclasse "
       . "FROM Classes, Periods, Courses, Disciplines, Offers, Units, Attends "
-      . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.schoolYear=? AND Classes.id=Offers.class_id AND Offers.discipline_id=Disciplines.id AND Offers.id=Units.offer_id AND Units.id=Attends.idUnit AND Attends.user_id=? "
+      . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.schoolYear=? AND Classes.id=Offers.class_id AND Offers.discipline_id=Disciplines.id AND Offers.id=Units.offer_id AND Units.id=Attends.unit_id AND Attends.user_id=? "
       . "group by Offers.id",
       [$this->user_id, Input::get("class"), $student]);
 
@@ -243,7 +243,7 @@ class UsersController extends \BaseController
       $sum = 0;
       $discipline->units = Unit::where("offer_id", $discipline->offer)->get();
       foreach ($discipline->units as $unit) {
-        $unit->exams = Exam::where("idUnit", $unit->id)->orderBy("aval")->get();
+        $unit->exams = Exam::where("unit_id", $unit->id)->orderBy("aval")->get();
         foreach ($unit->exams as $exam) {
           $exam->value = ExamsValue::where("idExam", $exam->id)->where("idAttend", $discipline->attend)->first();
         }
@@ -288,7 +288,7 @@ class UsersController extends \BaseController
       foreach (Input::get("offers") as $offer) {
         $units = Unit::where("offer_id", decrypt($offer))->get();
         foreach ($units as $unit) {
-          $attend = Attend::where("user_id", $user_id)->where("idUnit", $unit->id)->first();
+          $attend = Attend::where("user_id", $user_id)->where("unit_id", $unit->id)->first();
           if ($attend) {
             $disc = Offer::find(decrypt($offer))->getDiscipline();
             return Redirect::back()
@@ -303,16 +303,16 @@ class UsersController extends \BaseController
         foreach ($units as $unit) {
           $attend = new Attend;
           $attend->user_id = $user_id;
-          $attend->idUnit = $unit->id;
+          $attend->unit_id = $unit->id;
           $attend->save();
-          $exams = Exam::where("idUnit", $unit->id)->get();
+          $exams = Exam::where("unit_id", $unit->id)->get();
           foreach ($exams as $exam) {
             $value = new ExamsValue;
             $value->idExam = $exam->id;
             $value->idAttend = $attend->id;
             $value->save();
           }
-          $lessons = Lesson::where("idUnit", $unit->id)->get();
+          $lessons = Lesson::where("unit_id", $unit->id)->get();
           foreach ($lessons as $lesson) {
             $value = new Frequency;
             $value->idLesson = $lesson->id;
@@ -597,7 +597,7 @@ class UsersController extends \BaseController
         and Classes.id = Offers.class_id
         and Offers.discipline_id = Disciplines.id
         and Offers.id = Units.offer_id
-        and Units.id = Attends.idUnit and Attends.user_id =  ?
+        and Units.id = Attends.unit_id and Attends.user_id =  ?
 				and Units.value IN (?)
 				and Classes.status = 'E'
 				and Courses.id = ?
@@ -639,7 +639,7 @@ class UsersController extends \BaseController
 
 					$pareceres->disciplines[$key]->units[$key2]->pareceres = [];
 					//Obtém os pareceres
-					$attend = Attend::where('idUnit', $unit->id)->where('user_id', $data['student']->id)->first();
+					$attend = Attend::where('unit_id', $unit->id)->where('user_id', $data['student']->id)->first();
 					$pareceresTmp = DescriptiveExam::where('idAttend', $attend->id)->get();
 
 					foreach ($pareceresTmp as $parecer) {
@@ -660,7 +660,7 @@ class UsersController extends \BaseController
 
         // Verifica se há prova de recuperação
         if ($examRecovery) {
-          $attend = Attend::where('idUnit', $unit->id)->where('user_id', $data['student']['id'])->first();
+          $attend = Attend::where('unit_id', $unit->id)->where('user_id', $data['student']['id'])->first();
           $recovery = ExamsValue::where('idAttend', $attend->id)->where('idExam', $examRecovery->id)->first();
           $data['disciplines'][$key][$unit->value]['recovery'] = isset($recovery) && $recovery->value ? $recovery->value : '--';
         }

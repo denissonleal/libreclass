@@ -129,7 +129,7 @@ class ImportCommand extends Command {
 							$offer = Offer::create(['class_id'=>$class->id, 'discipline_id'=>$discipline->id, 'classroom'=>$classroom, 'day_period'=>$day_period]);
 							$unit = Unit::create(['offer_id'=>$offer->id]);
 							foreach ($students as $student) {
-								Attend::create(['user_id'=>$student->id, 'idUnit'=>$unit->id]);
+								Attend::create(['user_id'=>$student->id, 'unit_id'=>$unit->id]);
 							}
 						}
 						if (strlen($cols[1])){

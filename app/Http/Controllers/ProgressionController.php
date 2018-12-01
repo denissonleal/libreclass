@@ -51,7 +51,7 @@ class ProgressionController extends \BaseController
 			FROM Classes, Offers, Units, Attends, Users
 			WHERE Classes.id = Offers.class_id
 				AND Offers.id = Units.offer_id
-				AND Units.id = Attends.idUnit
+				AND Units.id = Attends.unit_id
 				AND Users.id = Attends.user_id
 				AND Classes.id = $classe_id
 				AND Attends.status = 'M'
@@ -69,7 +69,7 @@ class ProgressionController extends \BaseController
 			FROM Classes, Offers, Units, Attends, Users
 			WHERE Classes.id = Offers.class_id
 				AND Offers.id = Units.offer_id
-				AND Units.id = Attends.idUnit ".
+				AND Units.id = Attends.unit_id ".
 				(!empty($students) ? "AND Users.id NOT IN ($students) " : "").
 				"AND Users.id = Attends.user_id
 				AND Classes.id = $previous_classe_id
@@ -109,7 +109,7 @@ class ProgressionController extends \BaseController
 		foreach($offers as $offer) {
 			foreach($offer->units as $unit) {
 				foreach($students_ids as $student_id) {
-					Attend::create(['user_id' => decrypt($student_id), 'idUnit' => $unit->id]);
+					Attend::create(['user_id' => decrypt($student_id), 'unit_id' => $unit->id]);
 				}
 			}
 		}

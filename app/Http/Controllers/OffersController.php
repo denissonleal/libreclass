@@ -82,11 +82,11 @@ class OffersController extends \BaseController
     $unit->save();
 
 		if($old) {
-			$attends = Attend::where("idUnit", $old->id)->get();
+			$attends = Attend::where("unit_id", $old->id)->get();
 
 			foreach ($attends as $attend) {
 				$new = new Attend;
-				$new->idUnit = $unit->id;
+				$new->unit_id = $unit->id;
 				$new->user_id = $attend->user_id;
 				$new->save();
 			}
@@ -169,7 +169,7 @@ class OffersController extends \BaseController
       $students = DB::select("SELECT Users.name as name, Users.id as id, Attends.status as status
                               FROM Users, Attends, Units
                               WHERE Users.id=Attends.user_id
-                              AND Attends.idUnit = Units.id
+                              AND Attends.unit_id = Units.id
                               AND Units.offer_id = " . decrypt($offer) . " GROUP BY Users.id ORDER BY Users.name");
 
       return View::make("modules.liststudentsoffers", ["user" => $user, "info" => $info, "students" => $students, "offer" => $offer]);
@@ -188,28 +188,28 @@ class OffersController extends \BaseController
 
     if (Input::get("status") == 'M') {
       foreach ($units as $unit) {
-        Attend::where('idUnit', $unit->id)->where('user_id', $student)->update(["status" => 'M']);
+        Attend::where('unit_id', $unit->id)->where('user_id', $student)->update(["status" => 'M']);
       }
 
     }
 
     if (Input::get("status") == 'D') {
       foreach ($units as $unit) {
-        Attend::where('idUnit', $unit->id)->where('user_id', $student)->update(["status" => 'D']);
+        Attend::where('unit_id', $unit->id)->where('user_id', $student)->update(["status" => 'D']);
       }
 
     }
 
     if (Input::get("status") == 'T') {
       foreach ($units as $unit) {
-        Attend::where('idUnit', $unit->id)->where('user_id', $student)->update(["status" => 'T']);
+        Attend::where('unit_id', $unit->id)->where('user_id', $student)->update(["status" => 'T']);
       }
 
     }
 
     if (Input::get("status") == 'R') {
       foreach ($units as $unit) {
-        Attend::where("idUnit", $unit->id)->where("user_id", $student)->delete();
+        Attend::where("unit_id", $unit->id)->where("user_id", $student)->delete();
       }
 
       return Redirect::back()->with("success", "Aluno removido com sucesso");

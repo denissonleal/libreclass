@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="col-md-2 col-sm-2 text-right">
-          <a href='{{ URL::to("/lectures/units?u=" . encrypt($exam->idUnit)) }}' class="btn btn-default btn-block">Voltar</a>
+          <a href='{{ URL::to("/lectures/units?u=" . encrypt($exam->unit_id)) }}' class="btn btn-default btn-block">Voltar</a>
         </div>
 
       </div>
@@ -56,7 +56,7 @@
 @if( isset($exam->id) )
   {{ Form::hidden("exam", encrypt($exam->id)) }}
 @else
-  {{ Form::hidden("unit", encrypt($exam->idUnit)) }}
+  {{ Form::hidden("unit", encrypt($exam->unit_id)) }}
 @endif
           <div class="row">
             <div class="col-md-8 col-xs-8">

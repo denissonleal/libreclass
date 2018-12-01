@@ -48,7 +48,7 @@ class ResolveTransferidosCommand extends Command {
 			foreach($offers as $offer) {
 				$units = array_merge($units, array_pluck($offer->units, 'id'));
 			}
-			$attends_change = Attend::whereIn('idUnit', $units)->where('user_id', $attend->user_id)->get();
+			$attends_change = Attend::whereIn('unit_id', $units)->where('user_id', $attend->user_id)->get();
 			foreach($attends_change as $attend_change) {
 				echo "CHANGE: User: $attend->user_id | Attend: $attend_change->id | Status: $attend_change->status | To: 'T'\n";
 				if($attend_change->status == 'M') {

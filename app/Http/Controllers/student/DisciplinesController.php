@@ -15,7 +15,7 @@ class DisciplinesController extends \BaseController {
   public function getIndex()
 	{
     $offers= DB::select("SELECT Offers.id, Disciplines.name as discipline FROM Attends, Units, Offers, Disciplines "
-                  . " WHERE Attends.user_id=? AND Attends.idUnit=Units.id AND Units.offer_id=Offers.id AND Offers.discipline_id=Disciplines.id", [$this->user->id]);
+                  . " WHERE Attends.user_id=? AND Attends.unit_id=Units.id AND Units.offer_id=Offers.id AND Offers.discipline_id=Disciplines.id", [$this->user->id]);
 
     return View::make("students.disciplines", ["offers" => $offers]);
 	}
@@ -34,8 +34,8 @@ class DisciplinesController extends \BaseController {
   public function postResumeUnit($unit)
   {
     $unit = decrypt($unit);
-    $list = DB::select("SELECT Lessons.id, title, date, value, 'L' as type FROM Lessons, Frequencies, Attends WHERE Lessons.idUnit=? AND Lessons.id=idLesson AND idAttend=Attends.id AND user_id=?"
-          . " UNION ALL ( SELECT Exams.id, title, date, value, 'E' as type FROM Exams, ExamsValues, Attends WHERE Exams.idUnit=? AND Exams.id=idExam AND idAttend=Attends.id AND user_id=? ) ORDER BY date DESC",
+    $list = DB::select("SELECT Lessons.id, title, date, value, 'L' as type FROM Lessons, Frequencies, Attends WHERE Lessons.unit_id=? AND Lessons.id=idLesson AND idAttend=Attends.id AND user_id=?"
+          . " UNION ALL ( SELECT Exams.id, title, date, value, 'E' as type FROM Exams, ExamsValues, Attends WHERE Exams.unit_id=? AND Exams.id=idExam AND idAttend=Attends.id AND user_id=? ) ORDER BY date DESC",
           [$unit, $this->user->id, $unit, $this->user->id]);
 
     $now = date("Y-m-d");

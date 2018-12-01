@@ -25,9 +25,9 @@ class AvaliableController extends \BaseController
     $exam = Exam::find(decrypt(Input::get("e")));
     $students = null;
     if ($exam->aval == "A") {
-      $students = Attend::where("idUnit", $exam->idUnit)->get();
+      $students = Attend::where("unit_id", $exam->unit_id)->get();
     }
-    return View::make("modules.avaliable", ["user" => $user, "exam" => $exam, "students" => $students, "unit" => Unit::find($exam->idUnit)]);
+    return View::make("modules.avaliable", ["user" => $user, "exam" => $exam, "students" => $students, "unit" => Unit::find($exam->unit_id)]);
   }
 
   public function postSave()
@@ -36,7 +36,7 @@ class AvaliableController extends \BaseController
       $exam = Exam::find(decrypt(Input::get("exam")));
     } else {
       $exam = new Exam;
-      $exam->idUnit = decrypt(Input::get("unit"));
+      $exam->unit_id = decrypt(Input::get("unit"));
       $exam->aval = "A";
     }
     $exam->date = Input::get("date-year") . "-" . Input::get("date-month") . "-" . Input::get("date-day");
@@ -52,7 +52,7 @@ class AvaliableController extends \BaseController
     if (!Input::has("exam")) {
       $this->createExamsValues($exam);
     }
-    return Redirect::to("/lectures/units?u=" . encrypt($exam->idUnit))->with("success", "Avaliação atualizada com sucesso.");
+    return Redirect::to("/lectures/units?u=" . encrypt($exam->unit_id))->with("success", "Avaliação atualizada com sucesso.");
   }
 
   /**
@@ -63,7 +63,7 @@ class AvaliableController extends \BaseController
   private function createExamsValues(Exam $exam)
   {
     try {
-      $attends = Attend::where("idUnit", $exam->idUnit)->get();
+      $attends = Attend::where("unit_id", $exam->unit_id)->get();
       foreach ($attends as $attend) {
         $value = new ExamsValue;
         $value->idAttend = $attend->id;
@@ -85,7 +85,7 @@ class AvaliableController extends \BaseController
     $user = User::find($this->user_id);
     $unit = Unit::find(decrypt(Input::get("u")));
     $exam = new Exam;
-    $exam->idUnit = $unit->id;
+    $exam->unit_id = $unit->id;
     $exam->date = date("Y-m-d");
     $exam->title = "Sem título";
     $exam->aval = "A";
@@ -159,17 +159,17 @@ class AvaliableController extends \BaseController
     {
       $user = User::find($this->user_id);
       $unit = decrypt($unit);
-      $final = Exam::whereAval("R")->where("idUnit", $unit)->first();
+      $final = Exam::whereAval("R")->where("unit_id", $unit)->first();
       if (!$final) {
         $final = new Exam;
         $final->aval = "R";
         $final->title = "Recuperação da Unidade";
         $final->type = 2;
-        $final->idUnit = $unit;
+        $final->unit_id = $unit;
         $final->date = date("Y-m-d");
       }
       $course = Unit::find($unit)->getOffer()->getDiscipline()->getPeriod()->getCourse();
-      $attends = Attend::where("idUnit", $unit)->get();
+      $attends = Attend::where("unit_id", $unit)->get();
       return View::make("modules.units.retrieval", ["exam" => $final, "user" => $user, "attends" => $attends, "average" => $course->average]);
     } catch (Exception $e) {
       return "$e";
@@ -179,11 +179,11 @@ class AvaliableController extends \BaseController
   public function postFinalunit($unit = "")
   {
     $cUnit = Unit::find(decrypt($unit));
-    $exam = Exam::where("idUnit", $cUnit->id)->whereAval("R")->first();
+    $exam = Exam::where("unit_id", $cUnit->id)->whereAval("R")->first();
     if (!$exam) {
       $exam = new Exam;
       $exam->aval = "R";
-      $exam->idUnit = $cUnit->id;
+      $exam->unit_id = $cUnit->id;
     }
     $exam->title = "Recuperação da Unidade $cUnit->value";
     $exam->date = Input::get("date-year") . "-" . Input::get("date-month") . "-" . Input::get("date-day");
@@ -253,7 +253,7 @@ class AvaliableController extends \BaseController
     $course = Offer::find($offer->id)->getDiscipline()->getPeriod()->getCourse();
     $alunos = DB::select("select Users.id, Users.name
                           from Attends, Units, Users
-                          where Units.offer_id=? AND Units.id=Attends.idUnit AND Attends.user_id=Users.id
+                          where Units.offer_id=? AND Units.id=Attends.unit_id AND Attends.user_id=Users.id
 													AND Attends.status = 'M'
                           group by Attends.user_id
                           order by Users.name", [$offer->id]);
@@ -275,11 +275,11 @@ class AvaliableController extends \BaseController
 
   public function getAverageUnit($unit)
   {
-    $final = Exam::whereAval("R")->where("idUnit", $unit->id)->first();
-    $qtdExam = Exam::whereAval("A")->where("idUnit", $unit->id)->count();
-    $sumWeight = Exam::whereAval("A")->where("idUnit", $unit->id)->sum("weight");
+    $final = Exam::whereAval("R")->where("unit_id", $unit->id)->first();
+    $qtdExam = Exam::whereAval("A")->where("unit_id", $unit->id)->count();
+    $sumWeight = Exam::whereAval("A")->where("unit_id", $unit->id)->sum("weight");
     $sumWeight = $sumWeight ? $sumWeight : 1;
-    $attends = Attend::where("idUnit", $unit->id)->get();
+    $attends = Attend::where("unit_id", $unit->id)->get();
     foreach ($attends as $attend) {
       if ($final and ($examfinal = ExamsValue::where("idAttend", $attend->id)->where("idExam", $final->id)->first())) {
         $attend->final = $examfinal->value;
@@ -311,7 +311,7 @@ class AvaliableController extends \BaseController
     $calculation = $exam->unit->calculation;
 
     if ($exam->aval == "A") {
-      $students = Attend::where("idUnit", $exam->idUnit)->where("status", "M")->get();
+      $students = Attend::where("unit_id", $exam->unit_id)->where("status", "M")->get();
 
 			$students = $students->sortBy(function($student) {
 				return $this->removeAccents($student->getUser()->name);
@@ -337,7 +337,7 @@ class AvaliableController extends \BaseController
 
     $unit = DB::select("SELECT Units.id, Units.status
                           FROM Units, Exams
-                          WHERE Units.id = Exams.idUnit AND
+                          WHERE Units.id = Exams.unit_id AND
                             Exams.id=?", [$exam->id]);
 
     if ($unit[0]->status == 'D') {
