@@ -81,7 +81,7 @@
                 {{ Form::submit("Aceito",["class"=>"btn btn-primary"]) }}
               </div>
 
-            {{ Form::close() }}
+            </form>
 
           </div>
         </div>

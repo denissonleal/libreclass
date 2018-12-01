@@ -98,7 +98,7 @@
           </div>
 
 
-{{ Form::close() }}
+</form>
       </div>
 
     <div class="block">
@@ -149,7 +149,7 @@
 
                   </tbody>
                 </table>
-                {{ Form::close() }}
+                </form>
 
               </div>
             </div>

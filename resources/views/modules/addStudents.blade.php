@@ -45,7 +45,7 @@
                 <span class="input-group-btn"><button id="submit-student" class="btn btn-primary"><i class="fa fa-lg fa-search"></i></button></span>
               </div>
             </div>
-            {{ Form::close() }}
+            </form>
           </div>
           <div class="col-md-12  table-responsive">
             @if(count($relationships) == 0)
@@ -176,7 +176,7 @@
 								<a href="" class="add-censo">Adicionar informações do censo escolar</a>
 							</div> -->
 						</div>
-          {{ Form::close() }}
+          </form>
 
           </div>
 
@@ -195,7 +195,7 @@
                 </div>
               </div>
 
-            {{ Form::close() }}
+            </form>
             <div class="text-center new-student">
               <span class="text-primary click">Não encontrei, desejo adicionar um novo aluno</span>
             </div>
@@ -214,7 +214,7 @@
 <div class="visible-none">
 {{ Form::open(["id" => "delete-discipline", "url" => url("/disciplines/delete")]) }}
   {{ Form::hidden("discipline", null) }}
-{{ Form::close() }}
+</form>
 </div>
 
 @stop

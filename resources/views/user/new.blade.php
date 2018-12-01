@@ -33,7 +33,7 @@
         <div class="form-group">
           {{ Form::button("Cadastrar", ["type" => "submit", "class" => "btn btn-go"]) }}
         </div>
-      {{ Form::close() }}
+      </form>
     </div>
   </div>
 </div>

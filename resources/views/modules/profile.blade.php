@@ -47,7 +47,7 @@
 <div class="visible-none">
 {{ Form::open(["id" => "delete-discipline", "url" => url("/disciplines/delete")]) }}
   {{ Form::hidden("discipline", null) }}
-{{ Form::close() }}
+</form>
 </div>
 
 @stop

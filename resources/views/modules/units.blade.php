@@ -44,7 +44,7 @@
                 </div>
               </div>
             </div>
-          {{ Form::close() }}
+          </form>
             <div class="row">
               <div class="col-md-12">
                 <div class="offer-students">
@@ -76,7 +76,7 @@
 {{ Form::open(["url" => URL::to("/lectures/units/rmstudent"), "id" => "rmstudent"]) }}
   {{ Form::hidden("unit", Input::get("u")) }}
   {{ Form::hidden("student", null) }}
-{{ Form::close() }}
+</form>
 
 
 @stop

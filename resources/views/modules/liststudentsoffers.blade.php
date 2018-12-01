@@ -86,7 +86,7 @@
   {{ Form::hidden("offer", $offer) }}
   {{ Form::hidden("student", null) }}
   {{ Form::hidden("status", null) }}
-{{ Form::close() }}
+</form>
 
 
 @stop

@@ -143,7 +143,7 @@
                 </tbody>
               </table>
 
-              {{ Form::close() }}
+              </form>
 
             </div>
           </div>

@@ -57,7 +57,7 @@
                     {{ Form::submit("Confirmar",["class"=>"btn btn-primary", "id" => "form-data-submit"]) }}
                   </div>
 
-                {{ Form::close() }}
+                </form>
               </div>
               <div id="spin-send" class="text-center visible-none">
                 <i class="fa fa-spinner fa-spin fa-2x text-blue"></i><br>

@@ -188,7 +188,7 @@
           <br>
 
 
-          {{ Form::close() }}
+          </form>
 
         </div>
         <br>

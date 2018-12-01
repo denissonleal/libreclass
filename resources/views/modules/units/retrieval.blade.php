@@ -99,7 +99,7 @@
           </div>
 
 
-  {{ Form::close() }}
+  </form>
       </div>
 @else
     <div id="block" class="block">
@@ -179,7 +179,7 @@
 
                   </tbody>
                 </table>
-                {{ Form::close() }}
+                </form>
 
               </div>
             </div>

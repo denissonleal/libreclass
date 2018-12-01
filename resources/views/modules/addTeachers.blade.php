@@ -44,7 +44,7 @@
                 <span class="input-group-btn"><button id="submit-teacher" class="btn btn-primary"><i class="fa fa-lg fa-search"></i></button></span>
               </div>
             </div>
-            {{ Form::close() }}
+            </form>
           </div>
 
         <div class="col-md-12  table-responsive">
@@ -149,7 +149,7 @@
 <div class="visible-none">
 {{ Form::open(["id" => "delete-discipline", "url" => url("/disciplines/delete")]) }}
   {{ Form::hidden("discipline", null) }}
-{{ Form::close() }}
+</form>
 </div>
 
 @stop

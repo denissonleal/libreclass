@@ -61,7 +61,7 @@
 	                <span class="help-block text-muted">Selecione um curso para visualizar os períodos.</span>
 	                {{ Form::select("course_id", $listCourses, null, ["class" => "form-control"]) }}
 	              </div>
-	            {{ Form::close() }}
+	            </form>
 	          </div>
 	        </div>
 

@@ -36,7 +36,7 @@
             <i class="fa fa-spin fa-spinner fa-lg text-muted fa-fw"></i>Processando.
           </div>
         </div>
-        {{ Form::close() }}
+        </form>
       </div>
     </div>
   </div>

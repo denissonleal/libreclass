@@ -112,7 +112,7 @@
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary">Salvar</button>
       </div>
-    {{ Form::close() }}
+    </form>
     </div>
   </div>
 </div>

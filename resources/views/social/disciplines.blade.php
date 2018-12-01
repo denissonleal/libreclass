@@ -61,7 +61,7 @@
                 <span class="help-block text-muted">Selecione o curso para visualizar as disciplinas.</span>
                 {{ Form::select("course", $listCourses, null, ["class" => "form-control"]) }}
               </div>
-            {{ Form::close() }}
+            </form>
           </div>
         </div>
 
@@ -120,7 +120,7 @@
             </div>
 
             {{ Form::submit("Salvar", ["class" => "pull-right btn btn-primary"]) }}
-          {{ Form::close() }}
+          </form>
 
 
         </div>

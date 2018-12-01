@@ -35,4 +35,4 @@
   <button type="button" class="btn btn-default" data-dismiss="modal">Concluir</button>
 
 </div>
-{{ Form::close() }}
+</form>

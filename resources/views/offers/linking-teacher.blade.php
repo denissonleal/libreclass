@@ -78,7 +78,7 @@
         <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
         <button class="pull-right btn btn-primary">Concluir</button>
       </div>
-      {{ Form::close() }}
+      </form>
     </div>
   </div>
 </div>

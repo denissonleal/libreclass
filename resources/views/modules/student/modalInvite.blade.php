@@ -25,7 +25,7 @@
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
           <button type="submit" class="btn btn-primary"><i class="fa fa-envelope-o fa-fw"></i> Convidar</button>
         </div>
-        {{ Form::close() }}
+        </form>
       </div>
     </div>
   </div>

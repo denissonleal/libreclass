@@ -56,7 +56,7 @@
                 {{ Form::file("photo", ["class" => "form-control photo-button"]) }}
               </div>
               {{ Form::submit("Atualizar", ["class"=>"btn btn-primary"]) }}
-            {{ Form::close() }}
+            </form>
 
           @elseif($key == "name")
             {{ Form::open(["url" => url("config/common")]) }}
@@ -65,7 +65,7 @@
                 {{ Form::text("name", null, ["class" => "form-control"]) }}
               </div>
               {{ Form::submit("Atualizar", ["class"=>"btn btn-primary"]) }}
-            {{ Form::close() }}
+            </form>
 
           @elseif($key == "birthdate")
             {{ Form::open(["url" => url("config/birthdate")]) }}
@@ -76,7 +76,7 @@
                 {{ Form::selectRange("birthdate-year", date("Y"), date("Y")-100, null, ["class" => "form-control"]) }}
               </div>
               {{ Form::submit("Atualizar", ["class"=>"btn btn-primary"]) }}
-            {{ Form::close() }}
+            </form>
 
           @elseif($key == "gender")
             {{ Form::open(["url" => url("config/commonselect")]) }}
@@ -85,7 +85,7 @@
                 {{ Form::select("gender", null, $user->gender, ["class" => "form-control"]) }}
               </div>
               {{ Form::submit("Atualizar", ["class"=>"btn btn-primary"]) }}
-            {{ Form::close() }}
+            </form>
 
           @elseif($key == "formation")
             {{ Form::open(["url" => url("config/commonselect")]) }}
@@ -94,7 +94,7 @@
                 {{ Form::select("formation", $select["formation"], null, ["class" => "form-control"]) }}
               </div>
               {{ Form::submit("Atualizar", ["class"=>"btn btn-primary"]) }}
-            {{ Form::close() }}
+            </form>
 
           @elseif($key == "course")
             {{ Form::open(["url" => url("config/common")]) }}
@@ -103,7 +103,7 @@
                 {{ Form::text("course", null, ["class" => "form-control"]) }}
               </div>
               {{ Form::submit("Atualizar", ["class"=>"btn btn-primary"]) }}
-            {{ Form::close() }}
+            </form>
 
           @elseif($key == "institution")
             {{ Form::open(["url" => url("config/common")]) }}
@@ -112,7 +112,7 @@
                 { Form::text("institution", null, ["class" => "form-control"]) }}
               </div>
               {{ Form::submit("Atualizar", ["class"=>"btn btn-primary"]) }}
-            {{ Form::close() }}
+            </form>
 
           @elseif($key == "type")
             {{ Form::open(["url" => url("config/type")]) }}
@@ -121,7 +121,7 @@
                 { Form::select("type", $select["type"], null, ["class" => "form-control"]) }}
               </div>
               {{ Form::submit("Atualizar", ["class"=>"btn btn-primary"]) }}
-            {{ Form::close() }}
+            </form>
 
           @else
             {{ date("Y-m-d H:m:s") }}

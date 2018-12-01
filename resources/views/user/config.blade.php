@@ -53,7 +53,7 @@
                   {{ Form::file("photo", ["class" => "form-control photo-button"]) }}
                 </div>
                   <button class="btn btn-primary">Atualizar</button>
-                {{ Form::close() }}
+                </form>
               </td>
             </tr>
 
@@ -70,7 +70,7 @@
                   {{ Form::text("name", $user->name, ["class" => "form-control"], "required") }}
                 </div>
                   <button class="btn btn-primary">Atualizar</button>
-                {{ Form::close() }}
+                </form>
               </td>
             </tr>
 
@@ -116,7 +116,7 @@
                         <button class="btn btn-primary">Atualizar</button>
                     </div>
                   </div>
-                  {{ Form::close() }}
+                  </form>
                 </td>
               </tr>
             @endif
@@ -139,7 +139,7 @@
                     {{ Form::submit('Atualizar', ["class" => "btn btn-primary"]) }}
                   </div>
                 </div>
-                {{ Form::close() }}
+                </form>
               </td>
             </tr>
           @endif
@@ -169,7 +169,7 @@
                   </div>
                 </div>
 
-                {{ Form::close() }}
+                </form>
               </td>
             </tr>
 
@@ -190,7 +190,7 @@
                     <button class="btn btn-primary">Atualizar</button>
                   </div>
                 </div>
-                {{ Form::close() }}
+                </form>
               </td>
             </tr>
 
@@ -211,7 +211,7 @@
                     <button class="btn btn-primary">Atualizar</button>
                   </div>
                 </div>
-                {{ Form::close() }}
+                </form>
               </td>
             </tr>
 
@@ -232,7 +232,7 @@
                     <button class="btn btn-primary">Atualizar</button>
                   </div>
                 </div>
-                {{ Form::close() }}
+                </form>
               </td>
             </tr>
 
@@ -253,7 +253,7 @@
                     {{ Form::submit('Atualizar', ["class" => "btn btn-primary"]) }}
                   </div>
                 </div>
-                {{ Form::close() }}
+                </form>
               </td>
             </tr>
           @endif
@@ -298,7 +298,7 @@
                     {{ Form::submit('Atualizar', ["class" => "btn btn-primary"]) }}
                   </div>
                 </div>
-                {{ Form::close() }}
+                </form>
               </td>
             </tr>
           @endif

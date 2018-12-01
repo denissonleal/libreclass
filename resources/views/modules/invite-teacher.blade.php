@@ -52,7 +52,7 @@
             </div>
 
             {{ Form::submit("Confirmar", ["class" => "btn btn-primary"]) }}
-          {{ Form::close() }}
+          </form>
 
             </div>
           </div>
