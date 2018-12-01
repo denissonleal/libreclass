@@ -26,7 +26,7 @@ class PeriodsController extends \BaseController {
 			return view("social.periods", ["listCourses" => $listCourses, "user" => $user]);
 		}
 		else {
-//      return Redirect::guest("/");
+//      return redirect("/");
 		}
 	}
 

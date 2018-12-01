@@ -15,7 +15,7 @@ class ClassroomController extends \BaseController {
 
   public function getIndex() {
     if (Session::has("redirect")) {
-      return Redirect::to(Session::get("redirect"));
+      return redirect(Session::get("redirect"));
     }
     $user = User::find($this->user_id);
     Session::put("type", $user->type);

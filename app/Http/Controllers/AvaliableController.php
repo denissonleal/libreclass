@@ -52,7 +52,7 @@ class AvaliableController extends \BaseController
     if (!Input::has("exam")) {
       $this->createExamsValues($exam);
     }
-    return Redirect::to("/lectures/units?u=" . encrypt($exam->unit_id))->with("success", "Avaliação atualizada com sucesso.");
+    return redirect("/lectures/units?u=" . encrypt($exam->unit_id))->with("success", "Avaliação atualizada com sucesso.");
   }
 
   /**
@@ -190,8 +190,8 @@ class AvaliableController extends \BaseController
     $exam->type = Input::get("type");
     $exam->comments = Input::get("comment");
     $exam->save();
-    return Redirect::to("/lectures/units?u=$unit")->with("success", "Avaliação atualizada com sucesso.");
-//  return Redirect::to("avaliable/finalunit/$unit")->with("message", "Avaliação atualizada com sucesso.");
+    return redirect("/lectures/units?u=$unit")->with("success", "Avaliação atualizada com sucesso.");
+//  return redirect("avaliable/finalunit/$unit")->with("message", "Avaliação atualizada com sucesso.");
   }
 
   public function postFinaldiscipline($id = "")
@@ -201,7 +201,7 @@ class AvaliableController extends \BaseController
     $offer->typeFinal = Input::get("type");
     $offer->comments = Input::get("comment");
     $offer->save();
-    return Redirect::to("avaliable/finaldiscipline/$id")->with("success", "Recuperação Final atualizada com sucesso");
+    return redirect("avaliable/finaldiscipline/$id")->with("success", "Recuperação Final atualizada com sucesso");
   }
 
   public function postOffer()
@@ -247,7 +247,7 @@ class AvaliableController extends \BaseController
     }
 
     if (!Lecture::where("user_id", $user->id)->where("offer_id", $offer->id)->first()) {
-      return Redirect::to("/logout");
+      return redirect("/logout");
     }
     $units = Unit::where("offer_id", $offer->id)->get();
     $course = Offer::find($offer->id)->getDiscipline()->getPeriod()->getCourse();
@@ -333,14 +333,14 @@ class AvaliableController extends \BaseController
                             Exams.id=?", [$exam->id]);
 
     if ($unit[0]->status == 'D') {
-      return Redirect::guest("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar.<br>Unidade desabilitada.");
+      return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar.<br>Unidade desabilitada.");
     }
     if ($exam) {
       $exam->status = "D";
       $exam->save();
-      return Redirect::guest("/lectures/units?u=" . encrypt($unit[0]->id))->with("success", "Avaliação excluída com sucesso!");
+      return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("success", "Avaliação excluída com sucesso!");
     } else {
-      return Redirect::guest("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar");
+      return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar");
     }
   }
 

@@ -35,7 +35,7 @@ class DisciplinesController extends \BaseController {
       return view("social.disciplines", ["listCourses" => $listCourses, "user" => $user]);
     }
     else {
-//      return Redirect::guest("/");
+//      return redirect("/");
     }
   }
 
@@ -55,10 +55,10 @@ class DisciplinesController extends \BaseController {
       $discipline->name = Input::get("name");
       $discipline->ementa = Input::get("ementa");
       $discipline->save();
-      return Redirect::to("/disciplines")->with("success", "Disciplina inserida com sucesso.");
+      return redirect("/disciplines")->with("success", "Disciplina inserida com sucesso.");
     }
     else {
-      return Redirect::to("/disciplines")->with("error", "Não foi possível inserir a disciplina.");
+      return redirect("/disciplines")->with("error", "Não foi possível inserir a disciplina.");
     }
     var_dump(Input::all());
   }
@@ -75,16 +75,16 @@ class DisciplinesController extends \BaseController {
                              Offers.class_id=Classes.id", [$discipline->id]);
 
     if(count($offers)) {
-      return Redirect::to("/disciplines")->with("error", "Não foi possível excluir. <br>Disciplina vinculada à turma <b>". $offers[0]->name . "</b>");
+      return redirect("/disciplines")->with("error", "Não foi possível excluir. <br>Disciplina vinculada à turma <b>". $offers[0]->name . "</b>");
     }
 
     if ($discipline) {
       $discipline->status = "D";
       $discipline->save();
-      return Redirect::to("/disciplines")->with("success", "Excluído com sucesso.");
+      return redirect("/disciplines")->with("success", "Excluído com sucesso.");
     }
     else {
-      return Redirect::to("/disciplines")->with("error", "Não foi possível excluir a disciplina.");
+      return redirect("/disciplines")->with("error", "Não foi possível excluir a disciplina.");
     }
   }
 

@@ -111,7 +111,7 @@ class CSVController extends \BaseController {
   public function getConfirmClasses()
   {
     if ( !Session::has("classes") )
-      return Redirect::to("/import")->with("error", "Algum erro aconteceu, tente novamente.");
+      return redirect("/import")->with("error", "Algum erro aconteceu, tente novamente.");
 
     $s_units = false;
     $classes = Session::get("classes");
@@ -213,10 +213,10 @@ class CSVController extends \BaseController {
       if($s_relations) DB::insert($s_relations);
       if($s_attends)   DB::insert($s_attends);
 
-      return Redirect::to("/import")->with("success", "Alunos matriculados com sucesso.");
+      return redirect("/import")->with("success", "Alunos matriculados com sucesso.");
     }
     else
-      return Redirect::to("/import")->with("error", "Algum erro aconteceu, tente novamente.");
+      return redirect("/import")->with("error", "Algum erro aconteceu, tente novamente.");
   }
 
   /**
@@ -287,7 +287,7 @@ class CSVController extends \BaseController {
       return view("modules.import.structure",["user" => $this->user, "school" => $school]);
     }
     catch (Exception $e) {
-      return Redirect::to("/import")->with("error", "Arquivo inválido!");
+      return redirect("/import")->with("error", "Arquivo inválido!");
     }
   }
 
@@ -415,7 +415,7 @@ class CSVController extends \BaseController {
         }
       }
     }
-    return Redirect::to("/import")->with("success", "Turmas inseridas com sucesso");
+    return redirect("/import")->with("success", "Turmas inseridas com sucesso");
   }
 
   /**

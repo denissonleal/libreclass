@@ -28,11 +28,11 @@ class UnitsController extends \BaseController
       $unit_current = Unit::find(decrypt(Input::get("u")));
 
       if ($unit_current->status == "D") {
-        return Redirect::to("lectures")->with("error", "Esta unidade está desativada");
+        return redirect("lectures")->with("error", "Esta unidade está desativada");
       }
 
 			if($unit_current->offer->classe->status == 'F') {
-				return Redirect::to("lectures")->with("error", "Não é possível acessar unidade de turmas encerradas");
+				return redirect("lectures")->with("error", "Não é possível acessar unidade de turmas encerradas");
 			}
 
       $units = Unit::where("offer_id", $unit_current->offer_id)->get();
@@ -51,7 +51,7 @@ class UnitsController extends \BaseController
         "recovery" => $recovery,
         "exams" => $exams]);
     } else {
-      return Redirect::guest("/");
+      return redirect("/");
     }
 
   }
@@ -92,7 +92,7 @@ class UnitsController extends \BaseController
         $new->save();
       }
 
-      return Redirect::guest("/lectures/units?u=" . encrypt($unit->id));
+      return redirect("/lectures/units?u=" . encrypt($unit->id));
     }
   }
 
@@ -111,7 +111,7 @@ class UnitsController extends \BaseController
 
       return view("modules.units", ["user" => $user, "list_students" => $list_students, "students" => $students]);
     } else {
-      return Redirect::guest("/");
+      return redirect("/");
     }
   }
 
@@ -123,7 +123,7 @@ class UnitsController extends \BaseController
 
     Attend::where("unit_id", $unit)->where("user_id", $student)->delete();
 
-    return Redirect::to("lectures/units/student?u=" . Input::get("unit"))
+    return redirect("lectures/units/student?u=" . Input::get("unit"))
       ->with("success", "Aluno removido com sucesso");
   }
 
@@ -134,14 +134,14 @@ class UnitsController extends \BaseController
 
     $attend = Attend::where("unit_id", $unit)->where("user_id", $student)->first();
     if ($attend) {
-      return Redirect::to("lectures/units/student?u=" . Input::get("unit"))
+      return redirect("lectures/units/student?u=" . Input::get("unit"))
         ->with("error", "Aluno já cadastrado");
     } else {
       $attend = new Attend;
       $attend->unit_id = $unit;
       $attend->user_id = $student;
       $attend->save();
-      return Redirect::to("lectures/units/student?u=" . Input::get("unit"))
+      return redirect("lectures/units/student?u=" . Input::get("unit"))
         ->with("success", "Aluno cadastrado com sucesso");
     }
   }

@@ -25,7 +25,7 @@ class LecturesController extends \BaseController
 			});
       return view("offers.teacher", ["user" => $user, "lectures" => $lectures]);
     } else {
-      return Redirect::guest("/");
+      return redirect("/");
     }
   }
 
@@ -120,7 +120,7 @@ class LecturesController extends \BaseController
     $user = User::find($this->user_id);
     $offer = Offer::find(decrypt($offer));
     if ($offer->getLectures()->user_id != $this->user_id) {
-      return Redirect::to("/lectures")->with("error", "Você não tem acesso a essa página");
+      return redirect("/lectures")->with("error", "Você não tem acesso a essa página");
     }
     $units = Unit::where("offer_id", $offer->id)->get();
     $students = DB::select("select Users.id, Users.name "

@@ -107,7 +107,7 @@ class UsersController extends \BaseController
       );
 
     } else {
-      return Redirect::guest("/");
+      return redirect("/");
     }
   }
 
@@ -128,12 +128,12 @@ class UsersController extends \BaseController
           $relationship->type = "2";
           $relationship->save();
         }
-        return Redirect::guest("/user/teacher")->with("success", "Professor vinculado com sucesso!");
+        return redirect("/user/teacher")->with("success", "Professor vinculado com sucesso!");
       }
 
       // Tipo P é professor com conta liberada. Ele mesmo deve atualizar as suas informações e não a instituição.
       if ($user->type == "P") {
-        return Redirect::guest("/user/teacher")->with("error", "Professor não pode ser editado!");
+        return redirect("/user/teacher")->with("error", "Professor não pode ser editado!");
       }
       $user->email = Input::get("email");
       // $user->enrollment = Input::get("enrollment");
@@ -141,11 +141,11 @@ class UsersController extends \BaseController
       $user->formation = Input::get("formation");
       $user->gender = Input::get("gender");
       $user->save();
-      return Redirect::guest("/user/teacher")->with("success", "Professor editado com sucesso!");
+      return redirect("/user/teacher")->with("success", "Professor editado com sucesso!");
     } else {
       $verify = Relationship::whereEnrollment(Input::get("enrollment"))->where('user_id', $this->user_id)->first();
       if (isset($verify) || $verify != null) {
-        return Redirect::guest("/user/teacher")->with("error", "Este número de inscrição já está cadastrado!");
+        return redirect("/user/teacher")->with("error", "Este número de inscrição já está cadastrado!");
       }
       $user = new User;
       $user->type = "M";
@@ -171,7 +171,7 @@ class UsersController extends \BaseController
 
       $this->postInvite($user->id);
 
-      return Redirect::guest("/user/teacher")->with("success", "Professor cadastrado com sucesso!");
+      return redirect("/user/teacher")->with("success", "Professor cadastrado com sucesso!");
     }
   }
 
@@ -179,7 +179,7 @@ class UsersController extends \BaseController
   {
     $user = User::find(decrypt(Input::get("teacher")));
     Relationship::where('user_id', $this->user_id)->where('idFriend', $user->id)->update(['enrollment' => Input::get('enrollment')]);
-    return Redirect::guest("/user/teacher")->with("success", "Matrícula editada com sucesso!");
+    return redirect("/user/teacher")->with("success", "Matrícula editada com sucesso!");
   }
 
   public function getProfileStudent()
@@ -217,7 +217,7 @@ class UsersController extends \BaseController
       $attests = Attest::where("idStudent", $profile->id)->where("institution_id", $user->id)->orderBy("date", "desc")->get();
       return view("modules.profilestudent", ["user" => $user, "profile" => $profile, "listclasses" => $listclasses, "attests" => $attests, "listidsclasses" => $listidsclasses, "listCourses" => $listCourses, 'courses' => $courses]);
     } else {
-      return Redirect::guest("/");
+      return redirect("/");
     }
   }
 
@@ -379,7 +379,7 @@ class UsersController extends \BaseController
       }
       return view("modules.profileteacher", ["user" => $user, "profile" => $profile]);
     } else {
-      return Redirect::guest("/");
+      return redirect("/");
     }
   }
 
@@ -460,7 +460,7 @@ class UsersController extends \BaseController
         ]
       );
     } else {
-      return Redirect::guest("/");
+      return redirect("/");
     }
   }
 
@@ -497,7 +497,7 @@ class UsersController extends \BaseController
 			$relationship->save();
 		}
 
-    return Redirect::guest("/user/student")->with("success", $message);
+    return redirect("/user/student")->with("success", $message);
   }
 
   public function postUnlink()
@@ -526,7 +526,7 @@ class UsersController extends \BaseController
         ->whereType(2)
         ->update(["status" => "D"]);
 
-      return Redirect::to("/user/teacher")->with("success", "Professor excluído dessa Instituição");
+      return redirect("/user/teacher")->with("success", "Professor excluído dessa Instituição");
     }
   }
 

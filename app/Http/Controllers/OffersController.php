@@ -22,7 +22,7 @@ class OffersController extends \BaseController
       $user = User::find($user);
       return $user;
     } else {
-      return Redirect::guest("/");
+      return redirect("/");
     }
   }
 
@@ -55,7 +55,7 @@ class OffersController extends \BaseController
         "classe" => $classe,
       ]);
     } else {
-      return Redirect::guest("/login");
+      return redirect("/login");
     }
   }
 
@@ -63,7 +63,7 @@ class OffersController extends \BaseController
   {
     $offer = Offer::find(decrypt($offer));
     if ($this->user_id != $offer->getClass()->getPeriod()->getCourse()->institution_id) {
-      return Redirect::to("/classes/offers?t=" . encrypt($offer->class_id))->with("error", "Você não tem permissão para criar unidade");
+      return redirect("/classes/offers?t=" . encrypt($offer->class_id))->with("error", "Você não tem permissão para criar unidade");
     }
 
     $old = Unit::where("offer_id", $offer->id)->orderBy("value", "desc")->first();
@@ -93,7 +93,7 @@ class OffersController extends \BaseController
 		}
 
 
-    return Redirect::to("/classes/offers?t=" . encrypt($offer->class_id))->with("success", "Unidade criada com sucesso!");
+    return redirect("/classes/offers?t=" . encrypt($offer->class_id))->with("success", "Unidade criada com sucesso!");
   }
 
   public function postTeacher()
@@ -135,7 +135,7 @@ class OffersController extends \BaseController
       $lecture->save();
     }
 
-    return Redirect::guest(Input::get("prev"))->with("success", "Modificado com sucesso!");
+    return redirect(Input::get("prev"))->with("success", "Modificado com sucesso!");
   }
 
   public function postStatus()
@@ -174,7 +174,7 @@ class OffersController extends \BaseController
 
       return view("modules.liststudentsoffers", ["user" => $user, "info" => $info, "students" => $students, "offer" => $offer]);
     } else {
-      return Redirect::guest("/");
+      return redirect("/");
     }
   }
 
@@ -224,7 +224,7 @@ class OffersController extends \BaseController
     $unit = Unit::where('offer_id', $offer->id)->orderBy('value', 'desc')->first();
     $unit->delete();
 
-    return Redirect::to("/classes/offers?t=" . encrypt($offer->class_id))->with("success", "Unidade deletada com sucesso!");
+    return redirect("/classes/offers?t=" . encrypt($offer->class_id))->with("success", "Unidade deletada com sucesso!");
   }
 
 	public function postOffersGrouped() {

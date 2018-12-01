@@ -121,13 +121,13 @@ class SyncController extends \BaseController {
         //return $data;
       }
 
-      return Redirect::to("/sync/error")
+      return redirect("/sync/error")
                            ->with("error", "Erro ao syncronizar. Usuário deve ser professor.");
     }
     else
     {
       Session::put("redirect", "sync");
-      return Redirect::to("/login");
+      return redirect("/login");
     }
   }
 
@@ -137,12 +137,12 @@ class SyncController extends \BaseController {
     Session::put("lb", Input::get("lb"));
     if ($this->user)
     {
-      return Redirect::to("/sync/receive");
+      return redirect("/sync/receive");
     }
     else
     {
       Session::put("redirect", "sync/receive");
-      return Redirect::to("/login");
+      return redirect("/login");
     }
   }
 
@@ -157,7 +157,7 @@ class SyncController extends \BaseController {
     $data = json_decode(Session::get("data"));
 
     if(decrypt($data->id) != $this->user->id)
-          return Redirect::to("/sync/error")
+          return redirect("/sync/error")
                  ->with("erro", "Erro ao syncronizar. Incompatiblilidade de usuários [" . $this->user->email . " != $data->email]");
 
     foreach( $data->lectures as $lecture )
@@ -169,7 +169,7 @@ class SyncController extends \BaseController {
                             . "WHERE Lectures.user_id=? AND Lectures.offer_id=Units.offer_id AND Units.id=?",
                             [$this->user->id, $unit->id])[0]->valid;
         if($valid == 0)
-          return Redirect::to("/sync/error")
+          return redirect("/sync/error")
                          ->with("error", "Erro ao syncronizar. Arquivo foi modificado de forma maliciosa. [units]")
                          ->with("email", $this->user->email);
 
@@ -185,7 +185,7 @@ class SyncController extends \BaseController {
             $lesson = Lesson::find(decrypt($json_lesson->id));
 
           if ( $lesson->unit_id != $unit->id )
-            return Redirect::to("/sync/error")
+            return redirect("/sync/error")
                            ->with("error", "Erro ao syncronizar. Arquivo foi modificado de forma maliciosa. [lesson]")
                            ->with("email", $this->user->email);
 
@@ -226,7 +226,7 @@ class SyncController extends \BaseController {
             $exam = Exam::find(decrypt($json_exam->id));
 
           if ( $exam->unit_id != $unit->id )
-            return Redirect::to("/sync/error")
+            return redirect("/sync/error")
                            ->with("error", "Erro ao syncronizar. Arquivo foi modificado de forma maliciosa. [exam]")
                            ->with("email", $this->user->email);
 
@@ -252,7 +252,7 @@ class SyncController extends \BaseController {
         }
       }
     }
-    return Redirect::to("/sync");
+    return redirect("/sync");
   }
 
   public function getError()

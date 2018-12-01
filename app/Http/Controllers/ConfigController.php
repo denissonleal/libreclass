@@ -38,7 +38,7 @@ class ConfigController extends \BaseController {
 			return view("user.config", [ "user" => User::find($this->user_id), "select" => $this->select ]);
 		}
 		else {
-			return Redirect::guest("/");
+			return redirect("/");
 		}
 	}
 
@@ -60,7 +60,7 @@ class ConfigController extends \BaseController {
 				case "image/gif":
 					break;
 				default:
-					return Redirect::to("/config")->with("error", "Não pode ser modificado!");
+					return redirect("/config")->with("error", "Não pode ser modificado!");
 			}
 
 			$image    = new Imagick(Input::file("photo")->getRealPath());
@@ -78,11 +78,11 @@ class ConfigController extends \BaseController {
 			$image->writeImage(__DIR__ . "/../../public" . $fileName);
 
 			return User::whereId($this->user_id)->update(["photo" => $fileName ]) ?
-														Redirect::to("/config")->with("success", "Modificado com sucesso!") :
-														Redirect::to("/config")->with("error", "Não pode ser modificado!");
+														redirect("/config")->with("success", "Modificado com sucesso!") :
+														redirect("/config")->with("error", "Não pode ser modificado!");
 		}
 		else
-			return Redirect::to("/config")->with("error", "Não pode ser modificado!");
+			return redirect("/config")->with("error", "Não pode ser modificado!");
 	}
 
 	public function postBirthdate()
@@ -92,7 +92,7 @@ class ConfigController extends \BaseController {
 											 Input::get("birthdate-month") . "-" .
 											 Input::get("birthdate-day");
 		$user->save();
-		return Redirect::to("/config")->with("success", "Modificado com sucesso!"); //date("d / m / Y", strtotime($user->birthdate));
+		return redirect("/config")->with("success", "Modificado com sucesso!"); //date("d / m / Y", strtotime($user->birthdate));
 	}
 
 	/**
@@ -109,7 +109,7 @@ class ConfigController extends \BaseController {
 			User::whereId($this->user_id)->update([$key => $value]) ? $value: "error";
 		}
 //    return view("user.config", [ "user" => User::find($this->user_id), "select" => $this->select ]);
-		return Redirect::to("/config")->with("success", "Modificado com sucesso!");
+		return redirect("/config")->with("success", "Modificado com sucesso!");
 	}
 
 	public function postCommonselect()
@@ -118,8 +118,8 @@ class ConfigController extends \BaseController {
 			if ( $key == "_token" || $key == "q") continue;
 
 			return User::whereId($this->user_id)->update([$key => $value]) ?
-								Redirect::to("/config")->with("success", "Modificado com sucesso!"):
-								Redirect::to("/config")->with("erro", "Erro ao modificar!");
+								redirect("/config")->with("success", "Modificado com sucesso!"):
+								redirect("/config")->with("erro", "Erro ao modificar!");
 		}
 	}
 
@@ -129,7 +129,7 @@ class ConfigController extends \BaseController {
 		$user->gender = Input::get("gender");
 		$user->save();
 
-		return Redirect::to("/config")->with("success", "Modificado com sucesso!");
+		return redirect("/config")->with("success", "Modificado com sucesso!");
 	}
 
 	public function postType()
@@ -139,7 +139,7 @@ class ConfigController extends \BaseController {
 		$user->save();
 
 		Session::put("type", $user->type);
-		return Redirect::to("/config")->with("success", "Modificado com sucesso!");
+		return redirect("/config")->with("success", "Modificado com sucesso!");
 	}
 
 	public function postPassword()
@@ -149,10 +149,10 @@ class ConfigController extends \BaseController {
 		{
 			$user->password = Hash::make(Input::get("newpassword"));
 			$user->save();
-			return Redirect::to("/config")->with("success", "Modificado com sucesso!");
+			return redirect("/config")->with("success", "Modificado com sucesso!");
 		}
 		else
-			return Redirect::to("/config")->with("error", "Senha atual inválida!");
+			return redirect("/config")->with("error", "Senha atual inválida!");
 
 	}
 
@@ -194,10 +194,10 @@ class ConfigController extends \BaseController {
 			$user = User::find($this->user_id);
 			$user->street = Input::get("street");
 			$user->save();
-			return Redirect::to("/config")->with("success", "Modificado com sucesso!");
+			return redirect("/config")->with("success", "Modificado com sucesso!");
 		}
 		catch(Exception $e) {
-			return Redirect::to("/config")->with("error", "Erro ao inserir o endereço!");
+			return redirect("/config")->with("error", "Erro ao inserir o endereço!");
 		}
 	}
 
@@ -207,10 +207,10 @@ class ConfigController extends \BaseController {
 			$user = User::find($this->user_id);
 			$user->uee = Input::get("uee");
 			$user->save();
-			return Redirect::to("/config")->with("success", "Modificado com sucesso!");
+			return redirect("/config")->with("success", "Modificado com sucesso!");
 		}
 		catch(Exception $e){
-			return Redirect::to("/config")->with("error", "Erro ao inserir UEE!");
+			return redirect("/config")->with("error", "Erro ao inserir UEE!");
 		}
 	}
 

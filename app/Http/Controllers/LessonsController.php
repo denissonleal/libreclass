@@ -64,7 +64,7 @@ class LessonsController extends \BaseController
       }
       return view("modules.lessons", ["user" => $user, "lesson" => $lesson, "students" => $students]);
     } else {
-      return Redirect::guest("/");
+      return redirect("/");
     }
   }
 
@@ -135,7 +135,7 @@ class LessonsController extends \BaseController
 			return ['status'=> 1, 'lesson'=> $lesson];
 		}
 		else {
-			return Redirect::to("/lessons?l=" . $lesson->id)->with("success", "Uma nova aula foi criada com sucesso.");
+			return redirect("/lessons?l=" . $lesson->id)->with("success", "Uma nova aula foi criada com sucesso.");
 		}
 
   }
@@ -166,7 +166,7 @@ class LessonsController extends \BaseController
                           WHERE Units.id = Lessons.unit_id AND
                             Lessons.id=?", [$lesson->id]);
 
-    return Redirect::guest("/lectures/units?u=" . encrypt($unit[0]->id))->with("success", "Aula atualizada com sucesso");
+    return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("success", "Aula atualizada com sucesso");
   }
 
   public function anyFrequency()
@@ -243,14 +243,14 @@ class LessonsController extends \BaseController
                             Lessons.id=?", [$lesson->id]);
 
     if ($unit[0]->status == 'D') {
-      return Redirect::guest("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar.<br>Unidade desabilitada.");
+      return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar.<br>Unidade desabilitada.");
     }
     if ($lesson) {
       $lesson->status = "D";
       $lesson->save();
-      return Redirect::guest("/lectures/units?u=" . encrypt($unit[0]->id))->with("success", "Aula excluída com sucesso!");
+      return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("success", "Aula excluída com sucesso!");
     } else {
-      return Redirect::guest("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar");
+      return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar");
     }
   }
 

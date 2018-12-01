@@ -13,7 +13,7 @@ class PermissionController extends \BaseController {
 
 	public function getIndex() {
 		if ( Session::has("redirect") )
-			return Redirect::to(Session::get("redirect"));
+			return redirect(Session::get("redirect"));
 
 		$friends = DB::select("SELECT Users.id, Users.name, Users.enrollment FROM Relationships, Users WHERE Relationships.user_id=? AND Relationships.idFriend=Users.id", [$this->user_id]);
 
@@ -68,7 +68,7 @@ class PermissionController extends \BaseController {
 				$adminer->save();
 			}
 
-		return Redirect::to("/permissions")->with("success", "Modificado com sucesso!");
+		return redirect("/permissions")->with("success", "Modificado com sucesso!");
 	}
 
 	public function postFind()
