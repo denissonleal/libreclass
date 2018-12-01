@@ -1,8 +1,8 @@
-<?php
+<?php namespace App;
 
-class Frequency extends \Eloquent
+class Frequency extends \Moloquent
 {
-  protected $table = "Frequencies";
+
 
   public static function getValue($user, $lesson)
   {

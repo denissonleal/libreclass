@@ -1,7 +1,7 @@
-<?php
+<?php namespace App;
 
-class ExamsValue extends \Eloquent {
-  protected $table = "ExamsValues";
+class ExamsValue extends \Moloquent {
+
 
   public static function getValue($user, $exam)
   {

@@ -1,8 +1,8 @@
-<?php
+<?php namespace App;
 
-class Classe extends \Eloquent
+class Classe extends \Moloquent
 {
-  protected $table = "Classes";
+
   protected $fillable = ['name', 'idPeriod', 'class'];
 
   public function period()

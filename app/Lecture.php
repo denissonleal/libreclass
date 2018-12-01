@@ -1,7 +1,7 @@
-<?php
+<?php namespace App;
 
-class Lecture extends \Eloquent {
-	protected $table = "Lectures";
+class Lecture extends \Moloquent {
+
 	protected $fillable = ['idUser', 'idOffer'];
 
   public function getUser() {

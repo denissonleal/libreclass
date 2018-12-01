@@ -1,8 +1,8 @@
-<?php
+<?php namespace App;
 
-class DescriptiveExam extends \Eloquent
+class DescriptiveExam extends \Moloquent
 {
-  protected $table = "DescriptiveExams";
+
 
   public function student()
   {

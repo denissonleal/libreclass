@@ -1,5 +1,5 @@
-<?php
+<?php namespace App;
 
-class Ctrl extends \Eloquent {
-	protected $table = "Controllers";
+class Ctrl extends \Moloquent {
+
 }

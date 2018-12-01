@@ -1,5 +1,5 @@
-<?php
+<?php namespace App;
 
-class Adminer extends \Eloquent {
-	protected $table = "Adminers";
+class Adminer extends \Moloquent {
+
 }

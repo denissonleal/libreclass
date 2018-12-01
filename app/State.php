@@ -1,6 +1,6 @@
-<?php
+<?php namespace App;
 
-class State extends \Eloquent {
-	protected $table = "States";
+class State extends \Moloquent {
+
         public $timestamps = false;
 }

@@ -1,7 +1,7 @@
-<?php
+<?php namespace App;
 
-class Relationship extends \Eloquent {
-  protected $table = "Relationships";
+class Relationship extends \Moloquent {
+
   protected $fillable = ['idUser', 'idFriend', 'type'];
 
   public function getUser() {

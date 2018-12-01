@@ -1,5 +1,5 @@
-<?php
+<?php namespace App;
 
-class Classroom extends \Eloquent {
+class Classroom extends \Moloquent {
 	protected $fillable = [];
 }

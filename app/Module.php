@@ -1,5 +1,5 @@
-<?php
+<?php namespace App;
 
-class Module extends \Eloquent {
-	protected $table = "Modules";
+class Module extends \Moloquent {
+
 }

@@ -1,7 +1,7 @@
-<?php
+<?php namespace App;
 
-class Attest extends \Eloquent {
-	protected $table = "Attests";
+class Attest extends \Moloquent {
+
 
 
 }

@@ -1,8 +1,8 @@
-<?php
+<?php namespace App;
 
-class Unit extends \Eloquent
+class Unit extends \Moloquent
 {
-  protected $table = "Units";
+
   protected $fillable = ['idOffer'];
 
   public function offer()

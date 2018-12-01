@@ -1,8 +1,8 @@
-<?php
+<?php namespace App;
 
-class Attend extends \Eloquent
+class Attend extends \Moloquent
 {
-  protected $table = "Attends";
+
   protected $fillable = ['idUser', 'idUnit'];
 
   public function getUser()

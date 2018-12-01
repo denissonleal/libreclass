@@ -1,8 +1,8 @@
-<?php
+<?php namespace App;
 
-class Offer extends \Eloquent
+class Offer extends \Moloquent
 {
-  protected $table = "Offers";
+
   protected $fillable = ['idClass', 'idDiscipline', 'classroom', 'day_period', 'grouping'];
 
   public function master()

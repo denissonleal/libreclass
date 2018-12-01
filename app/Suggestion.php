@@ -1,8 +1,8 @@
-<?php
+<?php namespace App;
 
-class Suggestion extends \Eloquent {
+class Suggestion extends \Moloquent {
 
-  protected $table = "Suggestions";
+
   public $timestamps = false;
 
 }

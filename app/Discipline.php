@@ -1,6 +1,6 @@
-<?php
+<?php namespace App;
 
-class Discipline extends \Eloquent {
+class Discipline extends \Moloquent {
   protected $table = 'Disciplines';
   protected $fillable = ['name', 'idPeriod'];
 

@@ -1,8 +1,8 @@
-<?php
+<?php namespace App;
 
-class Lesson extends \Eloquent {
+class Lesson extends \Moloquent {
 	use SoftDeletingTrait;
-	protected $table = "Lessons";
+
   protected $dates = ['deleted_at'];
 
   public function unit() {

@@ -1,7 +1,7 @@
-<?php
+<?php namespace App;
 
-class Bind extends \Eloquent {
-	protected $table = "Binds";
+class Bind extends \Moloquent {
+
 	public $timestamps = false;
 
 	public function discipline() {

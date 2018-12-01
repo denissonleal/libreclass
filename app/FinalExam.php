@@ -1,5 +1,5 @@
-<?php
+<?php namespace App;
 
-class FinalExam extends \Eloquent {
-	protected $table = "FinalExams";
+class FinalExam extends \Moloquent {
+
 }

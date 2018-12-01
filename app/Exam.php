@@ -1,8 +1,8 @@
-<?php
+<?php namespace App;
 
-class Exam extends \Eloquent
+class Exam extends \Moloquent
 {
-  protected $table = "Exams";
+
 
   public function unit()
   {
