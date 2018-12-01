@@ -28,7 +28,7 @@ class Unit extends \Moloquent
     $weight = 0.;
     // echo count($exams) . " - ";
     foreach ($exams as $exam) {
-      $value = ExamsValue::where("idExam", $exam->id)->where("attend_id", $attend->id)->first();
+      $value = ExamsValue::where("exam_id", $exam->id)->where("attend_id", $attend->id)->first();
       // echo " $value ";
       if ($value) {
         $sum += $value->value * ($this->calculation == "W" ? $exam->weight : 1);
@@ -49,7 +49,7 @@ class Unit extends \Moloquent
 
     $final = Exam::where("unit_id", $this->id)->whereAval("R")->first();
     if ($final) {
-      $value = ExamsValue::where("idExam", $final->id)->where("attend_id", $attend->id)->first();
+      $value = ExamsValue::where("exam_id", $final->id)->where("attend_id", $attend->id)->first();
       if ($value) {
         $out[1] = $value->value;
       }

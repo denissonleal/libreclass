@@ -245,7 +245,7 @@ class UsersController extends \BaseController
       foreach ($discipline->units as $unit) {
         $unit->exams = Exam::where("unit_id", $unit->id)->orderBy("aval")->get();
         foreach ($unit->exams as $exam) {
-          $exam->value = ExamsValue::where("idExam", $exam->id)->where("attend_id", $discipline->attend)->first();
+          $exam->value = ExamsValue::where("exam_id", $exam->id)->where("attend_id", $discipline->attend)->first();
         }
 
         $value = $unit->getAverage($student);
@@ -308,7 +308,7 @@ class UsersController extends \BaseController
           $exams = Exam::where("unit_id", $unit->id)->get();
           foreach ($exams as $exam) {
             $value = new ExamsValue;
-            $value->idExam = $exam->id;
+            $value->exam_id = $exam->id;
             $value->attend_id = $attend->id;
             $value->save();
           }
@@ -643,7 +643,7 @@ class UsersController extends \BaseController
 					$pareceresTmp = DescriptiveExam::where('attend_id', $attend->id)->get();
 
 					foreach ($pareceresTmp as $parecer) {
-						$parecer->exam = Exam::where('id', $parecer->idExam)->first(['title', 'type', 'date']);
+						$parecer->exam = Exam::where('id', $parecer->exam_id)->first(['title', 'type', 'date']);
 						$parecer->exam->type = $this->typesExams($parecer->exam->type);
 					}
 					if(!empty($pareceresTmp)) {
@@ -661,7 +661,7 @@ class UsersController extends \BaseController
         // Verifica se há prova de recuperação
         if ($examRecovery) {
           $attend = Attend::where('unit_id', $unit->id)->where('user_id', $data['student']['id'])->first();
-          $recovery = ExamsValue::where('attend_id', $attend->id)->where('idExam', $examRecovery->id)->first();
+          $recovery = ExamsValue::where('attend_id', $attend->id)->where('exam_id', $examRecovery->id)->first();
           $data['disciplines'][$key][$unit->value]['recovery'] = isset($recovery) && $recovery->value ? $recovery->value : '--';
         }
       }

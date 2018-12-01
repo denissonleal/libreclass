@@ -71,12 +71,12 @@ class SyncController extends \BaseController {
             $unit->attends = $attends;
 
             foreach ( $exams as $exam ) {
-              $examsValues = ExamsValue::where('idExam', $exam->id)->get();
+              $examsValues = ExamsValue::where('exam_id', $exam->id)->get();
               $exam->id = encrypt($exam->id);
               $exam->unit_id = $unit->id;
               foreach ( $examsValues as $examValue) {
                 $examValue->attend_id = $keyAttend[$examValue->attend_id];
-                $examValue->idExam = $exam->id;
+                $examValue->exam_id = $exam->id;
               }
               $exam->examsValues = $examsValues;
             }
@@ -240,12 +240,12 @@ class SyncController extends \BaseController {
 
           foreach ($json_exam->examsValues as $json_value )
             if ( !ExamsValue::where('attend_id', decrypt($json_value->attend_id))
-                            ->where('idExam', $exam->id)
+                            ->where('exam_id', $exam->id)
                             ->update(array('value' => $json_value->value)) )
             {
               $value = new ExamsValue;
               $value->attend_id = decrypt($json_value->attend_id);
-              $value->idExam = $exam->id;
+              $value->exam_id = $exam->id;
               $value->value = $json_value->value;
               $value->save();
             }

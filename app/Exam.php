@@ -11,7 +11,7 @@ class Exam extends \Moloquent
 
   public function descriptive_exams()
   {
-    $descriptive_exams = $this->hasMany("DescriptiveExam", "idExam")->get();
+    $descriptive_exams = $this->hasMany("DescriptiveExam", "exam_id")->get();
     foreach ($descriptive_exams as $key => $descriptive_exam) {
       $descriptive_exams[$key]['student'] = $descriptive_exam->student();
     }
