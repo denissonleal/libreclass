@@ -71,7 +71,7 @@ class DisciplinesController extends \BaseController {
     $offers = DB::select("SELECT Offers.id, Classes.name
                             FROM Offers, Classes
                              WHERE Classes.status = 'E' AND
-                             Offers.idDiscipline=? AND
+                             Offers.discipline_id=? AND
                              Offers.class_id=Classes.id", [$discipline->id]);
 
     if(count($offers)) {

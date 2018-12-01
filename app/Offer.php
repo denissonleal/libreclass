@@ -3,7 +3,7 @@
 class Offer extends \Moloquent
 {
 
-  protected $fillable = ['class_id', 'idDiscipline', 'classroom', 'day_period', 'grouping'];
+  protected $fillable = ['class_id', 'discipline_id', 'classroom', 'day_period', 'grouping'];
 
   public function master()
   {
@@ -17,7 +17,7 @@ class Offer extends \Moloquent
 
   public function discipline()
   {
-    return $this->belongsTo('Discipline', 'idDiscipline');
+    return $this->belongsTo('Discipline', 'discipline_id');
   }
 
   public function units()
@@ -32,7 +32,7 @@ class Offer extends \Moloquent
 
   public function getDiscipline()
   {
-    return Discipline::find($this->idDiscipline);
+    return Discipline::find($this->discipline_id);
   }
 
   public function getClass()

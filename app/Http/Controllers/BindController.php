@@ -9,12 +9,12 @@ class BindController extends \BaseController {
 		if ( Input::get("bind") == "true"){
 			$bind = new Bind;
 			$bind->user_id = $user;
-			$bind->idDiscipline = $discipline;
+			$bind->discipline_id = $discipline;
 			$bind->save();
 			return "new";
 		}
 		else
-			Bind::where("user_id", $user)->where("idDiscipline", $discipline)->delete();
+			Bind::where("user_id", $user)->where("discipline_id", $discipline)->delete();
 
 		return "del";
 	}

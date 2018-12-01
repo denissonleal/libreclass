@@ -79,7 +79,7 @@ class ClassesGroupController extends \BaseController
       $master_discipline = Discipline::create(['name' => Input::get('name')]);
       $master_offer = Offer::create([
         'class_id' => decrypt(Input::get('classe')),
-        'idDiscipline' => $master_discipline->id,
+        'discipline_id' => $master_discipline->id,
         'grouping' => 'M',
       ]);
       $unit = new Unit;

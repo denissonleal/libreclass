@@ -127,7 +127,7 @@ class CSVController extends \BaseController {
       foreach ( $disciplines as $discipline)
       {
           $offer = new Offer;
-          $offer->idDiscipline = $discipline->id;
+          $offer->discipline_id = $discipline->id;
           $offer->classroom = "";
           $offer->class_id = $classe->id;
           $offer->save();
@@ -401,7 +401,7 @@ class CSVController extends \BaseController {
         {
           $discipline = Discipline::where("period_id", $period->id)->where("name", $disc)->first();
           $offer = new Offer;
-          $offer->idDiscipline = $discipline->id;
+          $offer->discipline_id = $discipline->id;
           $offer->classroom = $offer_aux[6];
           $offer->class_id = $classe->id;
           $offer->save();

@@ -105,7 +105,7 @@ class ClassesController extends \BaseController
       $offers = Offer::where("class_id", decrypt(Input::get("classe_id")))->get();
       $registered_disciplines_ids = [];
       foreach ($offers as $offer) {
-        $registered_disciplines_ids[] = $offer->idDiscipline;
+        $registered_disciplines_ids[] = $offer->discipline_id;
       }
       $disciplines = Discipline::where("period_id", decrypt(Input::get("period_id")))->whereStatus('E')->whereNotIn('id', $registered_disciplines_ids)->get();
     } else {
@@ -126,7 +126,7 @@ class ClassesController extends \BaseController
       if (strstr($key, "discipline_") != false) {
         $offer = new Offer;
         $offer->class_id = $class->id;
-        $offer->idDiscipline = decrypt($value);
+        $offer->discipline_id = decrypt($value);
         $offer->save();
         $unit = new Unit;
         $unit->offer_id = $offer->id;
@@ -157,7 +157,7 @@ class ClassesController extends \BaseController
         if (strstr($key, "discipline_") != false) {
           $offer = new Offer;
           $offer->class_id = $class->id;
-          $offer->idDiscipline = decrypt($value);
+          $offer->discipline_id = decrypt($value);
           $offer->save();
           $unit = new Unit;
           $unit->offer_id = $offer->id;
@@ -217,7 +217,7 @@ class ClassesController extends \BaseController
         "WHERE Units.offer_id=? AND Units.id=Attends.idUnit AND Attends.user_id=?",
         [$offer->id, $idStudent])[0]->qtd;
 
-      $offer->name = Discipline::find($offer->idDiscipline)->name;
+      $offer->name = Discipline::find($offer->discipline_id)->name;
       $offer->id = encrypt($offer->id);
     }
 
@@ -391,7 +391,7 @@ class ClassesController extends \BaseController
 
 		$new_offer = new Offer();
 		$new_offer->class_id = $classe->id;
-		$new_offer->idDiscipline = $offer->idDiscipline;
+		$new_offer->discipline_id = $offer->discipline_id;
 		$new_offer->classroom = $offer->classroom;
 		$new_offer->day_period = $offer->day_period;
 		$new_offer->maxlessons = $offer->maxlessons;

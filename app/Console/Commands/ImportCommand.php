@@ -125,8 +125,8 @@ class ImportCommand extends Command {
 						if (!$discipline = Discipline::where('name', $cols[2])->where('period_id', $period->id)->first()){
 							$discipline = Discipline::create(['name'=>$cols[2], 'period_id'=>$period->id]);
 						}
-						if (!$offer = Offer::where('class_id', $class->id)->where('idDiscipline', $discipline->id)->first()){
-							$offer = Offer::create(['class_id'=>$class->id, 'idDiscipline'=>$discipline->id, 'classroom'=>$classroom, 'day_period'=>$day_period]);
+						if (!$offer = Offer::where('class_id', $class->id)->where('discipline_id', $discipline->id)->first()){
+							$offer = Offer::create(['class_id'=>$class->id, 'discipline_id'=>$discipline->id, 'classroom'=>$classroom, 'day_period'=>$day_period]);
 							$unit = Unit::create(['offer_id'=>$offer->id]);
 							foreach ($students as $student) {
 								Attend::create(['user_id'=>$student->id, 'idUnit'=>$unit->id]);
