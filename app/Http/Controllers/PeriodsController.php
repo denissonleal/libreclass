@@ -32,7 +32,7 @@ class PeriodsController extends \BaseController {
 
 	public function anyList() {
 		if ($this->idUser) {
-			$periods = Period::where('idCourse', Input::get('course_id'))->where('status', 'E')->get();
+			$periods = Period::where('course_id', Input::get('course_id'))->where('status', 'E')->get();
 			if($periods) {
 	      return View::make("social.periods.list", [ "periods" => $periods ]);
 	    }
@@ -47,7 +47,7 @@ class PeriodsController extends \BaseController {
 				$period = Period::find(Input::get('period_id'));
 			}
 			$period->name = Input::get('name');
-			$period->idCourse = Input::get('course_id');
+			$period->course_id = Input::get('course_id');
 			// $period->progression_value = Input::get('progression_value');
 			// dd(Input::all());
 			$period->save();

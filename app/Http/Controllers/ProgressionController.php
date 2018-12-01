@@ -31,7 +31,7 @@ class ProgressionController extends \BaseController
 		// 	return ['status' => 0, 'message' => 'Não foi possível obter as turmas para progressão. Verifique a sequência de progressão em <a href="periods">Meus Períodos</a>.'];
 		// }
 
-		// $next_period = Period::where('idCourse', $atual_period->idCourse)->where('progression_value', $atual_period->progression_value + 1)->first();
+		// $next_period = Period::where('course_id', $atual_period->course_id)->where('progression_value', $atual_period->progression_value + 1)->first();
     //
 		// //Se não há configuração de progressão da próxima série
 		// if(empty($next_period)) {

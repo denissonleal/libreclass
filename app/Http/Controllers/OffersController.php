@@ -32,7 +32,7 @@ class OffersController extends \BaseController
       $user = User::find($this->idUser);
       $classe = Classe::find(decrypt(Input::get("t")));
       $period = Period::find($classe->period_id);
-      $course = Course::find($period->idCourse);
+      $course = Course::find($period->course_id);
       $offers = Offer::where("idClass", $classe->id)->get();
 
       foreach ($offers as $offer) {
@@ -187,7 +187,7 @@ class OffersController extends \BaseController
       //$list_students[encrypt($student->id)] = $student->name;
       $info = DB::select("SELECT Courses.name as course, Periods.name as period, Classes.id as idClass, Classes.class as class
                           FROM Courses, Periods, Classes, Offers
-                          WHERE Courses.id = Periods.idCourse
+                          WHERE Courses.id = Periods.course_id
                           AND Periods.id = Classes.period_id
                           AND Classes.id = Offers.idClass
                           AND Offers.id = " . decrypt($offer) . "

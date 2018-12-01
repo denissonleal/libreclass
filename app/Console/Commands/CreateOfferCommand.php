@@ -70,7 +70,7 @@ class CreateOfferCommand extends Command {
 					$classroom = $cols[3];
 				}
 				elseif ($cols[0] == 'Ano') {//Period
-					$period = Period::where('idCourse', $course->id)->where('name', $cols[1])->first();
+					$period = Period::where('course_id', $course->id)->where('name', $cols[1])->first();
 					$class = Classe::where('period_id', $period->id)->where('name', $cols[3])->first();
 
 					switch ($cols[5]) {

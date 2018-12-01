@@ -43,7 +43,7 @@ class DisciplinesController extends \BaseController {
   {
     $course = Course::find(decrypt(Input::get("course")));
     if ($this->idUser == $course->idInstitution) {
-      $period = Period::where("idCourse", $course->id )->whereId(decrypt(Input::get("period")))->first();
+      $period = Period::where("course_id", $course->id )->whereId(decrypt(Input::get("period")))->first();
       $discipline = null;
       if (strlen(Input::get("discipline"))) {
         $discipline = Discipline::find(decrypt(Input::get("discipline")));
@@ -116,7 +116,7 @@ class DisciplinesController extends \BaseController {
    */
   public function postListperiods()
   {
-    $periods = Period::where("idCourse", decrypt(Input::get("course")))->whereStatus("E")->get();
+    $periods = Period::where("course_id", decrypt(Input::get("course")))->whereStatus("E")->get();
     foreach( $periods as $period )
       $period->id = encrypt($period->id);
 
@@ -126,7 +126,7 @@ class DisciplinesController extends \BaseController {
   public function anyList()
   {
     if(Input::get("course")) {
-      $disciplines = DB::select("SELECT Disciplines.id AS id, Disciplines.name AS name, Periods.name AS period FROM Disciplines, Periods WHERE period_id = Periods.id AND idCourse = ? AND Disciplines.status = 'E'", [decrypt(Input::get("course"))]);
+      $disciplines = DB::select("SELECT Disciplines.id AS id, Disciplines.name AS name, Periods.name AS period FROM Disciplines, Periods WHERE period_id = Periods.id AND course_id = ? AND Disciplines.status = 'E'", [decrypt(Input::get("course"))]);
       return View::make("social.disciplines.list", [ "disciplines" => $disciplines ]);
     }
   }

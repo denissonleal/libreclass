@@ -72,7 +72,7 @@ class CSVController extends \BaseController {
         }
         else if ($cols[0] == "Série:")
         {
-          $period = Period::where("idCourse", $course->id)->whereName(explode(" - ", $cols[1])[0])->first();
+          $period = Period::where("course_id", $course->id)->whereName(explode(" - ", $cols[1])[0])->first();
           if (!$period) {
             throw new Exception("Não possui o periodo/série: " . explode(" - ", $cols[1])[0] . " $course->name");
           }
@@ -317,7 +317,7 @@ class CSVController extends \BaseController {
           foreach ($out[8] as $disc)
             $school[$cod[2]][$cod[1]][$disc] = DB::select("SELECT count(*) as 'qtd' FROM Courses, Periods, Disciplines
                                                            WHERE Courses.idInstitution=? AND Courses.name=? AND
-                                                           Courses.id=Periods.idCourse AND Periods.name=? AND
+                                                           Courses.id=Periods.course_id AND Periods.name=? AND
                                                            Periods.id=Disciplines.period_id AND Disciplines.name=?",
                                                           [$this->user->id, $cod[2], $cod[1], $disc])[0]->qtd;
   //      print_r($out); return;
@@ -353,10 +353,10 @@ class CSVController extends \BaseController {
         $course->average_final = 5;
         $course->save();
       }
-      $period = Period::where("idCourse", $course->id)->where("name", $class[0][1])->first();
+      $period = Period::where("course_id", $course->id)->where("name", $class[0][1])->first();
       if (!$period) {
         $period = new Period;
-        $period->idCourse = $course->id;
+        $period->course_id = $course->id;
         $period->name = $class[0][1];
         $period->save();
       }
@@ -394,7 +394,7 @@ class CSVController extends \BaseController {
     $s_relations = false;
     foreach ($structure as $class) {
 //    $course = Course::where("idInstitution", $this->user->id)->whereName($class[0][2])->first();
-//    $period = Period::where("idCourse", $course->id)->where("name", $class[0][1])->first();
+//    $period = Period::where("course_id", $course->id)->where("name", $class[0][1])->first();
       foreach ($class[1] as $offer) {
 //      foreach ( $offer[8] as $disc ) {
 //        $discipline = Discipline::where("period_id", $period->id)->where("name", $disc)->first();
@@ -432,7 +432,7 @@ class CSVController extends \BaseController {
     $structure = Session::get("structure");
     foreach ($structure as $class) {
       $course = Course::where("idInstitution", $this->user->id)->whereName($class[0][2])->first();
-      $period = Period::where("idCourse", $course->id)->where("name", $class[0][1])->first();
+      $period = Period::where("course_id", $course->id)->where("name", $class[0][1])->first();
       $classe = Classe::where("period_id", $period->id)->whereClass($class[0][0])->first();
       if ( !$classe )
       {

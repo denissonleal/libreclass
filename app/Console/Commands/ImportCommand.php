@@ -72,8 +72,8 @@ class ImportCommand extends Command {
 					$classroom = $cols[3];
 				}
 				elseif ($cols[0] == 'Ano') {//Period
-					if (!$period = Period::where('idCourse', $course->id)->where('name', $cols[1])->first()){
-						$period = Period::create(['idCourse'=>$course->id, 'name'=>$cols[1]]);
+					if (!$period = Period::where('course_id', $course->id)->where('name', $cols[1])->first()){
+						$period = Period::create(['course_id'=>$course->id, 'name'=>$cols[1]]);
 					}
 					if (!$class = Classe::where('period_id', $period->id)->where('name', $cols[3])->first()){
 						$class = Classe::create(['period_id'=>$period->id, 'name'=>$cols[3], 'class'=>'2017']);

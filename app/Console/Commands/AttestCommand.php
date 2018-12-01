@@ -47,7 +47,7 @@ class AttestCommand extends Command {
 		DB::update("UPDATE Attests, Courses, Periods, Classes, Offers, Units, Lessons, Frequencies, Attends
                   SET Frequencies.value='A'
                   WHERE Attests.idInstitution=Courses.idInstitution
-                    AND Courses.id=Periods.idCourse
+                    AND Courses.id=Periods.course_id
                     AND Periods.id=Classes.period_id
                     AND Classes.id=Offers.idClass
                     AND Offers.id=Units.idOffer
