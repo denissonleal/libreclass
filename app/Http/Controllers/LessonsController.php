@@ -26,7 +26,7 @@ class LessonsController extends \BaseController
                                 WHERE Frequencies.idAttend=Attends.id AND
 																			Attends.status != 'T' AND
                                       Attends.user_id=Users.id AND
-                                      Frequencies.idLesson=? AND
+                                      Frequencies.lesson_id=? AND
                                       Attends.unit_id=Units.id
                                 ORDER BY Users.name", [$lesson->id]);
 
@@ -88,7 +88,7 @@ class LessonsController extends \BaseController
     foreach ($attends as $attend) {
       $frequency = new Frequency;
       $frequency->idAttend = $attend->id;
-      $frequency->idLesson = $lesson->id;
+      $frequency->lesson_id = $lesson->id;
       $frequency->value = "P";
       $frequency->save();
     }
@@ -122,7 +122,7 @@ class LessonsController extends \BaseController
         foreach ($attends_slaves as $attend_slave) {
           $frequency_slave = new Frequency;
           $frequency_slave->idAttend = $attend_slave->id;
-          $frequency_slave->idLesson = $lesson_slave->id;
+          $frequency_slave->lesson_id = $lesson_slave->id;
           $frequency_slave->value = "P";
           $frequency_slave->save();
         }
@@ -172,7 +172,7 @@ class LessonsController extends \BaseController
   public function anyFrequency()
   {
     $attend = Attend::find(decrypt(Input::get("idAttend")));
-    $idLesson = decrypt(Input::get("idLesson"));
+    $lesson_id = decrypt(Input::get("lesson_id"));
     $value = Input::get("value") == "P" ? "F" : "P";
 
     $offer_id = DB::select(
@@ -180,10 +180,10 @@ class LessonsController extends \BaseController
       . "  FROM Lessons, Units "
       . "WHERE Lessons.id = ? "
       . "  AND Lessons.unit_id = Units.id",
-      [$idLesson]
+      [$lesson_id]
     )[0]->offer_id;
 
-    $status = Frequency::where("idAttend", $attend->id)->where("idLesson", $idLesson)->update(["value" => $value]);
+    $status = Frequency::where("idAttend", $attend->id)->where("lesson_id", $lesson_id)->update(["value" => $value]);
 
     $frequency = DB::select(
       "SELECT Offers.maxlessons, COUNT(*) as qtd "
@@ -197,7 +197,7 @@ class LessonsController extends \BaseController
       [$offer_id, $attend->user_id]
     )[0];
 
-  	$this->slavesFrequency($attend->id, $idLesson, $value);
+  	$this->slavesFrequency($attend->id, $lesson_id, $value);
 
     return Response::json(["status" => $status, "value" => $value, "frequency" => sprintf("%d (%.1f %%)", $frequency->qtd, 100. * $frequency->qtd / $frequency->maxlessons)]);
   }
@@ -207,18 +207,18 @@ class LessonsController extends \BaseController
    * aluno por aula em oferta. É verificado se o aluno existe nas ofertas slaves.
    *
    * @param  [type] $idAttend [description]
-   * @param  [type] $idLesson [description]
+   * @param  [type] $lesson_id [description]
    * @param  [type] $value    [description]
    * @return [type]           [description]
    */
-  private function slavesFrequency($idAttend, $idLesson, $value)
+  private function slavesFrequency($idAttend, $lesson_id, $value)
   {
     if (Attend::find($idAttend)->getUnit()->offer->grouping != 'M') {
       return;
     }
 		$unit = Attend::find($idAttend)->getUnit();
 		$slaveOffers = Offer::where('offer_id', $unit->offer->id)->get();
-		$groupLesson = Lesson::find($idLesson);
+		$groupLesson = Lesson::find($lesson_id);
 		$student = Attend::find($idAttend)->getUser();
 
 
@@ -228,7 +228,7 @@ class LessonsController extends \BaseController
 
 			foreach ($lessons as $key => $lesson) {
 				$o_attend = Attend::where('user_id', $student->id)->where('unit_id', $o_unit->id)->first();
-				Frequency::where("idAttend", $o_attend->id)->where("idLesson", $lesson->id)->update(["value" => $value]);
+				Frequency::where("idAttend", $o_attend->id)->where("lesson_id", $lesson->id)->update(["value" => $value]);
 			}
 		}
   }
@@ -288,16 +288,16 @@ class LessonsController extends \BaseController
       foreach ($attends as $attend) {
         $frequency = new Frequency;
         $frequency->idAttend = $attend->id;
-        $frequency->idLesson = $copy->id;
+        $frequency->lesson_id = $copy->id;
         $frequency->value = "P";
         $frequency->save();
       }
     } else {
       $copy->save();
-      $frequencies = Frequency::where("idLesson", $lesson->id)->get();
+      $frequencies = Frequency::where("lesson_id", $lesson->id)->get();
       foreach ($frequencies as $frequency) {
         $frequency = $frequency->replicate();
-        $frequency->idLesson = $copy->id;
+        $frequency->lesson_id = $copy->id;
         if (Input::get("type") == 1) {
           $frequency->value = "P";
         }

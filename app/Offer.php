@@ -71,7 +71,7 @@ class Offer extends \Moloquent
                         FROM Units, Attends, Lessons, Frequencies
                         WHERE Units.offer_id=? AND
                               Units.id=Lessons.unit_id AND
-                              Lessons.id=Frequencies.idLesson AND
+                              Lessons.id=Frequencies.lesson_id AND
                               Lessons.deleted_at IS NULL AND
                               Frequencies.idAttend=Attends.id AND
                               Frequencies.value='F' AND
@@ -85,7 +85,7 @@ class Offer extends \Moloquent
                         WHERE Units.offer_id = ? AND
                               Units.value = ? AND
                               Units.id = Lessons.unit_id AND
-                              Lessons.id = Frequencies.idLesson AND
+                              Lessons.id = Frequencies.lesson_id AND
                               Lessons.deleted_at IS NULL AND
                               Frequencies.idAttend = Attends.id AND
                               Frequencies.value = 'F' AND

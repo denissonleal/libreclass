@@ -40,7 +40,7 @@ class AttestCommand extends Command {
     DB::update("UPDATE Units, Lessons, Frequencies
                   SET Frequencies.value='F'
                   WHERE Units.id=Lessons.unit_id
-                    AND Lessons.id=Frequencies.idLesson
+                    AND Lessons.id=Frequencies.lesson_id
                     AND Units.status='E'
                     AND Frequencies.value='A'");
 
@@ -52,7 +52,7 @@ class AttestCommand extends Command {
                     AND Classes.id=Offers.class_id
                     AND Offers.id=Units.offer_id
                     AND Units.id=Lessons.unit_id
-                    AND Lessons.id=Frequencies.idLesson
+                    AND Lessons.id=Frequencies.lesson_id
                     AND Frequencies.idAttend=Attends.id
                     AND Attends.user_id=Attests.idStudent
                     AND Units.status='E'

@@ -83,12 +83,12 @@ class SyncController extends \BaseController {
             $unit->exams = $exams;
 
             foreach ( $lessons as $lesson ) {
-              $frequencies = Frequency::where('idLesson', $lesson->id)->get();
+              $frequencies = Frequency::where('lesson_id', $lesson->id)->get();
               $lesson->id = encrypt($lesson->id);
               $lesson->unit_id = $unit->id;
               foreach ( $frequencies as $frequency ) {
                 $frequency->idAttend = $keyAttend[$frequency->idAttend];
-                $frequency->idLesson = $lesson->id;
+                $frequency->lesson_id = $lesson->id;
               }
               $lesson->frequencies = $frequencies;
             }
@@ -203,12 +203,12 @@ class SyncController extends \BaseController {
           $lesson->save();
           foreach ($json_lesson->frequencies as $json_frequency)
             if ( !Frequency::where('idAttend', decrypt($json_frequency->idAttend))
-                            ->where('idLesson', $lesson->id)
+                            ->where('lesson_id', $lesson->id)
                             ->update(["value" => $json_frequency->value]) )
             {
               $frequency = new Frequency;
               $frequency->idAttend = decrypt($json_frequency->idAttend);
-              $frequency->idLesson = $lesson->id;
+              $frequency->lesson_id = $lesson->id;
               $frequency->value = $json_frequency->value;
               $frequency->save();
             }

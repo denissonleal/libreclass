@@ -315,7 +315,7 @@ class UsersController extends \BaseController
           $lessons = Lesson::where("unit_id", $unit->id)->get();
           foreach ($lessons as $lesson) {
             $value = new Frequency;
-            $value->idLesson = $lesson->id;
+            $value->lesson_id = $lesson->id;
             $value->idAttend = $attend->id;
             $value->save();
           }
