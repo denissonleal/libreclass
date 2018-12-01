@@ -34,8 +34,8 @@ class DisciplinesController extends \BaseController {
   public function postResumeUnit($unit)
   {
     $unit = decrypt($unit);
-    $list = DB::select("SELECT Lessons.id, title, date, value, 'L' as type FROM Lessons, Frequencies, Attends WHERE Lessons.unit_id=? AND Lessons.id=lesson_id AND idAttend=Attends.id AND user_id=?"
-          . " UNION ALL ( SELECT Exams.id, title, date, value, 'E' as type FROM Exams, ExamsValues, Attends WHERE Exams.unit_id=? AND Exams.id=idExam AND idAttend=Attends.id AND user_id=? ) ORDER BY date DESC",
+    $list = DB::select("SELECT Lessons.id, title, date, value, 'L' as type FROM Lessons, Frequencies, Attends WHERE Lessons.unit_id=? AND Lessons.id=lesson_id AND attend_id=Attends.id AND user_id=?"
+          . " UNION ALL ( SELECT Exams.id, title, date, value, 'E' as type FROM Exams, ExamsValues, Attends WHERE Exams.unit_id=? AND Exams.id=idExam AND attend_id=Attends.id AND user_id=? ) ORDER BY date DESC",
           [$unit, $this->user->id, $unit, $this->user->id]);
 
     $now = date("Y-m-d");

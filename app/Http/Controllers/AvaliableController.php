@@ -66,7 +66,7 @@ class AvaliableController extends \BaseController
       $attends = Attend::where("unit_id", $exam->unit_id)->get();
       foreach ($attends as $attend) {
         $value = new ExamsValue;
-        $value->idAttend = $attend->id;
+        $value->attend_id = $attend->id;
         $value->idExam = $exam->id;
         $value->value = "";
         $value->save();
@@ -112,11 +112,11 @@ class AvaliableController extends \BaseController
           $value = sprintf("%.2f", $value);
         }
       }
-      if (ExamsValue::where("idAttend", $attend)->where("idExam", $exam)->first()) {
-        ExamsValue::where("idAttend", $attend)->where("idExam", $exam)->update(["value" => $value]);
+      if (ExamsValue::where("attend_id", $attend)->where("idExam", $exam)->first()) {
+        ExamsValue::where("attend_id", $attend)->where("idExam", $exam)->update(["value" => $value]);
       } else {
         $examsvalue = new ExamsValue;
-        $examsvalue->idAttend = $attend;
+        $examsvalue->attend_id = $attend;
         $examsvalue->idExam = $exam;
         $examsvalue->value = $value;
         $examsvalue->save();
@@ -132,12 +132,12 @@ class AvaliableController extends \BaseController
     try {
       $exam = decrypt(Input::get("exam"));
       $attend = decrypt(Input::get("student"));
-      $examsvalue = DescriptiveExam::where("idAttend", $attend)->where("idExam", $exam)->first();
+      $examsvalue = DescriptiveExam::where("attend_id", $attend)->where("idExam", $exam)->first();
       if ($examsvalue) {
-        DescriptiveExam::where("idAttend", $attend)->where("idExam", $exam)->update(["description" => Input::get("description"), "approved" => Input::get("approved")]);
+        DescriptiveExam::where("attend_id", $attend)->where("idExam", $exam)->update(["description" => Input::get("description"), "approved" => Input::get("approved")]);
       } else {
         $examsvalue = new DescriptiveExam;
-        $examsvalue->idAttend = $attend;
+        $examsvalue->attend_id = $attend;
         $examsvalue->idExam = $exam;
         $examsvalue->description = Input::get("description");
         $examsvalue->approved = Input::get("approved");
@@ -281,12 +281,12 @@ class AvaliableController extends \BaseController
     $sumWeight = $sumWeight ? $sumWeight : 1;
     $attends = Attend::where("unit_id", $unit->id)->get();
     foreach ($attends as $attend) {
-      if ($final and ($examfinal = ExamsValue::where("idAttend", $attend->id)->where("idExam", $final->id)->first())) {
+      if ($final and ($examfinal = ExamsValue::where("attend_id", $attend->id)->where("idExam", $final->id)->first())) {
         $attend->final = $examfinal->value;
       } else {
         $attend->final = "F";
       }
-      $values = ExamsValue::where("idAttend", $attend->id)->get();
+      $values = ExamsValue::where("attend_id", $attend->id)->get();
       $sum = 0.;
       foreach ($values as $value) {
         $sum += $value->value * Exam::find($value->idExam)->weight;

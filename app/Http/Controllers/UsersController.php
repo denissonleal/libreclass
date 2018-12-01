@@ -245,7 +245,7 @@ class UsersController extends \BaseController
       foreach ($discipline->units as $unit) {
         $unit->exams = Exam::where("unit_id", $unit->id)->orderBy("aval")->get();
         foreach ($unit->exams as $exam) {
-          $exam->value = ExamsValue::where("idExam", $exam->id)->where("idAttend", $discipline->attend)->first();
+          $exam->value = ExamsValue::where("idExam", $exam->id)->where("attend_id", $discipline->attend)->first();
         }
 
         $value = $unit->getAverage($student);
@@ -309,14 +309,14 @@ class UsersController extends \BaseController
           foreach ($exams as $exam) {
             $value = new ExamsValue;
             $value->idExam = $exam->id;
-            $value->idAttend = $attend->id;
+            $value->attend_id = $attend->id;
             $value->save();
           }
           $lessons = Lesson::where("unit_id", $unit->id)->get();
           foreach ($lessons as $lesson) {
             $value = new Frequency;
             $value->lesson_id = $lesson->id;
-            $value->idAttend = $attend->id;
+            $value->attend_id = $attend->id;
             $value->save();
           }
         }
@@ -640,7 +640,7 @@ class UsersController extends \BaseController
 					$pareceres->disciplines[$key]->units[$key2]->pareceres = [];
 					//Obtém os pareceres
 					$attend = Attend::where('unit_id', $unit->id)->where('user_id', $data['student']->id)->first();
-					$pareceresTmp = DescriptiveExam::where('idAttend', $attend->id)->get();
+					$pareceresTmp = DescriptiveExam::where('attend_id', $attend->id)->get();
 
 					foreach ($pareceresTmp as $parecer) {
 						$parecer->exam = Exam::where('id', $parecer->idExam)->first(['title', 'type', 'date']);
@@ -661,7 +661,7 @@ class UsersController extends \BaseController
         // Verifica se há prova de recuperação
         if ($examRecovery) {
           $attend = Attend::where('unit_id', $unit->id)->where('user_id', $data['student']['id'])->first();
-          $recovery = ExamsValue::where('idAttend', $attend->id)->where('idExam', $examRecovery->id)->first();
+          $recovery = ExamsValue::where('attend_id', $attend->id)->where('idExam', $examRecovery->id)->first();
           $data['disciplines'][$key][$unit->value]['recovery'] = isset($recovery) && $recovery->value ? $recovery->value : '--';
         }
       }

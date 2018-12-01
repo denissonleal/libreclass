@@ -73,7 +73,7 @@ class Offer extends \Moloquent
                               Units.id=Lessons.unit_id AND
                               Lessons.id=Frequencies.lesson_id AND
                               Lessons.deleted_at IS NULL AND
-                              Frequencies.idAttend=Attends.id AND
+                              Frequencies.attend_id=Attends.id AND
                               Frequencies.value='F' AND
                               Attends.user_id=?", [$this->id, $idStudent])[0]->qtd;
   }
@@ -87,7 +87,7 @@ class Offer extends \Moloquent
                               Units.id = Lessons.unit_id AND
                               Lessons.id = Frequencies.lesson_id AND
                               Lessons.deleted_at IS NULL AND
-                              Frequencies.idAttend = Attends.id AND
+                              Frequencies.attend_id = Attends.id AND
                               Frequencies.value = 'F' AND
                               Attends.user_id = ?", [$this->id, $unitValue, $idStudent])[0]->qtd;
   }

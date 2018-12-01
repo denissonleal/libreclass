@@ -171,7 +171,7 @@ function events(){
     _this = this;
     $(this).addClass("btn-default").removeClass("btn-danger btn-primary");
     $.post("/lessons/frequency", {
-      "idAttend": $(this).closest("tr").attr("id"),
+      "attend_id": $(this).closest("tr").attr("id"),
       "lesson_id": $(this).closest("tbody").attr("id"),
       "value":    $(this).text()
     }, function (data) {

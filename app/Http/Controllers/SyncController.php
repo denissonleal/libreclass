@@ -75,7 +75,7 @@ class SyncController extends \BaseController {
               $exam->id = encrypt($exam->id);
               $exam->unit_id = $unit->id;
               foreach ( $examsValues as $examValue) {
-                $examValue->idAttend = $keyAttend[$examValue->idAttend];
+                $examValue->attend_id = $keyAttend[$examValue->attend_id];
                 $examValue->idExam = $exam->id;
               }
               $exam->examsValues = $examsValues;
@@ -87,7 +87,7 @@ class SyncController extends \BaseController {
               $lesson->id = encrypt($lesson->id);
               $lesson->unit_id = $unit->id;
               foreach ( $frequencies as $frequency ) {
-                $frequency->idAttend = $keyAttend[$frequency->idAttend];
+                $frequency->attend_id = $keyAttend[$frequency->attend_id];
                 $frequency->lesson_id = $lesson->id;
               }
               $lesson->frequencies = $frequencies;
@@ -202,12 +202,12 @@ class SyncController extends \BaseController {
           $lesson->notes = $json_lesson->notes;
           $lesson->save();
           foreach ($json_lesson->frequencies as $json_frequency)
-            if ( !Frequency::where('idAttend', decrypt($json_frequency->idAttend))
+            if ( !Frequency::where('attend_id', decrypt($json_frequency->attend_id))
                             ->where('lesson_id', $lesson->id)
                             ->update(["value" => $json_frequency->value]) )
             {
               $frequency = new Frequency;
-              $frequency->idAttend = decrypt($json_frequency->idAttend);
+              $frequency->attend_id = decrypt($json_frequency->attend_id);
               $frequency->lesson_id = $lesson->id;
               $frequency->value = $json_frequency->value;
               $frequency->save();
@@ -239,12 +239,12 @@ class SyncController extends \BaseController {
           $exam->save();
 
           foreach ($json_exam->examsValues as $json_value )
-            if ( !ExamsValue::where('idAttend', decrypt($json_value->idAttend))
+            if ( !ExamsValue::where('attend_id', decrypt($json_value->attend_id))
                             ->where('idExam', $exam->id)
                             ->update(array('value' => $json_value->value)) )
             {
               $value = new ExamsValue;
-              $value->idAttend = decrypt($json_value->idAttend);
+              $value->attend_id = decrypt($json_value->attend_id);
               $value->idExam = $exam->id;
               $value->value = $json_value->value;
               $value->save();

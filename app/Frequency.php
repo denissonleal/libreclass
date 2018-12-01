@@ -8,7 +8,7 @@ class Frequency extends \Moloquent
   {
     $out = DB::select("select Frequencies.value "
       . "from Frequencies, Attends "
-      . "where Frequencies.lesson_id=? and Frequencies.idAttend=Attends.id and Attends.user_id=?",
+      . "where Frequencies.lesson_id=? and Frequencies.attend_id=Attends.id and Attends.user_id=?",
       [$lesson, $user]);
 
     return count($out) ? $out[0]->value : "";

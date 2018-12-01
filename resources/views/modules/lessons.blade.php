@@ -214,7 +214,7 @@
                 </thead>
                 <tbody id='{{ encrypt($lesson->id) }}'>
                   @foreach($students as $student )
-                    <tr id='{{ encrypt($student->idAttend) }}'>
+                    <tr id='{{ encrypt($student->attend_id) }}'>
                       <td>{{ $student->name }}</td>
                       <td class="text-right">
 												@if(isset($student->attest))

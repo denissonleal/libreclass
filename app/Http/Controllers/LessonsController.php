@@ -21,9 +21,9 @@ class LessonsController extends \BaseController
       $user = User::find($this->user_id);
       $lesson = Lesson::find(decrypt(Input::get("l")));
 
-      $students = DB::select("SELECT Users.name AS name, Attends.id AS idAttend, Frequencies.value AS value, Units.offer_id, Attends.user_id, Units.id AS unit_id
+      $students = DB::select("SELECT Users.name AS name, Attends.id AS attend_id, Frequencies.value AS value, Units.offer_id, Attends.user_id, Units.id AS unit_id
                                 FROM Frequencies, Attends, Users, Units
-                                WHERE Frequencies.idAttend=Attends.id AND
+                                WHERE Frequencies.attend_id=Attends.id AND
 																			Attends.status != 'T' AND
                                       Attends.user_id=Users.id AND
                                       Frequencies.lesson_id=? AND
@@ -57,7 +57,7 @@ class LessonsController extends \BaseController
         $frequency = DB::select("SELECT Offers.maxlessons, COUNT(*) as qtd "
                                   . "FROM Offers, Units, Attends, Frequencies "
                                   . "WHERE Offers.id=? AND Offers.id=Units.offer_id AND Units.id=Attends.unit_id "
-                                    . "AND Attends.user_id=? AND Attends.id=Frequencies.idAttend AND Frequencies.value='F'",
+                                    . "AND Attends.user_id=? AND Attends.id=Frequencies.attend_id AND Frequencies.value='F'",
                                 [$student->offer_id, $student->user_id])[0];
         $student->maxlessons = $frequency->maxlessons;
         $student->qtd = $frequency->qtd - $qtdAttests;
@@ -87,7 +87,7 @@ class LessonsController extends \BaseController
     $attends = Attend::where("unit_id", $unit->id)->get();
     foreach ($attends as $attend) {
       $frequency = new Frequency;
-      $frequency->idAttend = $attend->id;
+      $frequency->attend_id = $attend->id;
       $frequency->lesson_id = $lesson->id;
       $frequency->value = "P";
       $frequency->save();
@@ -121,7 +121,7 @@ class LessonsController extends \BaseController
         $attends_slaves = Attend::where("unit_id", $unit_slave->id)->get();
         foreach ($attends_slaves as $attend_slave) {
           $frequency_slave = new Frequency;
-          $frequency_slave->idAttend = $attend_slave->id;
+          $frequency_slave->attend_id = $attend_slave->id;
           $frequency_slave->lesson_id = $lesson_slave->id;
           $frequency_slave->value = "P";
           $frequency_slave->save();
@@ -171,7 +171,7 @@ class LessonsController extends \BaseController
 
   public function anyFrequency()
   {
-    $attend = Attend::find(decrypt(Input::get("idAttend")));
+    $attend = Attend::find(decrypt(Input::get("attend_id")));
     $lesson_id = decrypt(Input::get("lesson_id"));
     $value = Input::get("value") == "P" ? "F" : "P";
 
@@ -183,7 +183,7 @@ class LessonsController extends \BaseController
       [$lesson_id]
     )[0]->offer_id;
 
-    $status = Frequency::where("idAttend", $attend->id)->where("lesson_id", $lesson_id)->update(["value" => $value]);
+    $status = Frequency::where("attend_id", $attend->id)->where("lesson_id", $lesson_id)->update(["value" => $value]);
 
     $frequency = DB::select(
       "SELECT Offers.maxlessons, COUNT(*) as qtd "
@@ -192,7 +192,7 @@ class LessonsController extends \BaseController
       . "  AND Offers.id = Units.offer_id "
       . "  AND Units.id = Attends.unit_id "
       . "  AND Attends.user_id = ? "
-      . "  AND Attends.id = Frequencies.idAttend "
+      . "  AND Attends.id = Frequencies.attend_id "
       . "  AND Frequencies.value = 'F'",
       [$offer_id, $attend->user_id]
     )[0];
@@ -206,20 +206,20 @@ class LessonsController extends \BaseController
    * Replica a frequência para as ofertas slaves. A frequência é replicada por
    * aluno por aula em oferta. É verificado se o aluno existe nas ofertas slaves.
    *
-   * @param  [type] $idAttend [description]
+   * @param  [type] $attend_id [description]
    * @param  [type] $lesson_id [description]
    * @param  [type] $value    [description]
    * @return [type]           [description]
    */
-  private function slavesFrequency($idAttend, $lesson_id, $value)
+  private function slavesFrequency($attend_id, $lesson_id, $value)
   {
-    if (Attend::find($idAttend)->getUnit()->offer->grouping != 'M') {
+    if (Attend::find($attend_id)->getUnit()->offer->grouping != 'M') {
       return;
     }
-		$unit = Attend::find($idAttend)->getUnit();
+		$unit = Attend::find($attend_id)->getUnit();
 		$slaveOffers = Offer::where('offer_id', $unit->offer->id)->get();
 		$groupLesson = Lesson::find($lesson_id);
-		$student = Attend::find($idAttend)->getUser();
+		$student = Attend::find($attend_id)->getUser();
 
 
 		foreach($slaveOffers as $o) {
@@ -228,7 +228,7 @@ class LessonsController extends \BaseController
 
 			foreach ($lessons as $key => $lesson) {
 				$o_attend = Attend::where('user_id', $student->id)->where('unit_id', $o_unit->id)->first();
-				Frequency::where("idAttend", $o_attend->id)->where("lesson_id", $lesson->id)->update(["value" => $value]);
+				Frequency::where("attend_id", $o_attend->id)->where("lesson_id", $lesson->id)->update(["value" => $value]);
 			}
 		}
   }
@@ -287,7 +287,7 @@ class LessonsController extends \BaseController
       $attends = Attend::where("unit_id", $unit->id)->get();
       foreach ($attends as $attend) {
         $frequency = new Frequency;
-        $frequency->idAttend = $attend->id;
+        $frequency->attend_id = $attend->id;
         $frequency->lesson_id = $copy->id;
         $frequency->value = "P";
         $frequency->save();

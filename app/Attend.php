@@ -12,7 +12,7 @@ class Attend extends \Moloquent
 
   public function getExamsValue($exam)
   {
-    $examValue = ExamsValue::where("idExam", $exam)->where("idAttend", $this->id)->first();
+    $examValue = ExamsValue::where("idExam", $exam)->where("attend_id", $this->id)->first();
     if ($examValue) {
       return $examValue->value;
     } else {
@@ -22,7 +22,7 @@ class Attend extends \Moloquent
 
   public function getDescriptiveExam($exam)
   {
-    $examDescriptive = DescriptiveExam::where("idExam", $exam)->where("idAttend", $this->id)->first();
+    $examDescriptive = DescriptiveExam::where("idExam", $exam)->where("attend_id", $this->id)->first();
     if ($examDescriptive) {
       return ["description" => $examDescriptive->description, "approved" => $examDescriptive->approved];
     } else {
