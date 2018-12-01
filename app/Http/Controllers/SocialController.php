@@ -6,7 +6,7 @@ class SocialController extends Controller
 
   public function __construct()
   {
-    $id = Session::get("user");
+    $id = session("user");
     if ( $id == null || $id == "" )
       $this->user_id = false;
     else
@@ -15,8 +15,8 @@ class SocialController extends Controller
 
   public function getIndex()
   {
-    if ( Session::has("redirect") )
-      return redirect(Session::get("redirect"));
+    if ( session("redirect") )
+      return redirect(session("redirect"));
 
     $user = User::find($this->user_id);
     Session::put("type", $user->type);

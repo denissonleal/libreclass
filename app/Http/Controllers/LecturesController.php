@@ -7,7 +7,7 @@ class LecturesController extends Controller
 
   public function LecturesController()
   {
-    $id = Session::get("user");
+    $id = session("user");
     if ($id == null || $id == "") {
       $this->user_id = false;
     } else {

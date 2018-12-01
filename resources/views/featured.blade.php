@@ -20,8 +20,8 @@
 
 
 {{--      <div class="col-md-4">
-        @if (Session::has("msg"))
-          <div class="container w60 alert alert-info text-center"><h4>{{Session::get("msg")}}</h4></div>
+        @if (session("msg"))
+          <div class="container w60 alert alert-info text-center"><h4>{{session("msg")}}</h4></div>
         @endif
 
         <a href="{{ url("/login") }}" class="btn"><i class="fa fa-sign-in fa-lg"></i> <b>Entrar</b></a><br><br>

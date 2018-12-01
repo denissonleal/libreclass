@@ -71,13 +71,13 @@
               <br>
               <hr>
 
-            {{ Form::open(["id" => "form-data", "url" => Session::get("lb")]) }}
+            {{ Form::open(["id" => "form-data", "url" => session("lb")]) }}
               {{ Form::hidden("data", $data) }}
               <div class="pull-left">
                 <a href="#" class="text-muted">Termos do Aplicativo</a>
               </div>
               <div class="pull-right">
-                <a class="btn btn-default" href="{{ Session::get("lb") }}">Cancelar</a>
+                <a class="btn btn-default" href="{{ session("lb") }}">Cancelar</a>
                 {{ Form::submit("Aceito",["class"=>"btn btn-primary"]) }}
               </div>
 

@@ -7,7 +7,7 @@ class ProgressionController extends Controller
 
   public function __construct()
   {
-    $id = Session::get("user");
+    $id = session("user");
     if ($id == null || $id == "") {
       $this->user_id = false;
     } else {

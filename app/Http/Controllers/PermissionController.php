@@ -5,7 +5,7 @@ class PermissionController extends Controller
 
 	public function __construct()
   {
-    $id = Session::get("user");
+    $id = session("user");
     if ( $id == null || $id == "" )
       $this->user_id = false;
     else
@@ -13,8 +13,8 @@ class PermissionController extends Controller
   }
 
 	public function getIndex() {
-		if ( Session::has("redirect") )
-			return redirect(Session::get("redirect"));
+		if ( session("redirect") )
+			return redirect(session("redirect"));
 
 		$friends = DB::select("SELECT Users.id, Users.name, Users.enrollment FROM Relationships, Users WHERE Relationships.user_id=? AND Relationships.idFriend=Users.id", [$this->user_id]);
 

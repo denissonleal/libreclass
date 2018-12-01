@@ -46,13 +46,13 @@ Route::get('logout', function () {
 
 Route::get('help/{rota}', 'HelpController@getView');
 
-if (Session::get("user") == null) {
+if (session("user") == null) {
   Route::controller('/', 'LoginController');
 } else {
   /*
    * Perfil de instituição
    *
-  if (Session::get("type") == "I") {
+  if (session("type") == "I") {
     Route::get('/user/scholar-report', "UsersController@printScholarReport");
     Route::post('user/teacher/delete', "UsersController@postUnlink");
     Route::post('user/teacher/update-enrollment', "UsersController@updateEnrollment");
@@ -81,7 +81,7 @@ if (Session::get("user") == null) {
   /*
    * Perfil de professor
    *
-  if (Session::get("type") == "P") {
+  if (session("type") == "P") {
     Route::get('user/profile', "UsersController@getProfile");
     Route::get('user/student', "UsersController@getStudent");
     Route::post('user/student', "UsersController@postStudent");

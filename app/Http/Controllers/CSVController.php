@@ -11,7 +11,7 @@ class CSVController extends Controller
 
   public function CSVController()
   {
-    $id = Session::get("user");
+    $id = session("user");
     $this->user = User::find(decrypt($id));
   }
 
@@ -111,11 +111,11 @@ class CSVController extends Controller
 
   public function getConfirmClasses()
   {
-    if ( !Session::has("classes") )
+    if ( !session("classes") )
       return redirect("/import")->with("error", "Algum erro aconteceu, tente novamente.");
 
     $s_units = false;
-    $classes = Session::get("classes");
+    $classes = session("classes");
     foreach( $classes as $c )
     {
       $classe = new Classe;
@@ -141,7 +141,7 @@ class CSVController extends Controller
     }
     if($s_units) DB::insert($s_units);
 
-    return view("modules.import/students",["user" => $this->user, "students" => Session::get("attends")]);
+    return view("modules.import/students",["user" => $this->user, "students" => session("attends")]);
   }
 
 
@@ -157,9 +157,9 @@ class CSVController extends Controller
     $s_attends = false;
 
 
-    if (Session::has("attends"))
+    if (session("attends"))
     {
-      $attends = Session::get("attends");
+      $attends = session("attends");
       foreach ($attends as $attend)
       {
         if (!$attend[4])
@@ -299,7 +299,7 @@ class CSVController extends Controller
    */
   public function getTeacher()
   {
-    $structure = Session::get("structure");
+    $structure = session("structure");
     $teachers = [];
     foreach ($structure as $class) {
       $course = Course::where("institution_id", $this->user->id)->whereName($class[0][2])->first();
@@ -349,7 +349,7 @@ class CSVController extends Controller
    */
   public function getOffer()
   {
-    $structure = Session::get("structure");
+    $structure = session("structure");
     $s_relations = false;
     foreach ($structure as $class) {
       foreach ($class[1] as $offer) {
@@ -378,7 +378,7 @@ class CSVController extends Controller
 
   public function getConfirmoffer()
   {
-    $structure = Session::get("structure");
+    $structure = session("structure");
     foreach ($structure as $class) {
       $course = Course::where("institution_id", $this->user->id)->whereName($class[0][2])->first();
       $period = Period::where("course_id", $course->id)->where("name", $class[0][1])->first();

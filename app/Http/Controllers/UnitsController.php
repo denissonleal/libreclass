@@ -12,7 +12,7 @@ class UnitsController extends Controller
       $this->unit = Unit::find(decrypt(Input::get("u")));
     }
 
-    $id = Session::get("user");
+    $id = session("user");
     if ($id == null || $id == "") {
       $this->user_id = false;
     } else {

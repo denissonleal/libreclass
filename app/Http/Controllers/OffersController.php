@@ -7,7 +7,7 @@ class OffersController extends Controller
 
   public function OffersController()
   {
-    $id = Session::get("user");
+    $id = session("user");
     if ($id == null || $id == "") {
       $this->user_id = false;
     } else {

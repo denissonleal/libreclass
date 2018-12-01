@@ -26,7 +26,7 @@ class ConfigController extends Controller
 	 */
 	public function ConfigController()
 	{
-		$id = Session::get("user");
+		$id = session("user");
 		if ( $id == null || $id == "" )
 			$this->user_id = false;
 		else

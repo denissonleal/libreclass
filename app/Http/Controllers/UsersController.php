@@ -7,7 +7,7 @@ class UsersController extends Controller
 
   public function UsersController()
   {
-    $id = Session::get("user");
+    $id = session("user");
     if ($id == null || $id == "") {
       $this->user_id = false;
     } else {

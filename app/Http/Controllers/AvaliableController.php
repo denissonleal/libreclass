@@ -11,7 +11,7 @@ class AvaliableController extends Controller
 
   public function AvaliableController()
   {
-    $id = Session::get("user");
+    $id = session("user");
     if ($id == null || $id == "") {
       $this->user_id = false;
     } else {

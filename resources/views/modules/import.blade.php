@@ -24,10 +24,10 @@
       <div class="row">
         <div class="col-md-12 col-xs-12">
           <h3 class="text-blue"><i class="fa fa-upload"></i><b> Importação de dados</b></h3>
-          @if(Session::has("message"))
+          @if(session("message"))
             <div class="alert alert-info alert-dismissible" role="alert">
               <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              {{ Session::get("message") }}
+              {{ session("message") }}
             </div>
           @endif
         </div>

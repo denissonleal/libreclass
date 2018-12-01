@@ -7,10 +7,10 @@ class DisciplinesController extends Controller
 {
   public function __construct()
   {
-    if ( !Session::has("user") )
+    if ( !session("user") )
       throw new Exception("404");
     else
-      $this->user = User::find(decrypt(Session::get("user")));
+      $this->user = User::find(decrypt(session("user")));
   }
 
   public function getIndex()

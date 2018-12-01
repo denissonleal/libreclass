@@ -5,8 +5,8 @@ class SyncController extends Controller
 
   public function __construct()
   {
-    if ( Session::has("user") )
-      $this->user = User::find(decrypt(Session::get("user")));
+    if ( session("user") )
+      $this->user = User::find(decrypt(session("user")));
     else
       $this->user = false;
   }
@@ -155,7 +155,7 @@ class SyncController extends Controller
     }
 
     Session::forget("redirect");
-    $data = json_decode(Session::get("data"));
+    $data = json_decode(session("data"));
 
     if(decrypt($data->id) != $this->user->id)
           return redirect("/sync/error")
@@ -258,13 +258,13 @@ class SyncController extends Controller
 
   public function getError()
   {
-    if( Session::has("email") )
-      Mail::send('email.alert', ["msg" => Session::get("error"), "email" => Session::get("email") ], function($message)
+    if( session("email") )
+      Mail::send('email.alert', ["msg" => session("error"), "email" => session("email") ], function($message)
       {
         $message->to( "suporte@sysvale.com", "Suporte LibreClass" )
                 ->subject("Tentativa de burlar o sistema");
       });
 
-    return view("modules.sync.error", ["data" => $this->user, "error" => Session::get("error")]);
+    return view("modules.sync.error", ["data" => $this->user, "error" => session("error")]);
   }
 }

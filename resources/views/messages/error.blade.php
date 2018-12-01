@@ -1,4 +1,4 @@
-@if(Session::has("error"))
+@if(session("error"))
   <div id="modalError" class="modal fade" tabindex="-1" role="dialog Modal Error" aria-labelledby="myErrorModal" aria-hidden="true">
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
@@ -9,7 +9,7 @@
         </div>
         <div class="modal-body">
           <div class="text-center">
-            <span class="text-center">{{ Session::get("error") }}</span>
+            <span class="text-center">{{ session("error") }}</span>
           </div>
           <br>
           <div class="text-right">
