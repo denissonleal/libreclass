@@ -23,7 +23,21 @@ class User extends \Moloquent implements
 	 * @var array
 	 */
 	protected $fillable = [
-		'name', 'email', 'password',
+		'email',
+		'password',
+		'name',
+		'type',
+		'gender',
+		'birthdate',
+		'institution',
+		'uee',
+		'course',
+		'formation',
+		'cadastre',
+		'city_id',
+		'street',
+		'photo',
+		'enrollment',
 	];
 
 	/**
@@ -34,4 +48,61 @@ class User extends \Moloquent implements
 	protected $hidden = [
 		'password', 'remember_token',
 	];
+
+	/**
+	 * The model's default values for attributes.
+	 *
+	 * @var array
+	 */
+	protected $attributes = [
+		'type' => 'P',
+		'cadastre' => 'N',
+		'photo' => '/images/user-photo-default.jpg',
+		'formation' => '0',
+	];
+
+	public function setNameAttribute($value)
+	{
+		$this->attributes['name'] = titleCase(trimpp($value));
+	}
+
+	public function setEmailAttribute($value)
+	{
+		$this->attributes['email'] = mb_strtolower(trimpp($value));
+	}
+
+	public function setTypeAttribute($value)
+	{
+		$this->attributes['type'] = mb_strtoupper(trimpp($value));
+	}
+
+	public function courses()
+	{
+		return $this->hasMany(Course::class, 'institution_id');
+	}
+
+	public function printLocation()
+	{
+		$city = City::find($this->city_id);
+		if (!$city) {
+			return "";
+		}
+
+		$state = State::find($city->state_id);
+		$country = Country::find($state->country_id);
+
+		return "$city->name, $state->name, $country->name";
+	}
+
+	public function printCityState()
+	{
+		$city = City::find($this->city_id);
+		if (!$city) {
+			return "";
+		}
+
+		$state = State::find($city->state_id);
+
+		return "$city->name - $state->name";
+	}
 }
