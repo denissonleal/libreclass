@@ -1,10 +1,19 @@
 <?php namespace App;
 
-class Bind extends \Moloquent {
+class Bind extends \Moloquent
+{
+	/**
+	 * The attributes that are mass assignable.
+	 *
+	 * @var array
+	 */
+	protected $fillable = [
+		'user_id',
+		'discipline_id',
+	];
 
-	public $timestamps = false;
-
-	public function discipline() {
-    return $this->hasOne('Discipline', 'discipline_id');
-  }
+	public function discipline()
+	{
+		return $this->hasOne('Discipline');
+	}
 }
