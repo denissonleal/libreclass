@@ -46,7 +46,8 @@ class User extends \Moloquent implements
 	 * @var array
 	 */
 	protected $hidden = [
-		'password', 'remember_token',
+		'password',
+		'remember_token',
 	];
 
 	/**
