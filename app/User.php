@@ -26,18 +26,18 @@ class User extends \Moloquent implements
 		'email',
 		'password',
 		'name',
-		'type',
-		'gender',
+		'type', // P = Professor; A = Aluno; N = aluno não cadastrado; M = professor não cadastrado
+		'gender', // F = feminino; M = masculino
 		'birthdate',
-		'institution',
+		'institution', // Nome da Instituição de ensino
 		'uee',
-		'course',
-		'formation',
-		'cadastre',
+		'course', // Cursos realizados pelo usuário (formação)
+		'formation', // Nível de formação acadêmica(Graduated, Master, PhD...)
+		'cadastre', // T = Temporário, W = aguardando, N = Normal, G = Google, F = Facebook
 		'city_id',
 		'street',
 		'photo',
-		'enrollment',
+		'enrollment', // matricula
 	];
 
 	/**

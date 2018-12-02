@@ -2,87 +2,103 @@
 
 class Unit extends \Moloquent
 {
+	protected $fillable = [
+		'offer_id',
+		'value', // 1 = primeira unidade; 2 = segunda unidade; ...
+		'calculation', // Tipo de cálculo para média: S = sum; A = avarage, W=média ponderada, P = Parecer Descritivo
+		'status', // E = Enable, D = Disable
+	];
 
-  protected $fillable = ['offer_id'];
+	/**
+	 * The model's default values for attributes.
+	 *
+	 * @var array
+	 */
+	protected $attributes = [
+		'value' => 1,
+		'calculation' => 'A',
+		'status' => 'E',
+	];
 
-  public function offer()
-  {
-    return $this->belongsTo('Offer', 'offer_id');
-  }
+	public function setValueAttribute($value)
+	{
+		$this->attributes['value'] = (int) $value;
+	}
 
-  public function getOffer()
-  {
-    return Offer::find($this->offer_id);
-  }
+	public function offer()
+	{
+		return $this->belongsTo('Offer', 'offer_id');
+	}
 
-  public function getAverage($student)
-  {
-    $exams = Exam::where("unit_id", $this->id)->whereAval("A")->whereStatus("E")->get();
-    $attend = Attend::where("unit_id", $this->id)->where("user_id", $student)->first();
-    if (!$attend) {
-      return null;
-    }
+	public function getOffer()
+	{
+		return Offer::find($this->offer_id);
+	}
 
-    $out = [null, null];
-    $sum = 0.;
-    $weight = 0.;
-    // echo count($exams) . " - ";
-    foreach ($exams as $exam) {
-      $value = ExamsValue::where("exam_id", $exam->id)->where("attend_id", $attend->id)->first();
-      // echo " $value ";
-      if ($value) {
-        $sum += $value->value * ($this->calculation == "W" ? $exam->weight : 1);
-      }
-      /* so multiplica pelo peso quando for média ponderada */
-      $weight += $exam->weight;
-    }
+	public function getAverage($student)
+	{
+		$exams = Exam::where("unit_id", $this->id)->whereAval("A")->whereStatus("E")->get();
+		$attend = Attend::where("unit_id", $this->id)->where("user_id", $student)->first();
+		if (!$attend) {
+			return null;
+		}
 
-    // echo $this->calculation . " $sum ";
-    /* tipo de calculo da média */
-    if ($this->calculation == "A" and count($exams)) {
-      $out[0] = $sum / count($exams);
-    } elseif ($this->calculation == "W" and $weight > 0) {
-      $out[0] = $sum / $weight;
-    } elseif ($this->calculation == "S") {
-      $out[0] = $sum;
-    }
+		$out = [null, null];
+		$sum = 0.;
+		$weight = 0.;
 
-    $final = Exam::where("unit_id", $this->id)->whereAval("R")->first();
-    if ($final) {
-      $value = ExamsValue::where("exam_id", $final->id)->where("attend_id", $attend->id)->first();
-      if ($value) {
-        $out[1] = $value->value;
-      }
-    }
+		foreach ($exams as $exam) {
+			$value = ExamsValue::where("exam_id", $exam->id)->where("attend_id", $attend->id)->first();
+			if ($value) {
+				$sum += $value->value * ($this->calculation == "W" ? $exam->weight : 1);
+			}
+			/* so multiplica pelo peso quando for média ponderada */
+			$weight += $exam->weight;
+		}
 
-    // print_r($out);exit;
+		/* tipo de calculo da média */
+		if ($this->calculation == "A" and count($exams)) {
+			$out[0] = $sum / count($exams);
+		} elseif ($this->calculation == "W" and $weight > 0) {
+			$out[0] = $sum / $weight;
+		} elseif ($this->calculation == "S") {
+			$out[0] = $sum;
+		}
 
-    return $out;
-  }
+		$final = Exam::where("unit_id", $this->id)->whereAval("R")->first();
+		if ($final) {
+			$value = ExamsValue::where("exam_id", $final->id)->where("attend_id", $attend->id)->first();
+			if ($value) {
+				$out[1] = $value->value;
+			}
+		}
 
-  public function getLessons()
-  {
-    return Lesson::where("unit_id", $this->id)->whereStatus("E")->get();
-  }
+		return $out;
+	}
 
-  public function getLessonsToPdf()
-  {
-    return Lesson::where("unit_id", $this->id)->whereStatus("E")->orderBy("date", "asc")->orderBy("id", "asc")->get();
-  }
+	public function getLessons()
+	{
+		return Lesson::where("unit_id", $this->id)->whereStatus("E")->get();
+	}
 
-  public function countLessons()
-  {
-    return Lesson::where("unit_id", $this->id)->whereStatus("E")->count();
-  }
+	public function getLessonsToPdf()
+	{
+		return Lesson::where("unit_id", $this->id)->whereStatus("E")->orderBy("date", "asc")->orderBy("id", "asc")->get();
+	}
 
-  public function getExams()
-  {
-    return Exam::where("unit_id", $this->id)->whereStatus("E")->whereAval("A")->get();
-  }
+	public function countLessons()
+	{
+		return Lesson::where("unit_id", $this->id)->whereStatus("E")->count();
+	}
 
-  public function getRecovery()
-  {
-    return Exam::where("unit_id", $this->id)->whereStatus("E")->whereAval("R")->first();
-  }
+	public function getExams()
+	{
+		return Exam::where("unit_id", $this->id)->whereStatus("E")->whereAval("A")->get();
+	}
+
+	public function getRecovery()
+	{
+		return Exam::where("unit_id", $this->id)->whereStatus("E")->whereAval("R")->first();
+	}
 
 }
