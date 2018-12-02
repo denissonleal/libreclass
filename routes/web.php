@@ -38,7 +38,9 @@ Route::post('disciplines/save', 'DisciplinesController@save');
 Route::get('disciplines/list-periods', 'DisciplinesController@listPeriods');
 Route::any('disciplines/list', 'DisciplinesController@list');
 
-
+/* bind */
+Route::get('bind/link', 'BindController@link');
+Route::get('bind/list', 'BindController@list');
 
 Route::get('/', 'HomeController@index');
 
@@ -89,7 +91,6 @@ if (session("user") == null) {
     Route::controller('import', "CSVController");
     Route::controller('permissions', "PermissionController");
     Route::controller('lectures/units', "UnitsController");
-    Route::controller('bind', "BindController");
   }
   /*
    * Perfil de professor

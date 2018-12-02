@@ -1,7 +1,12 @@
 <?php namespace App;
 
-class Course extends \Moloquent {
-
+class Course extends \Moloquent
+{
+	/**
+	 * The attributes that are mass assignable.
+	 *
+	 * @var array
+	 */
 	public $fillable = [
 		'institution_id',
 		'name',
@@ -14,7 +19,12 @@ class Course extends \Moloquent {
 		'curricular_profile',
 	];
 
-	protected $fillable = [
+	/**
+	 * The model's default values for attributes.
+	 *
+	 * @var array
+	 */
+	protected $attributes = [
 		'status' => 'E',
 	];
 
