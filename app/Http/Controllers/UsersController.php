@@ -20,7 +20,7 @@ class UsersController extends Controller
     $teacher = User::where('email', request()->get('str'))->first();
     \Log::info('post search teacher', [$teacher]);
     if ($teacher) {
-      $relationship = Relationship::where('user_id', $this->user_id)->where('idFriend', $teacher->id)->first();
+      $relationship = Relationship::where('user_id', $this->user_id)->where('friend_id', $teacher->id)->first();
       if (!$relationship) {
         return Response::json([
           'status' => 1,
@@ -55,7 +55,7 @@ class UsersController extends Controller
     $teachers = DB::select("SELECT Users.id, Users.name, Users.photo, Relationships.enrollment as 'comment'"
       . "FROM Users, Relationships "
       . "WHERE Relationships.user_id=? AND Relationships.type='2' "
-      . "AND Relationships.idFriend=Users.id "
+      . "AND Relationships.friend_id=Users.id "
       . "AND Relationships.status='E'"
       . " ORDER BY name",
       [$this->user_id]);
@@ -84,14 +84,14 @@ class UsersController extends Controller
 
       $relationships = DB::select("SELECT Users.id, Users.name, Relationships.enrollment, Users.type "
         . "FROM Users, Relationships "
-        . "WHERE Relationships.user_id=? AND Relationships.type='2' AND Relationships.idFriend=Users.id "
+        . "WHERE Relationships.user_id=? AND Relationships.type='2' AND Relationships.friend_id=Users.id "
         . "AND Relationships.status='E' AND (Users.name LIKE ? OR Relationships.enrollment=?) "
         . " ORDER BY name LIMIT ? OFFSET ?",
         [$this->user_id, "%$search%", $search, $block, $current * $block]);
 
       $length = DB::select("SELECT count(*) as 'length' "
         . "FROM Users, Relationships "
-        . "WHERE Relationships.user_id=? AND Relationships.type='2' AND Relationships.idFriend=Users.id "
+        . "WHERE Relationships.user_id=? AND Relationships.type='2' AND Relationships.friend_id=Users.id "
         . "AND (Users.name LIKE ? OR Relationships.enrollment=?) ", [$this->user_id, "%$search%", $search]);
 
       return view(
@@ -118,11 +118,11 @@ class UsersController extends Controller
     if (strlen(request()->get("teacher"))) {
       $user = User::find(decrypt(request()->get("teacher")));
       if (strlen(request()->get("registered"))) {
-        $relationship = Relationship::where('user_id', $this->user_id)->where('idFriend', $user->id)->first();
+        $relationship = Relationship::where('user_id', $this->user_id)->where('friend_id', $user->id)->first();
         if (!$relationship) {
           $relationship = new Relationship;
           $relationship->user_id = $this->user_id;
-          $relationship->idFriend = $user->id;
+          $relationship->friend_id = $user->id;
           $relationship->enrollment = request()->get('enrollment');
           $relationship->status = "E";
           $relationship->type = "2";
@@ -163,7 +163,7 @@ class UsersController extends Controller
 
       $relationship = new Relationship;
       $relationship->user_id = $this->user_id;
-      $relationship->idFriend = $user->id;
+      $relationship->friend_id = $user->id;
       $relationship->enrollment = request()->get("enrollment");
       $relationship->status = "E";
       $relationship->type = "2";
@@ -178,7 +178,7 @@ class UsersController extends Controller
   public function updateEnrollment()
   {
     $user = User::find(decrypt(request()->get("teacher")));
-    Relationship::where('user_id', $this->user_id)->where('idFriend', $user->id)->update(['enrollment' => request()->get('enrollment')]);
+    Relationship::where('user_id', $this->user_id)->where('friend_id', $user->id)->update(['enrollment' => request()->get('enrollment')]);
     return redirect("/user/teacher")->with("success", "Matrícula editada com sucesso!");
   }
 
@@ -333,7 +333,7 @@ class UsersController extends Controller
   public function postAttest()
   {
     $idStudent = decrypt(request()->get("student"));
-    $relation = Relationship::where("user_id", $this->user_id)->where("idFriend", $idStudent)->whereType(1)->whereStatus("E")->first();
+    $relation = Relationship::where("user_id", $this->user_id)->where("friend_id", $idStudent)->whereType(1)->whereStatus("E")->first();
 
     if ($relation) {
       $attest = new Attest;
@@ -357,7 +357,7 @@ class UsersController extends Controller
     $profile = decrypt(request()->get("u"));
     if ($profile) {
       $profile = User::find($profile);
-      $relationship = Relationship::where('user_id', $this->user_id)->where('idFriend', $profile->id)->first();
+      $relationship = Relationship::where('user_id', $this->user_id)->where('friend_id', $profile->id)->first();
       $profile->enrollment = $relationship->enrollment;
       switch ($profile->formation) {
         case '0':$profile->formation = "Não quero informar";
@@ -392,7 +392,7 @@ class UsersController extends Controller
       $guest = User::find(decrypt(request()->has("teacher") ? request()->get("teacher") : request()->get("guest")));
     }
 
-    if (($guest->type == "M" or $guest->type == "N") and Relationship::where("user_id", $this->user_id)->where("idFriend", $guest->id)->first()) {
+    if (($guest->type == "M" or $guest->type == "N") and Relationship::where("user_id", $this->user_id)->where("friend_id", $guest->id)->first()) {
       if (User::whereEmail(request()->get("email"))->first()) {
         return Redirect::back()->with("error", "O email " . request()->get("email") . " já está cadastrado.");
       }
@@ -439,14 +439,14 @@ class UsersController extends Controller
 
       $relationships = DB::select("SELECT Users.id, Users.name, Users.enrollment "
         . "FROM Users, Relationships "
-        . "WHERE Relationships.user_id=? AND Relationships.type='1' AND Relationships.idFriend=Users.id "
+        . "WHERE Relationships.user_id=? AND Relationships.type='1' AND Relationships.friend_id=Users.id "
         . "AND (Users.name LIKE ? OR Users.enrollment=?) "
         . " ORDER BY name LIMIT ? OFFSET ?",
         [$this->user_id, "%$search%", $search, $block, $current * $block]);
 
       $length = DB::select("SELECT count(*) as 'length' "
         . "FROM Users, Relationships "
-        . "WHERE Relationships.user_id=? AND Relationships.type='1' AND Relationships.idFriend=Users.id "
+        . "WHERE Relationships.user_id=? AND Relationships.type='1' AND Relationships.friend_id=Users.id "
         . "AND (Users.name LIKE ? OR Users.enrollment=?) ", [$this->user_id, "%$search%", $search]);
 
       return view("modules.addStudents",
@@ -491,7 +491,7 @@ class UsersController extends Controller
 		if(!request()->has('student_id')) {
 			$relationship = new Relationship;
 			$relationship->user_id = $this->user_id;
-			$relationship->idFriend = $user->id;
+			$relationship->friend_id = $user->id;
 			$relationship->status = "E";
 			$relationship->type = "1";
 			$relationship->save();
@@ -522,7 +522,7 @@ class UsersController extends Controller
       return Redirect::back()->with("error", $str);
     } else {
       Relationship::where('user_id', $this->user_id)
-        ->where('idFriend', $idTeacher)
+        ->where('friend_id', $idTeacher)
         ->whereType(2)
         ->update(["status" => "D"]);
 
@@ -533,7 +533,7 @@ class UsersController extends Controller
   public function getInfouser()
   {
     $user = User::find(decrypt(request()->get("user")));
-    $user->enrollment = DB::table('Relationships')->where('user_id', $this->user_id)->where('idFriend', $user->id)->pluck('enrollment');
+    $user->enrollment = DB::table('Relationships')->where('user_id', $this->user_id)->where('friend_id', $user->id)->pluck('enrollment');
     $user->password = null;
     return $user;
   }
@@ -549,7 +549,7 @@ class UsersController extends Controller
     }
     $user = decrypt($user);
 
-    $r = Relationship::where("user_id", $this->user_id)->where("idFriend", $user)->whereType($type)->first();
+    $r = Relationship::where("user_id", $this->user_id)->where("friend_id", $user)->whereType($type)->first();
     if ($r and $r->status == "E") {
       return Redirect::back()->with("error", "Já possui esse relacionamento.");
     } elseif ($r) {
@@ -557,7 +557,7 @@ class UsersController extends Controller
     } else {
       $r = new Relationship;
       $r->user_id = $this->user_id;
-      $r->idFriend = $user;
+      $r->friend_id = $user;
       $r->type = $type;
     }
     $r->save();
@@ -576,7 +576,7 @@ class UsersController extends Controller
     $data['student'] = User::find(decrypt(request()->get('u')));
 
     // Obtém número de matrícula do aluno na instituição
-    $e = Relationship::where('user_id', $this->user_id)->where('idFriend', $data['student']->id)->first();
+    $e = Relationship::where('user_id', $this->user_id)->where('friend_id', $data['student']->id)->first();
     $data['student']['enrollment'] = $e['enrollment'];
 
     $disciplines = DB::select("

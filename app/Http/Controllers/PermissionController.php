@@ -16,7 +16,7 @@ class PermissionController extends Controller
 		if ( session("redirect") )
 			return redirect(session("redirect"));
 
-		$friends = DB::select("SELECT Users.id, Users.name, Users.enrollment FROM Relationships, Users WHERE Relationships.user_id=? AND Relationships.idFriend=Users.id", [$this->user_id]);
+		$friends = DB::select("SELECT Users.id, Users.name, Users.enrollment FROM Relationships, Users WHERE Relationships.user_id=? AND Relationships.friend_id=Users.id", [$this->user_id]);
 
 		$listfriends = [];
 		$keys = [];

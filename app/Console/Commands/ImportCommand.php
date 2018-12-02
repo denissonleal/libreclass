@@ -103,7 +103,7 @@ class ImportCommand extends Command {
 						$gender = !empty($cols[2]) ? $cols[2][0] : '-';//Primeira letra do sexo (alguns arquivos trazem 'Masculino/Feminino')
 						$student = User::create(['name'=>$cols[1], 'type'=>'N', 'enrollment'=>$cols[0], 'cadastre'=>'N', 'gender'=>$gender,
 						'birthdate'=>$birthdate]);
-						Relationship::create(['user_id'=>$institution->id, 'idFriend'=>$student->id, 'type'=>'1']);
+						Relationship::create(['user_id'=>$institution->id, 'friend_id'=>$student->id, 'type'=>'1']);
 						$students[] = $student;
 					}else {//Linha em branco: acabou a listagem de alunos desta turma.
 						$cadastro_alunos = false;
@@ -117,8 +117,8 @@ class ImportCommand extends Command {
 						if(!$professor = User::where('name', $cols[1])->whereIn('type', ['P', 'M'])->first()){
 							$professor = User::create(['name'=>$cols[1], 'type'=>'M', 'cadastre'=>'N']);
 						}
-						if(!Relationship::where('user_id', $institution->id)->where('idFriend', $professor->id)->count()){
-							Relationship::create(['user_id'=>$institution->id, 'idFriend'=>$professor->id, 'type'=>'2']);
+						if(!Relationship::where('user_id', $institution->id)->where('friend_id', $professor->id)->count()){
+							Relationship::create(['user_id'=>$institution->id, 'friend_id'=>$professor->id, 'type'=>'2']);
 						}
 					}
 					if (strlen($cols[2])){//Disciplinas

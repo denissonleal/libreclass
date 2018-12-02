@@ -90,7 +90,7 @@ class CSVController extends Controller
           $cols[5] = $cols[5][2] . "-" . $cols[5][1] . "-" . $cols[5][0];
           $student = DB::select("SELECT Users.id FROM Relationships, Users
                                  WHERE Relationships.user_id=? AND
-                                 Relationships.idFriend=Users.id AND
+                                 Relationships.friend_id=Users.id AND
                                  Users.enrollment=?", [ $this->user->id, $cols[1] ]);
           $result[] = [
             $cols[1], // matricula
@@ -166,7 +166,7 @@ class CSVController extends Controller
         {
           $student = DB::select("SELECT Users.id FROM Relationships, Users
                                  WHERE Relationships.user_id=? AND
-                                 Relationships.idFriend=Users.id AND
+                                 Relationships.friend_id=Users.id AND
                                  Users.enrollment=?", [ $this->user->id, $attend[0] ]);
           if (count($student))
           {
@@ -184,7 +184,7 @@ class CSVController extends Controller
             $attend[4] = $student->id;
 
             if( !$s_relations )
-              $s_relations = "INSERT IGNORE INTO Relationships (user_id, idFriend, type ) VALUES (".$this->user->id.", $student->id, '1')";
+              $s_relations = "INSERT IGNORE INTO Relationships (user_id, friend_id, type ) VALUES (".$this->user->id.", $student->id, '1')";
             else
               $s_relations .= ", (".$this->user->id.", $student->id, '1')";
           }
@@ -333,7 +333,7 @@ class CSVController extends Controller
           $offer[1],
           DB::select("SELECT count(*) as 'qtd' FROM Relationships, Users
                       WHERE Relationships.user_id=? AND
-                      Relationships.idFriend=Users.id AND
+                      Relationships.friend_id=Users.id AND
                       Relationships.type='2' AND
                       Users.enrollment=?", [$this->user->id, $offer[0]])[0]->qtd
           ];
@@ -355,7 +355,7 @@ class CSVController extends Controller
       foreach ($class[1] as $offer) {
         $status = DB::select("SELECT count(*) as 'qtd' FROM Relationships, Users
                               WHERE Relationships.user_id=? AND
-                              Relationships.idFriend=Users.id AND
+                              Relationships.friend_id=Users.id AND
                               Relationships.type='2' AND
                               Users.enrollment=?",[$this->user->id, $offer[0]])[0]->qtd;
         if (!$status) {
@@ -366,7 +366,7 @@ class CSVController extends Controller
           $user->enrollment = $offer[0];
           $user->save();
           if( !$s_relations )
-            $s_relations = "INSERT IGNORE INTO Relationships (user_id, idFriend, type ) VALUES (".$this->user->id.", $user->id, '2')";
+            $s_relations = "INSERT IGNORE INTO Relationships (user_id, friend_id, type ) VALUES (".$this->user->id.", $user->id, '2')";
           else
             $s_relations .= ", (".$this->user->id.", $user->id, '2')";
         }
@@ -395,7 +395,7 @@ class CSVController extends Controller
       {
         $teacher = DB::select("SELECT Users.id FROM Relationships, Users
                                WHERE Relationships.user_id=? AND
-                               Relationships.idFriend=Users.id AND
+                               Relationships.friend_id=Users.id AND
                                Relationships.type='2' AND
                                Users.enrollment=?",[$this->user->id, $offer_aux[0]])[0];
         foreach ($offer_aux[8] as $disc)
