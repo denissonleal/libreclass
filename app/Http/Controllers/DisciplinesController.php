@@ -1,140 +1,149 @@
 <?php namespace App\Http\Controllers;
 
+use App\Course;
+use App\Period;
+use App\Discipline;
+
 class DisciplinesController extends Controller
 {
+	public function __construct()
+	{
+		$this->middleware('auth.type:IP');
+	}
 
-  /**
-   * Armazena o ID do usuário
-   * @var type num
-   */
-  private $user_id;
+	/**
+	 * Construção da página inicial
+	 * @return type redirect
+	 */
+	public function index()
+	{
+		$user = auth()->user();
+		$courses = Course::where('institution_id', $user->id)
+			->whereStatus('E')->orderBy('name')->get();
 
-  public function __construct()
-  {
-    $id = session("user");
-    if ($id == null || $id == "") {
-      $this->user_id = false;
-    }
-    else {
-      $this->user_id = decrypt($id);
-    }
-  }
+		$listCourses = [];
+		foreach ($courses as $course) {
+			$listCourses[encrypt($course->id)] = $course->name;
+		}
 
-  /**
-   * Construção da página inicial
-   * @return type redirect
-   */
-  public function getIndex()
-  {
-    if ($this->user_id) {
-      $user = User::find($this->user_id);
-      $courses = Course::where("institution_id", $this->user_id)->whereStatus("E")->orderBy("name")->get();
-      $listCourses = [];
-      foreach ($courses as $course) {
-        $listCourses[encrypt($course->id)] = $course->name;
-      }
-      return view("social.disciplines", ["listCourses" => $listCourses, "user" => $user]);
-    }
-    else {
-//      return redirect("/");
-    }
-  }
+		return view('social.disciplines', [
+			'listCourses' => $listCourses,
+			'user' => $user,
+		]);
+	}
 
-  public function postSave()
-  {
-    $course = Course::find(decrypt(request()->get("course")));
-    if ($this->user_id == $course->institution_id) {
-      $period = Period::where("course_id", $course->id )->whereId(decrypt(request()->get("period")))->first();
-      $discipline = null;
-      if (strlen(request()->get("discipline"))) {
-        $discipline = Discipline::find(decrypt(request()->get("discipline")));
-      }
-      else {
-        $discipline = new Discipline;
-      }
-      $discipline->period_id = $period->id;
-      $discipline->name = request()->get("name");
-      $discipline->ementa = request()->get("ementa");
-      $discipline->save();
-      return redirect("/disciplines")->with("success", "Disciplina inserida com sucesso.");
-    }
-    else {
-      return redirect("/disciplines")->with("error", "Não foi possível inserir a disciplina.");
-    }
-    var_dump(request()->all());
-  }
+	public function save()
+	{
+		$course = Course::find(decrypt(request()->get("course")));
+		$period = Period::where("course_id", $course->id )
+			->whereId(decrypt(request()->get("period")))
+			->first();
 
-  public function postDelete()
-  {
-    //~ return request()->all();
+		$discipline = new Discipline;
+		if (strlen(request()->get("discipline"))) {
+			$discipline = Discipline::find(decrypt(request()->get("discipline")));
+		}
 
-    $discipline = Discipline::find(decrypt(request()->get("input-trash")));
-    $offers = DB::select("SELECT Offers.id, Classes.name
-                            FROM Offers, Classes
-                             WHERE Classes.status = 'E' AND
-                             Offers.discipline_id=? AND
-                             Offers.class_id=Classes.id", [$discipline->id]);
+		$discipline->period_id = $period->id;
+		$discipline->name = request()->get("name");
+		$discipline->ementa = request()->get("ementa");
+		$discipline->save();
 
-    if(count($offers)) {
-      return redirect("/disciplines")->with("error", "Não foi possível excluir. <br>Disciplina vinculada à turma <b>". $offers[0]->name . "</b>");
-    }
+		return redirect("/disciplines")
+			->with("success", "Disciplina inserida com sucesso.");
+	}
 
-    if ($discipline) {
-      $discipline->status = "D";
-      $discipline->save();
-      return redirect("/disciplines")->with("success", "Excluído com sucesso.");
-    }
-    else {
-      return redirect("/disciplines")->with("error", "Não foi possível excluir a disciplina.");
-    }
-  }
+	public function postDelete()
+	{
+		//~ return request()->all();
 
-  public function getDiscipline()
-  {
-    $discipline = Discipline::find(decrypt(request()->get("discipline")));
-    return $discipline;
-  }
+		$discipline = Discipline::find(decrypt(request()->get("input-trash")));
+		$offers = DB::select("SELECT Offers.id, Classes.name
+														FROM Offers, Classes
+														 WHERE Classes.status = 'E' AND
+														 Offers.discipline_id=? AND
+														 Offers.class_id=Classes.id", [$discipline->id]);
 
-  public function postEdit()
-  {
-    $discipline = Discipline::find(decrypt(request()->get("discipline")));
-    if (!isset($discipline) || empty($discipline)) {
-      return Redirect::back()->with("error", "Não foi possível editar a disciplina");
-    } else {
-      $discipline->name = request()->get("name");
-      $discipline->ementa = request()->get("ementa");
-      $discipline->save();
-      return Redirect::back()->with("success", "Disciplina editada com sucesso!");
-    }
-  }
+		if(count($offers)) {
+			return redirect("/disciplines")->with("error", "Não foi possível excluir. <br>Disciplina vinculada à turma <b>". $offers[0]->name . "</b>");
+		}
 
-  /**
-   * Lista os periodos para mostrar em um select
-   *
-   * @return array [id=>value]
-   */
-  public function postListperiods()
-  {
-    $periods = Period::where("course_id", decrypt(request()->get("course")))->whereStatus("E")->get();
-    foreach( $periods as $period )
-      $period->id = encrypt($period->id);
+		if ($discipline) {
+			$discipline->status = "D";
+			$discipline->save();
+			return redirect("/disciplines")->with("success", "Excluído com sucesso.");
+		}
+		else {
+			return redirect("/disciplines")->with("error", "Não foi possível excluir a disciplina.");
+		}
+	}
 
-    return $periods;
-  }
+	public function getDiscipline()
+	{
+		$discipline = Discipline::find(decrypt(request()->get("discipline")));
+		return $discipline;
+	}
 
-  public function anyList()
-  {
-    if(request()->get("course")) {
-      $disciplines = DB::select("SELECT Disciplines.id AS id, Disciplines.name AS name, Periods.name AS period FROM Disciplines, Periods WHERE period_id = Periods.id AND course_id = ? AND Disciplines.status = 'E'", [decrypt(request()->get("course"))]);
-      return view("social.disciplines.list", [ "disciplines" => $disciplines ]);
-    }
-  }
+	public function postEdit()
+	{
+		$discipline = Discipline::find(decrypt(request()->get("discipline")));
+		if (!isset($discipline) || empty($discipline)) {
+			return Redirect::back()->with("error", "Não foi possível editar a disciplina");
+		} else {
+			$discipline->name = request()->get("name");
+			$discipline->ementa = request()->get("ementa");
+			$discipline->save();
+			return Redirect::back()->with("success", "Disciplina editada com sucesso!");
+		}
+	}
 
-  public function getEmenta() {
+	/**
+	 * Lista os periodos para mostrar em um select
+	 *
+	 * @return array [id=>value]
+	 */
+	public function listPeriods()
+	{
+		$periods = Period::where("course_id", decrypt(request()->get("course")))->whereStatus("E")->get();
+		foreach( $periods as $period )
+			$period->id = encrypt($period->id);
 
-      $discipline = Discipline::find(decrypt(request()->get("offer")));
+		return $periods;
+	}
 
-      return $discipline;
-  }
+	public function list()
+	{
+		$disciplines = collect();
+
+		$periods = Period::whereCourseId(decrypt(request()->course))
+			->with(['disciplines' => function($query) {
+				$query->whereStatus('E');
+			}])
+			->get();
+
+		foreach ($periods as $period) {
+			foreach ($period->disciplines as $discipline) {
+				$disciplines->push(optional((object) [
+					'id' => $discipline->id,
+					'name' => $discipline->name,
+					'period' => $period->name,
+				]));
+			}
+		}
+
+		// $disciplines = DB::select("
+		// 	SELECT Disciplines.id AS id, Disciplines.name AS name, Periods.name AS period
+		// 	FROM Disciplines, Periods
+		// 	WHERE period_id = Periods.id AND course_id = ? AND Disciplines.status = 'E'",
+		// 	[decrypt(request()->get("course"))]);
+
+		return view("social.disciplines.list", [ "disciplines" => $disciplines ]);
+	}
+
+	public function getEmenta() {
+		$discipline = Discipline::find(decrypt(request()->get("offer")));
+
+		return $discipline;
+	}
 
 }

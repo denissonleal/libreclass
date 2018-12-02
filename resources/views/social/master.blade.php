@@ -6,7 +6,8 @@
     LibreClass Online
   @show
   </title>
-  <link rel="shortcut icon" href="{{{asset("images/favicon.ico")}}}">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <link rel="shortcut icon" href="/images/favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
@@ -120,6 +121,7 @@
     })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
     ga('create', 'UA-90938637-1', 'auto');
     ga('send', 'pageview');
+    $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}});
   </script>
 
 </body>

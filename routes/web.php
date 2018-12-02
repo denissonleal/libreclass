@@ -11,24 +11,39 @@
 |
 */
 
-// auth
+/* Erro ao detectar internet explorer */
+Route::get('/ie', function () {
+  return view('ie');
+});
+
+/* auth */
 Route::get('login', 'LoginController@index');
 Route::post('login', 'LoginController@login');
 Route::any('logout', 'LoginController@logout');
 
-// courses
+/* courses */
 Route::get('courses', 'CoursesController@index');
 Route::post('courses/save', 'CoursesController@save');
+
+/* period */
+Route::get('periods', 'PeriodsController@index');
+Route::any('periods/list', 'PeriodsController@list');
+Route::any('periods/save', 'PeriodsController@save');
+Route::any('periods/read', 'PeriodsController@read');
+
+/* disciplines */
+// Route::controller('disciplines', "DisciplinesController");
+Route::get('disciplines', 'DisciplinesController@index');
+Route::post('disciplines/save', 'DisciplinesController@save');
+Route::get('disciplines/list-periods', 'DisciplinesController@listPeriods');
+Route::any('disciplines/list', 'DisciplinesController@list');
+
+
 
 Route::get('/', 'HomeController@index');
 
 /** ROTAS ANTIGAS
 Route::controller('/censo', 'CensoController');
-
-// Erro ao detectar internet explorer
-Route::get('/ie', function () {
-  return View::make("ie");
-});
 
 Route::controller('/classrooms', "ClassroomController");
 
@@ -63,8 +78,6 @@ if (session("user") == null) {
     Route::get('classes/group/{class_id}', "ClassesGroupController@loadClassGroup");
 
     Route::controller('courses', "CoursesController");
-    Route::controller('disciplines', "DisciplinesController");
-		Route::controller('periods', "PeriodsController");
 
     Route::controller('classes/lessons', "LessonsController");
     Route::controller('classes/offers', "OffersController");

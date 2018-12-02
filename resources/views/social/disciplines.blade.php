@@ -56,6 +56,7 @@
         <div class="row">
           <div class="col-md-12">
             {{ Form::open(["id" => "select-course"]) }}
+              @csrf
               <div class="form-group">
                 {{ Form::label("course", "Curso", ["class" => "control-label"]) }}
                 <span class="help-block text-muted">Selecione o curso para visualizar as disciplinas.</span>
@@ -96,6 +97,7 @@
       <div class="row">
         <div class="col-md-12">
           {{ Form::open(["id" => "new-discipline", "url" => URL::to("/disciplines/save") ]) }}
+            @csrf
             {{ Form::hidden("discipline", null) }}
             <div class="form-group">
               {{ Form::label("course", "Curso", ["class" => "control-label"]) }}
@@ -103,10 +105,9 @@
               {{ Form::select("course", $listCourses, null, ["class" => "form-control"]) }}
             </div>
             <div class="form-group">
-              {{ Form::label("period", "Série/Período", ["class" => "control-label"]) }}
+              {{ Form::label("period", "Série/Período *", ["class" => "control-label"]) }}
               <span class="help-block text-muted">Selecione a série ou período para o qual deseja vincular a disciplina</span>
-              {{ Form::select("period", [""], null, ["class" => "form-control"]) }}
-              {{-- Form::text("period", null, ["class" => "form-control", "autofocus"]) --}}
+              <select name="period" class="form-control" required></select>
             </div>
             <div class="form-group">
               {{ Form::label("name", "Nome", ["class" => "control-label"]) }}
