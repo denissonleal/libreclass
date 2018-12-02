@@ -8,15 +8,10 @@ class Frequency extends \Moloquent
 	 * @var array
 	 */
 	protected $fillable = [
-		'offer_id',
-		'user_id',
-		'value',
+		'attend_id', // Id do relacionamento cursa
+		'lesson_id', // Id da aula
+		'value', // P = Presente; F = Falta;
 	];
-
-	public function setValueAttribute($value)
-	{
-		$this->attributes['value'] = (float) $value;
-	}
 
 	public static function getValue($user, $lesson)
 	{
