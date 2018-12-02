@@ -1,8 +1,26 @@
 <?php namespace App;
 
-class Period extends \Moloquent {
-
+class Period extends \Moloquent
+{
+	/**
+	 * The attributes that are mass assignable.
+	 *
+	 * @var array
+	 */
 	public $fillable = [
+		'course_id',
+		'name',
+		'value', // 1 = primeiro período/série; 2 = segundo período/série; ...
+		'status',
+	];
+
+	/**
+	 * The model's default values for attributes.
+	 *
+	 * @var array
+	 */
+	protected $attributes = [
+		'status' => 'E',
 	];
 
 	public function disciplines()
