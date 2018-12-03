@@ -33,7 +33,7 @@ class CoursesController extends Controller
 		]);
 	}
 
-	public function postAllCourses()
+	public function allCourses()
 	{
 		$courses = Course::where("institution_id", auth()->id())
 			->whereStatus("E")
@@ -90,7 +90,7 @@ class CoursesController extends Controller
 			->with("success", "Curso $course->name salvo com sucesso!");
 	}
 
-	public function postDelete(Request $request)
+	public function delete(Request $request)
 	{
 		$course = Course::find(decrypt($request->get("input-trash")));
 		if ($course) {
@@ -105,12 +105,12 @@ class CoursesController extends Controller
 		}
 	}
 
-	public function getEdit(Request $request)
+	public function edit(Request $request)
 	{
 		return Course::find(decrypt($request->get("course")));
 	}
 
-	public function postPeriod(Request $request)
+	public function period(Request $request)
 	{
 		try {
 			$course = Course::find(decrypt($request->get("course")));
@@ -133,7 +133,7 @@ class CoursesController extends Controller
 		}
 	}
 
-	public function postEditperiod(Request $request)
+	public function editperiod(Request $request)
 	{
 		try {
 			$course = Course::find(decrypt($request->get("course")));

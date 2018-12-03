@@ -16,14 +16,17 @@ Route::get('/ie', function () {
   return view('ie');
 });
 
-/* auth */
 Route::get('login', 'LoginController@index');
 Route::post('login', 'LoginController@login');
 Route::any('logout', 'LoginController@logout');
 
-/* courses */
 Route::get('courses', 'CoursesController@index');
+Route::get('courses/edit', 'CoursesController@edit');
 Route::post('courses/save', 'CoursesController@save');
+Route::post('courses/all-courses', 'CoursesController@allCourses');
+Route::post('courses/delete', 'CoursesController@delete');
+Route::post('courses/period', 'CoursesController@period');
+Route::post('courses/editperiod', 'CoursesController@editperiod');
 
 /* period */
 Route::get('periods', 'PeriodsController@index');
