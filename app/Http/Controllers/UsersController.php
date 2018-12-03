@@ -48,14 +48,17 @@ class UsersController extends Controller
 
 	public function anyTeachersFriends()
 	{
-		$teachers = DB::select("SELECT Users.id, Users.name, Users.photo, Relationships.enrollment as 'comment'"
-			. "FROM Users, Relationships "
-			. "WHERE Relationships.user_id=? AND Relationships.type='2' "
-			. "AND Relationships.friend_id=Users.id "
-			. "AND Relationships.status='E'"
-			. " ORDER BY name",
-			[auth()->id()]);
+		$relationships = Relationship::whereuserId(auth()->id())
+			->whereType('2')
+			->whereStatus('E')
+			->get(['friend_id', 'enrollment'])
+			->pluck('enrollment', 'friend_id');
+
+		$teachers = User::whereIn('_id', $relationships->keys()->all())
+			->orderBy('name')->get(['name', 'photo']);
+
 		foreach ($teachers as $teacher) {
+			$teacher->comment = $relationships->get($teacher->id);
 			$teacher->id = base64_encode($teacher->id);
 		}
 
