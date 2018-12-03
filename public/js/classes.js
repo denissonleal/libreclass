@@ -270,7 +270,7 @@ $(function() {
 		return false;
 	});
 
-	$("#view-classes [name='schoolYear']").change(function(e) {
+	$("#view-classes [name='school_year']").change(function(e) {
 		location.href="/classes?year="+$(e.target).val();
 	});
 
@@ -285,7 +285,7 @@ $(function() {
   });
 
 	$("#receive-classes", "#view-classes").click(function(){
-		var year = $("#view-classes [name='schoolYear']").val();
+		var year = $("#view-classes [name='school_year']").val();
 		var modal = $("#modalReceiveClass");
 		var list = modal.find('.list-classes').empty();
 		$.post('classes/classes-by-year', { 'year': year - 1 }, function(data) {
@@ -361,7 +361,7 @@ $(function() {
 				}
 				// var classes = '';
 				// data.next_classe.classes.forEach(function(item) {
-				// 	classes += '<option value="'+ item.id +'">'+ item.schoolYear +' - '+data.next_classe.name +' - '+ item.name +'</option>';
+				// 	classes += '<option value="'+ item.id +'">'+ item.school_year +' - '+data.next_classe.name +' - '+ item.name +'</option>';
 				// });
 
 				$('.block_list_students', '#modalProgressionClasses').show();

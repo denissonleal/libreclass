@@ -199,7 +199,7 @@ class UsersController extends Controller
 
     if ($profile) {
       $profile = User::find($profile);
-			$courses = DB::select("SELECT Courses.id, Courses.name, Courses.quantUnit FROM Attends, Units, Offers, Disciplines, Periods, Courses, Classes "
+			$courses = DB::select("SELECT Courses.id, Courses.name, Courses.quant_unit FROM Attends, Units, Offers, Disciplines, Periods, Courses, Classes "
 			. " WHERE Units.id = Attends.unit_id "
 			. " AND Offers.id = Units.offer_id "
 			. " AND Disciplines.id = Offers.discipline_id "
@@ -235,7 +235,7 @@ class UsersController extends Controller
     $student = decrypt(request()->get("student"));
     $disciplines = DB::select("SELECT  Courses.id as course, Disciplines.name, Offers.id as offer, Attends.id as attend, Classes.status as statusclasse "
       . "FROM Classes, Periods, Courses, Disciplines, Offers, Units, Attends "
-      . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.schoolYear=? AND Classes.id=Offers.class_id AND Offers.discipline_id=Disciplines.id AND Offers.id=Units.offer_id AND Units.id=Attends.unit_id AND Attends.user_id=? "
+      . "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.school_year=? AND Classes.id=Offers.class_id AND Offers.discipline_id=Disciplines.id AND Offers.id=Units.offer_id AND Units.id=Attends.unit_id AND Attends.user_id=? "
       . "group by Offers.id",
       [$this->user_id, request()->get("class"), $student]);
 
@@ -593,7 +593,7 @@ class UsersController extends Controller
         Courses.institution_id =  ?
         and Courses.id = Periods.course_id
         and Periods.id = Classes.period_id
-        and Classes.schoolYear =  ?
+        and Classes.school_year =  ?
         and Classes.id = Offers.class_id
         and Offers.discipline_id = Disciplines.id
         and Offers.id = Units.offer_id
@@ -602,7 +602,7 @@ class UsersController extends Controller
 				and Classes.status = 'E'
 				and Courses.id = ?
       GROUP BY Offers.id",
-      [$this->user_id, request()->get('schoolYear'), $data['student']->id, implode(',', request()->get('unit_value')), request()->get('course')]
+      [$this->user_id, request()->get('school_year'), $data['student']->id, implode(',', request()->get('unit_value')), request()->get('course')]
     );
 
     if (!$disciplines) {

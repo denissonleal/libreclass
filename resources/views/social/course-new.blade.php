@@ -28,7 +28,7 @@
 					<div class="form-group">
 						<label class="control-label">Total de trimestres</label>
 						<span class="help-block text-muted">Quantidade de trimestres ou unidades</span>
-						<input type="text" name="quantUnit" class="form-control" placeholder="Informe a quantidade de trimestres ou unidades do curso">
+						<input type="text" name="quant_unit" class="form-control" placeholder="Informe a quantidade de trimestres ou unidades do curso">
 					</div>
 					<div class="form-group">
 						<label class="control-label">Percentual de faltas para reprovação (%)</label>

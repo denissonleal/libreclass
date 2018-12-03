@@ -15,8 +15,8 @@ class Offer extends \Moloquent
 		'day_period', // dados do csv
 		'grouping', // N = Nothing, M = Master, S = Slave
 		'maxlessons',
-		'typeFinal',
-		'dateFinal',
+		'type_final',
+		'date_final',
 		'comments',
 		'status',
 	];

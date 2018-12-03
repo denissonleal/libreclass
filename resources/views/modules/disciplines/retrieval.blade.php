@@ -51,9 +51,9 @@
                 <div class="form-inline">
 
                   {{ Form::label("date-day", "Data da avaliação ")}}
-                  {{ Form::selectRange("date-day", 1, 31, date("d", strtotime($offer->dateFinal)),["class" => "form-control"]) }}
-                  {{ Form::selectRange("date-month", 1, 12, date("m", strtotime($offer->dateFinal)), ["class" => "form-control"]) }}
-                  {{ Form::selectRange("date-year", date("Y"), date("Y")-10, date("Y", strtotime($offer->dateFinal)), ["class" => "form-control"]) }}
+                  {{ Form::selectRange("date-day", 1, 31, date("d", strtotime($offer->date_final)),["class" => "form-control"]) }}
+                  {{ Form::selectRange("date-month", 1, 12, date("m", strtotime($offer->date_final)), ["class" => "form-control"]) }}
+                  {{ Form::selectRange("date-year", date("Y"), date("Y")-10, date("Y", strtotime($offer->date_final)), ["class" => "form-control"]) }}
                 </div>
               </div>
             </div>
@@ -76,7 +76,7 @@
                                           "Texto Dissertativo",
                                           "Avaliação Prática",
                                           "Outros"
-                                        ], $offer->typeFinal, ["class" => "form-control", "required"]) }}
+                                        ], $offer->type_final, ["class" => "form-control", "required"]) }}
               </div>
             </div>
           </div>

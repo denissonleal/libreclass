@@ -21,9 +21,9 @@
         <div class="row">
           <div class="col-md-6 col-sm-6 col-xs-12">
             <div class="form-group">
-              {{ Form::label("schoolYear", "Ano escolar", ["class" => "control-label"]) }}
+              {{ Form::label("school_year", "Ano escolar", ["class" => "control-label"]) }}
               <span class="help-block text-muted">Selecione o ano escolar</span>
-            	{{ Form::select("schoolYear", ['2018' => '2018'], $schoolYear, ["class" => "form-control"]) }}
+            	{{ Form::select("school_year", ['2018' => '2018'], $school_year, ["class" => "form-control"]) }}
             </div>
           </div>
           <div class="col-md-6 col-sm-6 col-xs-12">

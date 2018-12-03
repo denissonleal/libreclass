@@ -197,8 +197,8 @@ class AvaliableController extends Controller
   public function postFinaldiscipline($id = "")
   {
     $offer = Offer::find(decrypt($id));
-    $offer->dateFinal = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
-    $offer->typeFinal = request()->get("type");
+    $offer->date_final = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
+    $offer->type_final = request()->get("type");
     $offer->comments = request()->get("comment");
     $offer->save();
     return redirect("avaliable/finaldiscipline/$id")->with("success", "Recuperação Final atualizada com sucesso");
@@ -242,8 +242,8 @@ class AvaliableController extends Controller
     $offer = Offer::find(decrypt($offer));
 
     /* caso não tenha data marcada, coloque a data de hoje */
-    if (strtotime($offer->dateFinal) < 0) {
-      $offer->dateFinal = date("Y-m-d");
+    if (strtotime($offer->date_final) < 0) {
+      $offer->date_final = date("Y-m-d");
     }
 
     if (!Lecture::where("user_id", $user->id)->where("offer_id", $offer->id)->first()) {

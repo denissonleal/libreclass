@@ -14,7 +14,7 @@
 					<br />Selecione abaixo as turmas e informe se deseja copiar com as ofertas atuais.
 				</p>
 				<br />
-				<b>Turmas de {{ $schoolYear - 1 }}</b>
+				<b>Turmas de {{ $school_year - 1 }}</b>
 
 				<ul class="list-group list-classes">
 				</ul>

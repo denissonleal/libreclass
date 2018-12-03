@@ -42,6 +42,12 @@ Route::any('disciplines/list', 'DisciplinesController@list');
 Route::get('bind/link', 'BindController@link');
 Route::get('bind/list', 'BindController@list');
 
+// Route::controller('classes', "ClassesController");
+Route::get('classes', 'ClassesController@index');
+Route::post('classes/classes-by-year', 'ClassesController@classesByYear');
+Route::post('classes/listdisciplines', 'ClassesController@listdisciplines');
+
+
 Route::get('/', 'HomeController@index');
 
 /** ROTAS ANTIGAS
@@ -83,7 +89,6 @@ if (session("user") == null) {
 
     Route::controller('classes/lessons', "LessonsController");
     Route::controller('classes/offers', "OffersController");
-    Route::controller('classes', "ClassesController");
 
 		Route::controller('progression', "ProgressionController");
 
@@ -100,8 +105,6 @@ if (session("user") == null) {
     Route::get('user/student', "UsersController@getStudent");
     Route::post('user/student', "UsersController@postStudent");
     Route::controller('courses', "CoursesController");
-    Route::controller('classes/panel', "ClassesController");
-    Route::controller('classes', "ClassesController");
     Route::controller('disciplines', "DisciplinesController");
     Route::controller('lectures/units', "UnitsController");
     Route::controller('lectures', "LecturesController");

@@ -20,7 +20,7 @@
   <div class="row">
     <div class="col-md-10 col-sm-10">
       <ol class="breadcrumb">
-        <li><b>{{ $classe->schoolYear }}</b></li>
+        <li><b>{{ $classe->school_year }}</b></li>
         <li><b>{{ $course->name }}</b></li>
         <li><b>{{ $period->name }}</b></li>
         <li class="active"><b>{{ $classe->fullName() }}</b></li>

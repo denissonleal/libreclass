@@ -13,7 +13,7 @@
 	            <div class="col-xs-12">
 	              <div class="form-group">
 	                <label>Selecione o ano letivo</label>
-	                {{ Form::select("schoolYear", ['2017'=>'2017', '2018' => '2018'], '2018', ["class" => "form-control", "id" => "class-modal-change"]) }}
+	                {{ Form::select("school_year", ['2017'=>'2017', '2018' => '2018'], '2018', ["class" => "form-control", "id" => "class-modal-change"]) }}
 	              </div>
 	            </div>
 	          </div>
@@ -23,7 +23,7 @@
 	                <label>Curso</label>
 									<select name="course" class="form-control" id="select-scholar-report-course">
 										@foreach($courses as $course)
-											<option value="{{$course->id}}" quant-unit="{{$course->quantUnit}}">{{$course->name}}</option>
+											<option value="{{$course->id}}" quant-unit="{{$course->quant_unit}}">{{$course->name}}</option>
 										@endforeach
 									</select>
 	              </div>

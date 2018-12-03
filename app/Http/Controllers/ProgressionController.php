@@ -38,7 +38,7 @@ class ProgressionController extends Controller
 		// 	return ['status' => 0, 'message' => 'Não existe progressão configurada para a série. Verifique a sequência de progressão em <a href="periods">Meus Períodos</a>.'];
 		// }
     //
-		// $next_period->classes = Classe::where('period_id', $next_period->id)->where('schoolYear', $atual_classe->schoolYear + 1)->get();
+		// $next_period->classes = Classe::where('period_id', $next_period->id)->where('school_year', $atual_classe->school_year + 1)->get();
 
 		//Se não há configuração de progressão da próxima série
 		// if(empty($next_period->classes)) {

@@ -36,7 +36,7 @@ $(document).ready(function(){
       $("#form-course input[name='name']").val(data.name);
       $("#form-course input[name='type']").val(data.type);
       $("#form-course input[name='modality']").val(data.modality);
-      $("#form-course input[name='quantUnit']").val(data.quantUnit);
+      $("#form-course input[name='quant_unit']").val(data.quant_unit);
 //      $("#form-course input[name='ementa']").val(data.ementa);
       $("#form-course input[name='absent_percent']").val(data.absent_percent);
       $("#form-course input[name='average']").val(data.average);

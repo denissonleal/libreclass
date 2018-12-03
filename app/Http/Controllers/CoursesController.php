@@ -63,7 +63,7 @@ class CoursesController extends Controller
 		$course->institution_id = auth()->id();
 		$course->name = $request->get("name");
 		$course->type = $request->get("type");
-		$course->quant_unit = $request->get("quantUnit");
+		$course->quant_unit = $request->get("quant_unit");
 		$course->modality  = $request->get("modality");
 		$course->absent_percent = $request->get("absent_percent");
 		$course->average = $request->get("average");

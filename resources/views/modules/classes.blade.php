@@ -38,7 +38,7 @@
 						<div class="col-xs-4">
 							<div class="input-group form-group">
 								<span class="input-group-addon">Ano letivo</span>
-								{{ Form::select("schoolYear", ['2017' => '2017', '2018' => '2018'], $schoolYear, ["class" => "form-control"]) }}
+								{{ Form::select("school_year", ['2017' => '2017', '2018' => '2018'], $school_year, ["class" => "form-control"]) }}
 							</div>
 						</div>
             <div class="col-xs-8">
@@ -165,7 +165,7 @@
 </div>
 
 @include("modules.addClassesModal")
-@include("modules.receiveClassesModal", ['schoolYear' => $schoolYear])
+@include("modules.receiveClassesModal", ['school_year' => $school_year])
 @include("modules.progressionClassesModal", ['previous_classes' => $previous_classes])
 @include("offers.blockUnitModal")
 @include("offers.unblockUnitModal")
