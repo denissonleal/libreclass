@@ -401,7 +401,7 @@ class ClassesController extends Controller
 		}
 	}
 
-	public function createOffer($offer, $classe, $group)
+	private function createOffer($offer, $classe, $group)
 	{
 		$new_offer = new Offer();
 		$new_offer->class_id = $classe->id;

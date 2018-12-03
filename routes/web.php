@@ -39,20 +39,34 @@ Route::any('periods/save', 'PeriodsController@save');
 Route::any('periods/read', 'PeriodsController@read');
 
 /* disciplines */
-// Route::controller('disciplines', "DisciplinesController");
 Route::get('disciplines', 'DisciplinesController@index');
 Route::post('disciplines/save', 'DisciplinesController@save');
 Route::get('disciplines/list-periods', 'DisciplinesController@listPeriods');
 Route::any('disciplines/list', 'DisciplinesController@list');
+Route::post('disciplines/delete', 'DisciplinesController@postDelete');
+Route::get('disciplines/discipline', 'DisciplinesController@getDiscipline');
+Route::post('disciplines/edit', 'DisciplinesController@postEdit');
+Route::get('disciplines/ementa', 'DisciplinesController@getEmenta');
 
 /* bind */
 Route::get('bind/link', 'BindController@link');
 Route::get('bind/list', 'BindController@list');
 
-// Route::controller('classes', "ClassesController");
 Route::get('classes', 'ClassesController@index');
 Route::post('classes/classes-by-year', 'ClassesController@classesByYear');
 Route::post('classes/listdisciplines', 'ClassesController@listdisciplines');
+Route::get('classes/panel', 'ClassesController@getPanel');
+Route::post('classes/new', 'ClassesController@postNew');
+Route::get('classes/info', 'ClassesController@getInfo');
+Route::post('classes/edit', 'ClassesController@postEdit');
+Route::post('classes/delete', 'ClassesController@postDelete');
+Route::post('classes/change-status', 'ClassesController@postChangeStatus');
+Route::any('classes/list-offers', 'ClassesController@anyListOffers');
+Route::post('classes/list-units/{status?}', 'ClassesController@postListUnits');
+Route::post('classes/block-unit', 'ClassesController@postBlockUnit');
+Route::post('classes/unblock-unit', 'ClassesController@postUnblockUnit');
+Route::any('classes/create-units', 'ClassesController@anyCreateUnits');
+Route::post('classes/copy-to-year', 'ClassesController@postCopyToYear');
 
 Route::get('config', 'ConfigController@index');
 Route::post('config/photo', 'ConfigController@postPhoto');
@@ -72,16 +86,31 @@ Route::get('user/student', 'UsersController@getStudent');
 Route::post('user/student', 'UsersController@postStudent');
 Route::any('user/find-user/{search?}', 'UsersController@anyFindUser');
 
+Route::get('lessons', 'LessonsController@getIndex');
+Route::any('lessons/new', 'LessonsController@anyNew');
+Route::post('lessons/save', 'LessonsController@postSave');
+Route::any('lessons/frequency', 'LessonsController@anyFrequency');
+Route::post('lessons/delete', 'LessonsController@postDelete');
+Route::get('lessons/info', 'LessonsController@getInfo');
+Route::any('lessons/copy', 'LessonsController@anyCopy');
+Route::post('lessons/list-offers', 'LessonsController@postListOffers');
+Route::get('lessons/delete', 'LessonsController@anyDelete');
+
+Route::get('sync', 'SyncController@getIndex');
+Route::post('sync/receive', 'SyncController@postReceive');
+Route::get('sync/receive', 'SyncController@getReceive');
+Route::get('sync/error', 'SyncController@getError');
+
+Route::get('classrooms', 'ClassroomController@getIndex');
+Route::get('classrooms/campus', 'ClassroomController@getCampus');
+
+Route::get('censo/student', 'CensoController@student');
+
+Route::get('help/{rota}', 'HelpController@getView');
+
 Route::get('/', 'HomeController@index');
 
 /** ROTAS ANTIGAS
-Route::controller('/censo', 'CensoController');
-
-Route::controller('/classrooms', "ClassroomController");
-
-Route::controller('sync', "SyncController");
-
-Route::get('help/{rota}', 'HelpController@getView');
 
 if (session("user") == null) {
   Route::controller('/', 'LoginController');
@@ -94,18 +123,12 @@ if (session("user") == null) {
     Route::post('user/teacher/delete', "UsersController@postUnlink");
     Route::post('user/teacher/update-enrollment', "UsersController@updateEnrollment");
     Route::get('classes/units/report-unit/{unit_id}', "UnitsController@getReportUnit");
-
     Route::post('classes/group/create', "ClassesGroupController@createMasterOffer");
     Route::post('classes/group/offers', 'ClassesGroupController@jsonOffers');
     Route::get('classes/group/{class_id}', "ClassesGroupController@loadClassGroup");
 
-    Route::controller('courses', "CoursesController");
-
-    Route::controller('classes/lessons', "LessonsController");
     Route::controller('classes/offers', "OffersController");
-
 		Route::controller('progression', "ProgressionController");
-
     Route::controller('user', "UsersController");
     Route::controller('import', "CSVController");
     Route::controller('permissions', "PermissionController");
@@ -118,14 +141,13 @@ if (session("user") == null) {
     Route::get('user/profile', "UsersController@getProfile");
     Route::get('user/student', "UsersController@getStudent");
     Route::post('user/student', "UsersController@postStudent");
-    Route::controller('courses', "CoursesController");
+		Route::any('offers/get-grouped', 'OffersController@postOffersGrouped');
+
     Route::controller('disciplines', "DisciplinesController");
     Route::controller('lectures/units', "UnitsController");
     Route::controller('lectures', "LecturesController");
     Route::controller('avaliable', "AvaliableController");
-    Route::controller('lessons', "LessonsController"); /* anotações de aula *
     Route::controller('attends', "\student\DisciplinesController");
-		Route::any('offers/get-grouped', 'OffersController@postOffersGrouped');
   }
 
   Route::controller('/', 'SocialController');
