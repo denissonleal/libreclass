@@ -2,10 +2,9 @@
 
 class HelpController extends Controller
 {
-
-  public function getView($rota) {
-    $bladeFile = "help.$rota";
-    return view($bladeFile);
-  }
-
+	public function getView($rota)
+	{
+		$blade_file = "help.$rota";
+		return view($blade_file);
+	}
 }

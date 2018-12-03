@@ -2,17 +2,9 @@
 
 class ClassesGroupController extends Controller
 {
-
-  private $user_id;
-
   public function __construct()
   {
-    $id = session("user");
-    if ($id == null || $id == "") {
-      $this->user_id = false;
-    } else {
-      $this->user_id = decrypt($id);
-    }
+
   }
 
   /**
@@ -26,7 +18,7 @@ class ClassesGroupController extends Controller
     $classe->disciplines = $this->getOffers($class_id);
     $classe->id = encrypt($classe->id);
 
-    $user = User::find($this->user_id);
+    $user = auth()->user();
     return view("modules.classesGroup", ['user' => $user, 'classe' => $classe]);
   }
 

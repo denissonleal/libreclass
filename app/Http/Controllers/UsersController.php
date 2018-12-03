@@ -180,7 +180,7 @@ class UsersController extends Controller
 
 	public function getProfileStudent()
 	{
-		$user = User::find(auth()->id());
+		$user = auth()->user();
 		$profile = decrypt(request()->get("u"));
 		$classes = DB::select("SELECT Classes.id, Classes.name, Classes.class FROM Classes, Periods, Courses "
 			. "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.status='E'",
@@ -349,7 +349,7 @@ class UsersController extends Controller
 
 	public function getProfileTeacher()
 	{
-		$user = User::find(auth()->id());
+		$user = auth()->user();
 		$profile = decrypt(request()->get("u"));
 		if ($profile) {
 			$profile = User::find($profile);
@@ -381,7 +381,7 @@ class UsersController extends Controller
 
 	public function postInvite($id = null)
 	{
-		$user = User::find(auth()->id());
+		$user = auth()->user();
 		if ($id) {
 			$guest = User::find($id);
 		} else {
@@ -595,7 +595,7 @@ class UsersController extends Controller
 		$data = [];
 		$data['units'] = [];
 		// Obtém dados da instituição
-		$data['institution'] = User::find(auth()->id());
+		$data['institution'] = auth()->user();
 
 		// Obtém dados do aluno
 		$data['student'] = User::find(decrypt(request()->get('u')));

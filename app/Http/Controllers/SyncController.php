@@ -6,14 +6,14 @@ class SyncController extends Controller
   public function __construct()
   {
     if ( session("user") )
-      $this->user = User::find(decrypt(session("user")));
+      auth()->user() = User::find(decrypt(session("user")));
     else
-      $this->user = false;
+      auth()->user() = false;
   }
 
   public function getIndex()
   {
-    $user = $this->user;
+    $user = auth()->user();
     $keyExams = [];
     $keyLessons = [];
 
@@ -24,7 +24,7 @@ class SyncController extends Controller
     if ($user)
     {
       Session::forget("redirect");
-      $data = $this->user;
+      $data = auth()->user();
       $data->id = encrypt($data->id); //crypt user
       $data->download = date("H:i:s - d/m/Y");
       unset($data->password);
@@ -136,7 +136,7 @@ class SyncController extends Controller
   {
     Session::put("data", request()->get("data"));
     Session::put("lb", request()->get("lb"));
-    if ($this->user)
+    if (auth()->user())
     {
       return redirect("/sync/receive");
     }
@@ -151,15 +151,15 @@ class SyncController extends Controller
   {
     if( !request()->has("confirm") )
     {
-      return view("modules.sync.send", ["data" => $this->user ]);
+      return view("modules.sync.send", ["data" => auth()->user() ]);
     }
 
     Session::forget("redirect");
     $data = json_decode(session("data"));
 
-    if(decrypt($data->id) != $this->user->id)
+    if(decrypt($data->id) != auth()->id())
           return redirect("/sync/error")
-                 ->with("erro", "Erro ao syncronizar. Incompatiblilidade de usuários [" . $this->user->email . " != $data->email]");
+                 ->with("erro", "Erro ao syncronizar. Incompatiblilidade de usuários [" . auth()->user()->email . " != $data->email]");
 
     foreach( $data->lectures as $lecture )
     {
@@ -168,11 +168,11 @@ class SyncController extends Controller
         $unit->id = decrypt($unit->id);
         $valid = DB::select("SELECT COUNT(*) as valid FROM Lectures, Offers, Units "
                             . "WHERE Lectures.user_id=? AND Lectures.offer_id=Units.offer_id AND Units.id=?",
-                            [$this->user->id, $unit->id])[0]->valid;
+                            [auth()->id(), $unit->id])[0]->valid;
         if($valid == 0)
           return redirect("/sync/error")
                          ->with("error", "Erro ao syncronizar. Arquivo foi modificado de forma maliciosa. [units]")
-                         ->with("email", $this->user->email);
+                         ->with("email", auth()->user()->email);
 
         foreach($unit->lessons as $json_lesson)
         {
@@ -188,7 +188,7 @@ class SyncController extends Controller
           if ( $lesson->unit_id != $unit->id )
             return redirect("/sync/error")
                            ->with("error", "Erro ao syncronizar. Arquivo foi modificado de forma maliciosa. [lesson]")
-                           ->with("email", $this->user->email);
+                           ->with("email", auth()->user()->email);
 
           $lesson->date = $json_lesson->date;
           $lesson->title = $json_lesson->title;
@@ -229,7 +229,7 @@ class SyncController extends Controller
           if ( $exam->unit_id != $unit->id )
             return redirect("/sync/error")
                            ->with("error", "Erro ao syncronizar. Arquivo foi modificado de forma maliciosa. [exam]")
-                           ->with("email", $this->user->email);
+                           ->with("email", auth()->user()->email);
 
           $exam->date = $json_exam->date;
           $exam->title = $json_exam->title;
@@ -265,6 +265,6 @@ class SyncController extends Controller
                 ->subject("Tentativa de burlar o sistema");
       });
 
-    return view("modules.sync.error", ["data" => $this->user, "error" => session("error")]);
+    return view("modules.sync.error", ["data" => auth()->user(), "error" => session("error")]);
   }
 }

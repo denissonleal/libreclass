@@ -2,74 +2,57 @@
 
 class OffersController extends Controller
 {
+	public function getUser()
+	{
+		$user = decrypt(request()->get("u"));
+		if ($user) {
+			$user = User::find($user);
+			return $user;
+		} else {
+			return redirect("/");
+		}
+	}
 
-  private $user_id;
+	public function getIndex()
+	{
+			$user = auth()->user();
+			$classe = Classe::find(decrypt(request()->get("t")));
+			$period = Period::find($classe->period_id);
+			$course = Course::find($period->course_id);
+			$offers = Offer::where("class_id", $classe->id)->get();
 
-  public function OffersController()
-  {
-    $id = session("user");
-    if ($id == null || $id == "") {
-      $this->user_id = false;
-    } else {
-      $this->user_id = decrypt($id);
-    }
-  }
+			foreach ($offers as $offer) {
+				$teachers = [];
+				$list = Lecture::where("offer_id", $offer->id)->get();
+				foreach ($list as $value) {
+					$teachers[] = base64_encode($value->user_id);
+				}
+				$offer->teachers = $teachers;
+				if (isset($offer->offer_id) && !empty($offer->offer_id)) {
+					$offer->offer = Offer::find($offer->offer_id);
+				}
+			}
 
-  public function getUser()
-  {
-    $user = decrypt(request()->get("u"));
-    if ($user) {
-      $user = User::find($user);
-      return $user;
-    } else {
-      return redirect("/");
-    }
-  }
+			return view("offers.institution", [
+				"course" => $course,
+				"user" => $user,
+				"offers" => $offers,
+				"period" => $period,
+				"classe" => $classe,
+			]);
+	}
 
-  public function getIndex()
-  {
-    if ($this->user_id) {
-      $user = User::find($this->user_id);
-      $classe = Classe::find(decrypt(request()->get("t")));
-      $period = Period::find($classe->period_id);
-      $course = Course::find($period->course_id);
-      $offers = Offer::where("class_id", $classe->id)->get();
+	public function getUnit($offer)
+	{
+		$offer = Offer::find(decrypt($offer));
+		if (auth()->id() != $offer->getClass()->getPeriod()->getCourse()->institution_id) {
+			return redirect("/classes/offers?t=" . encrypt($offer->class_id))->with("error", "Você não tem permissão para criar unidade");
+		}
 
-      foreach ($offers as $offer) {
-        $teachers = [];
-        $list = Lecture::where("offer_id", $offer->id)->get();
-        foreach ($list as $value) {
-          $teachers[] = base64_encode($value->user_id);
-        }
-        $offer->teachers = $teachers;
-        if (isset($offer->offer_id) && !empty($offer->offer_id)) {
-          $offer->offer = Offer::find($offer->offer_id);
-        }
-      }
+		$old = Unit::where("offer_id", $offer->id)->orderBy("value", "desc")->first();
 
-      return view("offers.institution", [
-        "course" => $course,
-        "user" => $user,
-        "offers" => $offers,
-        "period" => $period,
-        "classe" => $classe,
-      ]);
-    } else {
-      return redirect("/login");
-    }
-  }
-
-  public function getUnit($offer)
-  {
-    $offer = Offer::find(decrypt($offer));
-    if ($this->user_id != $offer->getClass()->getPeriod()->getCourse()->institution_id) {
-      return redirect("/classes/offers?t=" . encrypt($offer->class_id))->with("error", "Você não tem permissão para criar unidade");
-    }
-
-    $old = Unit::where("offer_id", $offer->id)->orderBy("value", "desc")->first();
-
-    $unit = new Unit;
-    $unit->offer_id = $offer->id;
+		$unit = new Unit;
+		$unit->offer_id = $offer->id;
 
 		if(!$old) {
 			$unit->value = 1;
@@ -79,7 +62,7 @@ class OffersController extends Controller
 			$unit->value = $old->value + 1;
 			$unit->calculation = $old->calculation;
 		}
-    $unit->save();
+		$unit->save();
 
 		if($old) {
 			$attends = Attend::where("unit_id", $old->id)->get();
@@ -93,139 +76,136 @@ class OffersController extends Controller
 		}
 
 
-    return redirect("/classes/offers?t=" . encrypt($offer->class_id))->with("success", "Unidade criada com sucesso!");
-  }
+		return redirect("/classes/offers?t=" . encrypt($offer->class_id))->with("success", "Unidade criada com sucesso!");
+	}
 
-  public function postTeacher()
-  {
-    $offer = Offer::find(decrypt(request()->get("offer")));
-    $offer->classroom = request()->get("classroom");
-    $offer->day_period = request()->get("day_period");
-    $offer->maxlessons = request()->get("maxlessons");
-    $offer->save();
-    $lectures = $offer->getAllLectures();
+	public function postTeacher()
+	{
+		$offer = Offer::find(decrypt(request()->get("offer")));
+		$offer->classroom = request()->get("classroom");
+		$offer->day_period = request()->get("day_period");
+		$offer->maxlessons = request()->get("maxlessons");
+		$offer->save();
+		$lectures = $offer->getAllLectures();
 
-    $teachers = [];
-    if (request()->has("teachers")) {
-      $teachers = request()->get("teachers");
-      for ($i = 0; $i < count($teachers); $i++) {
-        $teachers[$i] = base64_decode($teachers[$i]);
-      }
+		$teachers = [];
+		if (request()->has("teachers")) {
+			$teachers = request()->get("teachers");
+			for ($i = 0; $i < count($teachers); $i++) {
+				$teachers[$i] = base64_decode($teachers[$i]);
+			}
 
-    }
+		}
 
-    foreach ($lectures as $lecture) {
-      $find = array_search($lecture->user_id, $teachers);
-      if ($find === false) {
-        Lecture::where('offer_id', $offer->id)->where('user_id', $lecture->user_id)->delete();
-      } else {
-        unset($teachers[$find]);
-      }
+		foreach ($lectures as $lecture) {
+			$find = array_search($lecture->user_id, $teachers);
+			if ($find === false) {
+				Lecture::where('offer_id', $offer->id)->where('user_id', $lecture->user_id)->delete();
+			} else {
+				unset($teachers[$find]);
+			}
 
-    }
+		}
 
-    foreach ($teachers as $teacher) {
-      $last = Lecture::where("user_id", $teacher)->orderBy("order", "desc")->first();
-      $last = $last ? $last->order + 1 : 1;
+		foreach ($teachers as $teacher) {
+			$last = Lecture::where("user_id", $teacher)->orderBy("order", "desc")->first();
+			$last = $last ? $last->order + 1 : 1;
 
-      $lecture = new Lecture;
-      $lecture->user_id = $teacher;
-      $lecture->offer_id = $offer->id;
-      $lecture->order = $last;
-      $lecture->save();
-    }
+			$lecture = new Lecture;
+			$lecture->user_id = $teacher;
+			$lecture->offer_id = $offer->id;
+			$lecture->order = $last;
+			$lecture->save();
+		}
 
-    return redirect(request()->get("prev"))->with("success", "Modificado com sucesso!");
-  }
+		return redirect(request()->get("prev"))->with("success", "Modificado com sucesso!");
+	}
 
-  public function postStatus()
-  {
-    $status = request()->get("status");
-    $id = decrypt(request()->get("unit"));
+	public function postStatus()
+	{
+		$status = request()->get("status");
+		$id = decrypt(request()->get("unit"));
 
-    $unit = Unit::find($id);
-    if (!strcmp($status, 'true')) {
-      $unit->status = 'E';
-    } else {
-      $unit->status = 'D';
-    }
-    $unit->save();
+		$unit = Unit::find($id);
+		if (!strcmp($status, 'true')) {
+			$unit->status = 'E';
+		} else {
+			$unit->status = 'D';
+		}
+		$unit->save();
 
-    return "Status changed to " . $status . " / " . $id;
-  }
+		return "Status changed to " . $status . " / " . $id;
+	}
 
-  public function getStudents($offer)
-  {
-    if ($this->user_id) {
-      $user = User::find($this->user_id);
+	public function getStudents($offer)
+	{
+		$user = auth()->user();
 
-      $info = DB::select("SELECT Courses.name as course, Periods.name as period, Classes.id as class_id, Classes.class as class
-                          FROM Courses, Periods, Classes, Offers
-                          WHERE Courses.id = Periods.course_id
-                          AND Periods.id = Classes.period_id
-                          AND Classes.id = Offers.class_id
-                          AND Offers.id = " . decrypt($offer) . "
-                          ");
-      $students = DB::select("SELECT Users.name as name, Users.id as id, Attends.status as status
-                              FROM Users, Attends, Units
-                              WHERE Users.id=Attends.user_id
-                              AND Attends.unit_id = Units.id
-                              AND Units.offer_id = " . decrypt($offer) . " GROUP BY Users.id ORDER BY Users.name");
+		$info = DB::select("SELECT Courses.name as course, Periods.name as period, Classes.id as class_id, Classes.class as class
+			FROM Courses, Periods, Classes, Offers
+			WHERE Courses.id = Periods.course_id
+			AND Periods.id = Classes.period_id
+			AND Classes.id = Offers.class_id
+			AND Offers.id = " . decrypt($offer)
+		);
+		$students = DB::select("SELECT Users.name as name, Users.id as id, Attends.status as status
+			FROM Users, Attends, Units
+			WHERE Users.id=Attends.user_id
+			AND Attends.unit_id = Units.id
+			AND Units.offer_id = " . decrypt($offer) . " GROUP BY Users.id ORDER BY Users.name"
+		);
 
-      return view("modules.liststudentsoffers", ["user" => $user, "info" => $info, "students" => $students, "offer" => $offer]);
-    } else {
-      return redirect("/");
-    }
-  }
+		return view("modules.liststudentsoffers", ["user" => $user, "info" => $info, "students" => $students, "offer" => $offer]);
+	}
 
-  public function postStatusStudent()
-  {
+	public function postStatusStudent()
+	{
 
-    //~ return request()->all();
-    $offer = decrypt(request()->get("offer"));
-    $student = decrypt(request()->get("student"));
-    $units = Unit::where("offer_id", $offer)->get();
+		//~ return request()->all();
+		$offer = decrypt(request()->get("offer"));
+		$student = decrypt(request()->get("student"));
+		$units = Unit::where("offer_id", $offer)->get();
 
-    if (request()->get("status") == 'M') {
-      foreach ($units as $unit) {
-        Attend::where('unit_id', $unit->id)->where('user_id', $student)->update(["status" => 'M']);
-      }
+		if (request()->get("status") == 'M') {
+			foreach ($units as $unit) {
+				Attend::where('unit_id', $unit->id)->where('user_id', $student)->update(["status" => 'M']);
+			}
 
-    }
+		}
 
-    if (request()->get("status") == 'D') {
-      foreach ($units as $unit) {
-        Attend::where('unit_id', $unit->id)->where('user_id', $student)->update(["status" => 'D']);
-      }
+		if (request()->get("status") == 'D') {
+			foreach ($units as $unit) {
+				Attend::where('unit_id', $unit->id)->where('user_id', $student)->update(["status" => 'D']);
+			}
 
-    }
+		}
 
-    if (request()->get("status") == 'T') {
-      foreach ($units as $unit) {
-        Attend::where('unit_id', $unit->id)->where('user_id', $student)->update(["status" => 'T']);
-      }
+		if (request()->get("status") == 'T') {
+			foreach ($units as $unit) {
+				Attend::where('unit_id', $unit->id)->where('user_id', $student)->update(["status" => 'T']);
+			}
 
-    }
+		}
 
-    if (request()->get("status") == 'R') {
-      foreach ($units as $unit) {
-        Attend::where("unit_id", $unit->id)->where("user_id", $student)->delete();
-      }
+		if (request()->get("status") == 'R') {
+			foreach ($units as $unit) {
+				Attend::where("unit_id", $unit->id)->where("user_id", $student)->delete();
+			}
 
-      return Redirect::back()->with("success", "Aluno removido com sucesso");
-    }
-    return Redirect::back()->with("success", "Status atualizado com sucesso");
-  }
+			return Redirect::back()->with("success", "Aluno removido com sucesso");
+		}
+		return Redirect::back()->with("success", "Status atualizado com sucesso");
+	}
 
-  public function anyDeleteLastUnit($offer)
-  {
-    $offer = Offer::find(decrypt($offer));
+	public function anyDeleteLastUnit($offer)
+	{
+		$offer = Offer::find(decrypt($offer));
 
-    $unit = Unit::where('offer_id', $offer->id)->orderBy('value', 'desc')->first();
-    $unit->delete();
+		$unit = Unit::where('offer_id', $offer->id)->orderBy('value', 'desc')->first();
+		$unit->delete();
 
-    return redirect("/classes/offers?t=" . encrypt($offer->class_id))->with("success", "Unidade deletada com sucesso!");
-  }
+		return redirect("/classes/offers?t=" . encrypt($offer->class_id))->with("success", "Unidade deletada com sucesso!");
+	}
 
 	public function postOffersGrouped() {
 		if(!request()->has('group_id')) {

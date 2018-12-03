@@ -2,98 +2,94 @@
 
 class LessonsController extends Controller
 {
-  private $user_id;
+	private $user_id;
 
-  public function LessonsController()
-  {
-    $id = session("user");
-    if ($id == null || $id == "") {
-      $this->user_id = false;
-    } else {
-      $this->user_id = decrypt($id);
-    }
+	public function LessonsController()
+	{
+		$id = session("user");
+		if ($id == null || $id == "") {
+			auth()->id() = false;
+		} else {
+			auth()->id() = decrypt($id);
+		}
 
-  }
+	}
 
-  public function getIndex()
-  {
-    if ($this->user_id) {
-      $user = User::find($this->user_id);
-      $lesson = Lesson::find(decrypt(request()->get("l")));
+	public function getIndex()
+	{
+		$user = auth()->user();
+		$lesson = Lesson::find(decrypt(request()->get("l")));
 
-      $students = DB::select("SELECT Users.name AS name, Attends.id AS attend_id, Frequencies.value AS value, Units.offer_id, Attends.user_id, Units.id AS unit_id
-                                FROM Frequencies, Attends, Users, Units
-                                WHERE Frequencies.attend_id=Attends.id AND
-																			Attends.status != 'T' AND
-                                      Attends.user_id=Users.id AND
-                                      Frequencies.lesson_id=? AND
-                                      Attends.unit_id=Units.id
-                                ORDER BY Users.name", [$lesson->id]);
+		$students = DB::select("SELECT Users.name AS name, Attends.id AS attend_id, Frequencies.value AS value, Units.offer_id, Attends.user_id, Units.id AS unit_id
+															FROM Frequencies, Attends, Users, Units
+															WHERE Frequencies.attend_id=Attends.id AND
+																		Attends.status != 'T' AND
+																		Attends.user_id=Users.id AND
+																		Frequencies.lesson_id=? AND
+																		Attends.unit_id=Units.id
+															ORDER BY Users.name", [$lesson->id]);
 
-			//Obtém todas a aulas da oferta da aula para calcular atestados;
+		//Obtém todas a aulas da oferta da aula para calcular atestados;
 
-      foreach ($students as $student) {
-				//Obtém os atestados
-				$allLessons = Unit::find($student->unit_id)->getOffer()->lessons();
-				$attests = Attest::where('idStudent',$student->user_id)->get();
-				$qtdAttests = 0;
-				foreach($attests as $attest) {
-					$attest->dateFinish = date('Y-m-d', strtotime($attest->date. '+ '. ($attest->days - 1) .' days'));
+		foreach ($students as $student) {
+			//Obtém os atestados
+			$allLessons = Unit::find($student->unit_id)->getOffer()->lessons();
+			$attests = Attest::where('idStudent',$student->user_id)->get();
+			$qtdAttests = 0;
+			foreach($attests as $attest) {
+				$attest->dateFinish = date('Y-m-d', strtotime($attest->date. '+ '. ($attest->days - 1) .' days'));
 
-					//If true, aluno possui um atestado para o dia da aula.
-					if (($lesson->date >= $attest->date) && ($lesson->date <= $attest->dateFinish))
-					{
-						$student->attest = true;
-					}
-
-					foreach($allLessons as $tmpLesson) {
-						if (($tmpLesson->date >= $attest->date) && ($tmpLesson->date <= $attest->dateFinish))
-						{
-							$qtdAttests++;
-						}
-					}
+				//If true, aluno possui um atestado para o dia da aula.
+				if (($lesson->date >= $attest->date) && ($lesson->date <= $attest->dateFinish))
+				{
+					$student->attest = true;
 				}
 
-        $frequency = DB::select("SELECT Offers.maxlessons, COUNT(*) as qtd "
-                                  . "FROM Offers, Units, Attends, Frequencies "
-                                  . "WHERE Offers.id=? AND Offers.id=Units.offer_id AND Units.id=Attends.unit_id "
-                                    . "AND Attends.user_id=? AND Attends.id=Frequencies.attend_id AND Frequencies.value='F'",
-                                [$student->offer_id, $student->user_id])[0];
-        $student->maxlessons = $frequency->maxlessons;
-        $student->qtd = $frequency->qtd - $qtdAttests;
-      }
-      return view("modules.lessons", ["user" => $user, "lesson" => $lesson, "students" => $students]);
-    } else {
-      return redirect("/");
-    }
-  }
+				foreach($allLessons as $tmpLesson) {
+					if (($tmpLesson->date >= $attest->date) && ($tmpLesson->date <= $attest->dateFinish))
+					{
+						$qtdAttests++;
+					}
+				}
+			}
 
-  public function anyNew()
-  {
-    $unit = Unit::find(decrypt(request()->get("unit")));
+			$frequency = DB::select("SELECT Offers.maxlessons, COUNT(*) as qtd "
+																. "FROM Offers, Units, Attends, Frequencies "
+																. "WHERE Offers.id=? AND Offers.id=Units.offer_id AND Units.id=Attends.unit_id "
+																	. "AND Attends.user_id=? AND Attends.id=Frequencies.attend_id AND Frequencies.value='F'",
+															[$student->offer_id, $student->user_id])[0];
+			$student->maxlessons = $frequency->maxlessons;
+			$student->qtd = $frequency->qtd - $qtdAttests;
+		}
+		return view("modules.lessons", ["user" => $user, "lesson" => $lesson, "students" => $students]);
+	}
+
+	public function anyNew()
+	{
+		$unit = Unit::find(decrypt(request()->get("unit")));
 
 		$date = date("Y-m-d");
 		if(request()->has("date-year") && request()->has("date-month") && request()->has("date-day")) {
 			$date = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
 		}
 
-    $lesson = new Lesson;
-    $lesson->unit_id = $unit->id;
-    $lesson->date = $date;
-    $lesson->title = "Sem título";
-    $lesson->save();
-    $lessons_count = count(Lesson::where('unit_id', $unit->id)->get());
+		$lesson = new Lesson;
+		$lesson->unit_id = $unit->id;
+		$lesson->date = $date;
+		$lesson->title = "Sem título";
+		$lesson->save();
+		$lessons_count = count(Lesson::where('unit_id', $unit->id)->get());
 
-    $attends = Attend::where("unit_id", $unit->id)->get();
-    foreach ($attends as $attend) {
-      $frequency = new Frequency;
-      $frequency->attend_id = $attend->id;
-      $frequency->lesson_id = $lesson->id;
-      $frequency->value = "P";
-      $frequency->save();
-    }
+		$attends = Attend::where("unit_id", $unit->id)->get();
+		foreach ($attends as $attend) {
+			$frequency = new Frequency;
+			$frequency->attend_id = $attend->id;
+			$frequency->lesson_id = $lesson->id;
+			$frequency->value = "P";
+			$frequency->save();
+		}
 
-    if ($unit->offer->grouping == 'M') {
+		if ($unit->offer->grouping == 'M') {
 			if(request()->has('slaves')) {
 				$slaves = [];
 				foreach (request()->get('slaves') as $key => $s) {
@@ -105,29 +101,29 @@ class LessonsController extends Controller
 				$offers = $unit->offer->slaves;
 			}
 
-      foreach ($offers as $offer) {
-        $unit_slave = $offer->units()->where('value', $unit->value)->first();
-        $lessons_count_slave = count(Lesson::where('unit_id', $unit_slave->id)->get());
-        if ($lessons_count_slave >= $lessons_count) {
-          continue;
-        }
-        $lesson_slave = new Lesson;
-        $lesson_slave->unit_id = $unit_slave->id;
-        $lesson_slave->date = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
-        $lesson_slave->title = $lesson->title;
-        Log::info('Lesson Slave', [$lesson_slave]);
-        $lesson_slave->save();
+			foreach ($offers as $offer) {
+				$unit_slave = $offer->units()->where('value', $unit->value)->first();
+				$lessons_count_slave = count(Lesson::where('unit_id', $unit_slave->id)->get());
+				if ($lessons_count_slave >= $lessons_count) {
+					continue;
+				}
+				$lesson_slave = new Lesson;
+				$lesson_slave->unit_id = $unit_slave->id;
+				$lesson_slave->date = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
+				$lesson_slave->title = $lesson->title;
+				Log::info('Lesson Slave', [$lesson_slave]);
+				$lesson_slave->save();
 
-        $attends_slaves = Attend::where("unit_id", $unit_slave->id)->get();
-        foreach ($attends_slaves as $attend_slave) {
-          $frequency_slave = new Frequency;
-          $frequency_slave->attend_id = $attend_slave->id;
-          $frequency_slave->lesson_id = $lesson_slave->id;
-          $frequency_slave->value = "P";
-          $frequency_slave->save();
-        }
-      }
-    }
+				$attends_slaves = Attend::where("unit_id", $unit_slave->id)->get();
+				foreach ($attends_slaves as $attend_slave) {
+					$frequency_slave = new Frequency;
+					$frequency_slave->attend_id = $attend_slave->id;
+					$frequency_slave->lesson_id = $lesson_slave->id;
+					$frequency_slave->value = "P";
+					$frequency_slave->save();
+				}
+			}
+		}
 
 		$lesson->id = encrypt($lesson->id);
 
@@ -138,84 +134,81 @@ class LessonsController extends Controller
 			return redirect("/lessons?l=" . $lesson->id)->with("success", "Uma nova aula foi criada com sucesso.");
 		}
 
-  }
+	}
 
-  public function postSave()
-  {
-    //~ var_dump(request()->all());
+	public function postSave()
+	{
+		$lesson = Lesson::find(decrypt(request()->get("l")));
 
-    $lesson = Lesson::find(decrypt(request()->get("l")));
+		$lesson->date = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
+		$lesson->title = request()->get("title");
+		$lesson->description = request()->get("description");
+		$lesson->goals = request()->get("goals");
+		$lesson->content = request()->get("content");
+		$lesson->methodology = request()->get("methodology");
+		$lesson->resources = request()->get("resources");
+		$lesson->valuation = request()->get("valuation");
+		$lesson->estimatedTime = request()->get("estimatedTime");
+		$lesson->keyworks = request()->get("keyworks");
+		$lesson->bibliography = request()->get("bibliography");
+		$lesson->notes = request()->get("notes");
+		$lesson->save();
 
-    $lesson->date = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
-    $lesson->title = request()->get("title");
-    $lesson->description = request()->get("description");
-    $lesson->goals = request()->get("goals");
-    $lesson->content = request()->get("content");
-    $lesson->methodology = request()->get("methodology");
-    $lesson->resources = request()->get("resources");
-    $lesson->valuation = request()->get("valuation");
-    $lesson->estimatedTime = request()->get("estimatedTime");
-    $lesson->keyworks = request()->get("keyworks");
-    $lesson->bibliography = request()->get("bibliography");
-    $lesson->notes = request()->get("notes");
-    $lesson->save();
+		$unit = DB::select("SELECT Units.id, Units.status
+													FROM Units, Lessons
+													WHERE Units.id = Lessons.unit_id AND
+														Lessons.id=?", [$lesson->id]);
 
-    //~ return $lesson;
-    $unit = DB::select("SELECT Units.id, Units.status
-                          FROM Units, Lessons
-                          WHERE Units.id = Lessons.unit_id AND
-                            Lessons.id=?", [$lesson->id]);
+		return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("success", "Aula atualizada com sucesso");
+	}
 
-    return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("success", "Aula atualizada com sucesso");
-  }
+	public function anyFrequency()
+	{
+		$attend = Attend::find(decrypt(request()->get("attend_id")));
+		$lesson_id = decrypt(request()->get("lesson_id"));
+		$value = request()->get("value") == "P" ? "F" : "P";
 
-  public function anyFrequency()
-  {
-    $attend = Attend::find(decrypt(request()->get("attend_id")));
-    $lesson_id = decrypt(request()->get("lesson_id"));
-    $value = request()->get("value") == "P" ? "F" : "P";
+		$offer_id = DB::select(
+			"SELECT Units.offer_id "
+			. "  FROM Lessons, Units "
+			. "WHERE Lessons.id = ? "
+			. "  AND Lessons.unit_id = Units.id",
+			[$lesson_id]
+		)[0]->offer_id;
 
-    $offer_id = DB::select(
-      "SELECT Units.offer_id "
-      . "  FROM Lessons, Units "
-      . "WHERE Lessons.id = ? "
-      . "  AND Lessons.unit_id = Units.id",
-      [$lesson_id]
-    )[0]->offer_id;
+		$status = Frequency::where("attend_id", $attend->id)->where("lesson_id", $lesson_id)->update(["value" => $value]);
 
-    $status = Frequency::where("attend_id", $attend->id)->where("lesson_id", $lesson_id)->update(["value" => $value]);
+		$frequency = DB::select(
+			"SELECT Offers.maxlessons, COUNT(*) as qtd "
+			. "  FROM Offers, Units, Attends, Frequencies "
+			. "WHERE Offers.id = ? "
+			. "  AND Offers.id = Units.offer_id "
+			. "  AND Units.id = Attends.unit_id "
+			. "  AND Attends.user_id = ? "
+			. "  AND Attends.id = Frequencies.attend_id "
+			. "  AND Frequencies.value = 'F'",
+			[$offer_id, $attend->user_id]
+		)[0];
 
-    $frequency = DB::select(
-      "SELECT Offers.maxlessons, COUNT(*) as qtd "
-      . "  FROM Offers, Units, Attends, Frequencies "
-      . "WHERE Offers.id = ? "
-      . "  AND Offers.id = Units.offer_id "
-      . "  AND Units.id = Attends.unit_id "
-      . "  AND Attends.user_id = ? "
-      . "  AND Attends.id = Frequencies.attend_id "
-      . "  AND Frequencies.value = 'F'",
-      [$offer_id, $attend->user_id]
-    )[0];
+		$this->slavesFrequency($attend->id, $lesson_id, $value);
 
-  	$this->slavesFrequency($attend->id, $lesson_id, $value);
+		return Response::json(["status" => $status, "value" => $value, "frequency" => sprintf("%d (%.1f %%)", $frequency->qtd, 100. * $frequency->qtd / $frequency->maxlessons)]);
+	}
 
-    return Response::json(["status" => $status, "value" => $value, "frequency" => sprintf("%d (%.1f %%)", $frequency->qtd, 100. * $frequency->qtd / $frequency->maxlessons)]);
-  }
-
-  /**
-   * Replica a frequência para as ofertas slaves. A frequência é replicada por
-   * aluno por aula em oferta. É verificado se o aluno existe nas ofertas slaves.
-   *
-   * @param  [type] $attend_id [description]
-   * @param  [type] $lesson_id [description]
-   * @param  [type] $value    [description]
-   * @return [type]           [description]
-   */
-  private function slavesFrequency($attend_id, $lesson_id, $value)
-  {
-    if (Attend::find($attend_id)->getUnit()->offer->grouping != 'M') {
-      return;
-    }
+	/**
+	 * Replica a frequência para as ofertas slaves. A frequência é replicada por
+	 * aluno por aula em oferta. É verificado se o aluno existe nas ofertas slaves.
+	 *
+	 * @param  [type] $attend_id [description]
+	 * @param  [type] $lesson_id [description]
+	 * @param  [type] $value    [description]
+	 * @return [type]           [description]
+	 */
+	private function slavesFrequency($attend_id, $lesson_id, $value)
+	{
+		if (Attend::find($attend_id)->getUnit()->offer->grouping != 'M') {
+			return;
+		}
 		$unit = Attend::find($attend_id)->getUnit();
 		$slaveOffers = Offer::where('offer_id', $unit->offer->id)->get();
 		$groupLesson = Lesson::find($lesson_id);
@@ -231,107 +224,107 @@ class LessonsController extends Controller
 				Frequency::where("attend_id", $o_attend->id)->where("lesson_id", $lesson->id)->update(["value" => $value]);
 			}
 		}
-  }
+	}
 
-  public function postDelete()
-  {
-    $lesson = Lesson::find(decrypt(request()->get("input-trash")));
+	public function postDelete()
+	{
+		$lesson = Lesson::find(decrypt(request()->get("input-trash")));
 
-    $unit = DB::select("SELECT Units.id, Units.status
-                          FROM Units, Lessons
-                          WHERE Units.id = Lessons.unit_id AND
-                            Lessons.id=?", [$lesson->id]);
+		$unit = DB::select("SELECT Units.id, Units.status
+													FROM Units, Lessons
+													WHERE Units.id = Lessons.unit_id AND
+														Lessons.id=?", [$lesson->id]);
 
-    if ($unit[0]->status == 'D') {
-      return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar.<br>Unidade desabilitada.");
-    }
-    if ($lesson) {
-      $lesson->status = "D";
-      $lesson->save();
-      return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("success", "Aula excluída com sucesso!");
-    } else {
-      return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar");
-    }
-  }
+		if ($unit[0]->status == 'D') {
+			return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar.<br>Unidade desabilitada.");
+		}
+		if ($lesson) {
+			$lesson->status = "D";
+			$lesson->save();
+			return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("success", "Aula excluída com sucesso!");
+		} else {
+			return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar");
+		}
+	}
 
-  public function getInfo()
-  {
-    $lesson = Lesson::find(decrypt(request()->get("lesson")));
-    $lesson->date = date("d/m/Y", strtotime($lesson->date));
-    return $lesson;
-  }
+	public function getInfo()
+	{
+		$lesson = Lesson::find(decrypt(request()->get("lesson")));
+		$lesson->date = date("d/m/Y", strtotime($lesson->date));
+		return $lesson;
+	}
 
-  /**
-   * Faz uma cópia de uma aula com ou sem frequecia
-   *    1 - cópia para a mesma unidade sem frequencia
-   *    2 - cópia para a mesma unidade com frequencia
-   *    3 - cópia para uma outra unidade sem frequencia
-   *
-   * @return type
-   */
-  public function anyCopy()
-  {
-    $lesson = Lesson::find(decrypt(request()->get("lesson")));
-    $auth = DB::select("SELECT COUNT(*) as qtd FROM Units, Lectures WHERE Units.id=? AND Units.offer_id=Lectures.offer_id AND Lectures.user_id=?",
-      [$lesson->unit_id, $this->user_id])[0]->qtd;
-    if (!$auth) {
-      return Response::JSON(false);
-    }
+	/**
+	 * Faz uma cópia de uma aula com ou sem frequecia
+	 *    1 - cópia para a mesma unidade sem frequencia
+	 *    2 - cópia para a mesma unidade com frequencia
+	 *    3 - cópia para uma outra unidade sem frequencia
+	 *
+	 * @return type
+	 */
+	public function anyCopy()
+	{
+		$lesson = Lesson::find(decrypt(request()->get("lesson")));
+		$auth = DB::select("SELECT COUNT(*) as qtd FROM Units, Lectures WHERE Units.id=? AND Units.offer_id=Lectures.offer_id AND Lectures.user_id=?",
+			[$lesson->unit_id, auth()->id()])[0]->qtd;
+		if (!$auth) {
+			return Response::JSON(false);
+		}
 
-    $copy = $lesson->replicate();
-    if (request()->get("type") == 3) {
-      $unit = Unit::where("offer_id", decrypt(request()->get("offer")))->whereStatus("E")->orderBy("value", "desc")->first();
-      $copy->unit_id = $unit->id;
-      $copy->save();
+		$copy = $lesson->replicate();
+		if (request()->get("type") == 3) {
+			$unit = Unit::where("offer_id", decrypt(request()->get("offer")))->whereStatus("E")->orderBy("value", "desc")->first();
+			$copy->unit_id = $unit->id;
+			$copy->save();
 
-      $attends = Attend::where("unit_id", $unit->id)->get();
-      foreach ($attends as $attend) {
-        $frequency = new Frequency;
-        $frequency->attend_id = $attend->id;
-        $frequency->lesson_id = $copy->id;
-        $frequency->value = "P";
-        $frequency->save();
-      }
-    } else {
-      $copy->save();
-      $frequencies = Frequency::where("lesson_id", $lesson->id)->get();
-      foreach ($frequencies as $frequency) {
-        $frequency = $frequency->replicate();
-        $frequency->lesson_id = $copy->id;
-        if (request()->get("type") == 1) {
-          $frequency->value = "P";
-        }
+			$attends = Attend::where("unit_id", $unit->id)->get();
+			foreach ($attends as $attend) {
+				$frequency = new Frequency;
+				$frequency->attend_id = $attend->id;
+				$frequency->lesson_id = $copy->id;
+				$frequency->value = "P";
+				$frequency->save();
+			}
+		} else {
+			$copy->save();
+			$frequencies = Frequency::where("lesson_id", $lesson->id)->get();
+			foreach ($frequencies as $frequency) {
+				$frequency = $frequency->replicate();
+				$frequency->lesson_id = $copy->id;
+				if (request()->get("type") == 1) {
+					$frequency->value = "P";
+				}
 
-        $frequency->save();
+				$frequency->save();
 
-      }
-      $copy->id = encrypt($copy->id);
-      $copy->date = date("d/m/Y", strtotime($copy->date));
-      return $copy;
-    }
-  }
+			}
+			$copy->id = encrypt($copy->id);
+			$copy->date = date("d/m/Y", strtotime($copy->date));
+			return $copy;
+		}
+	}
 
-  /**
-   * seleciona as ofertas ministradas pelo professor que está logado
-   *
-   * @return lista das ofertas
-   */
-  public function postListOffers()
-  {
-    $offers = DB::select("SELECT Offers.id, Disciplines.name, Classes.class, Periods.name as `periodName`, Courses.name as `courseName` FROM Lectures, Offers, Classes, Disciplines, Periods, Courses "
-      . "WHERE Lectures.user_id=? AND Lectures.offer_id=Offers.id AND Offers.class_id=Classes.id AND Offers.discipline_id=Disciplines.id AND Disciplines.period_id=Periods.id AND Periods.course_id=Courses.id",
-      [$this->user_id]);
+	/**
+	 * seleciona as ofertas ministradas pelo professor que está logado
+	 *
+	 * @return lista das ofertas
+	 */
+	public function postListOffers()
+	{
+		$offers = DB::select("SELECT Offers.id, Disciplines.name, Classes.class, Periods.name as `periodName`, Courses.name as `courseName` FROM Lectures, Offers, Classes, Disciplines, Periods, Courses "
+			. "WHERE Lectures.user_id=? AND Lectures.offer_id=Offers.id AND Offers.class_id=Classes.id AND Offers.discipline_id=Disciplines.id AND Disciplines.period_id=Periods.id AND Periods.course_id=Courses.id",
+			[auth()->id()]);
 
-    foreach ($offers as $offer) {
-      $offer->id = encrypt($offer->id);
-    }
+		foreach ($offers as $offer) {
+			$offer->id = encrypt($offer->id);
+		}
 
 		return $offers;
-  }
+	}
 
-  public function anyDelete()
-  {
-    Lesson::find(decrypt(request()->get("input-trash")))->delete();
-    return Redirect::back()->with("alert", "Aula excluída!");
-  }
+	public function anyDelete()
+	{
+		Lesson::find(decrypt(request()->get("input-trash")))->delete();
+		return Redirect::back()->with("alert", "Aula excluída!");
+	}
 }

@@ -4,13 +4,7 @@ class CensoController extends Controller
 {
 	public function __construct()
 	{
-		$id = session("user");
-		if ($id == null || $id == "") {
-			$this->user_id = false;
-		}
-		else {
-			$this->user_id = decrypt($id);
-		}
+
 	}
 
 	/**
@@ -21,7 +15,7 @@ class CensoController extends Controller
 	 */
 	public function getStudent()
 	{
-		return view("censo.formStudent", ['user' => User::find($this->user_id)]);//
+		return view("censo.formStudent", ['user' => auth()->user()]);//
 	}
 
 	/**

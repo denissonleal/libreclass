@@ -2,8 +2,6 @@
 
 class UnitsController extends Controller
 {
-
-  private $user_id;
   private $unit;
 
   public function __construct()
@@ -11,20 +9,12 @@ class UnitsController extends Controller
     if (request()->has("u")) {
       $this->unit = Unit::find(decrypt(request()->get("u")));
     }
-
-    $id = session("user");
-    if ($id == null || $id == "") {
-      $this->user_id = false;
-    } else {
-      $this->user_id = decrypt($id);
-    }
-
   }
 
   public function getIndex()
   {
-    if ($this->user_id && request()->has("u")) {
-      $user = User::find($this->user_id);
+    if (auth()->id() && request()->has("u")) {
+      $user = auth()->user();
       $unit_current = Unit::find(decrypt(request()->get("u")));
 
       if ($unit_current->status == "D") {
@@ -98,8 +88,8 @@ class UnitsController extends Controller
 
   public function getStudent()
   {
-    if ($this->user_id) {
-      $user = User::find($this->user_id);
+    if (auth()->id()) {
+      $user = auth()->user();
 
       $students = User::whereType("N")->orderby("name")->get();
       $list_students = [];
@@ -153,8 +143,8 @@ class UnitsController extends Controller
 
   public function getReportunitz()
   {
-    if ($this->user_id) {
-      $user = User::find($this->user_id);
+    if (auth()->id()) {
+      $user = auth()->user();
 
       $students = DB::select("select Users.id, Users.name "
         . "from Users, Attends, Units "

@@ -114,7 +114,7 @@ class CoursesController extends Controller
 	{
 		try {
 			$course = Course::find(decrypt($request->get("course")));
-			if( $course->institution_id != auth()->user()->id ) {
+			if( $course->institution_id != auth()->id() ) {
 				throw new Exception("Esse usuário nao tem acesso ao curso.");
 			}
 

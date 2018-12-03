@@ -2,19 +2,6 @@
 
 class CSVController extends Controller
 {
-
-  /**
-   * Armazena o ID do usuário
-   * @var type num
-   */
-  private $user;
-
-  public function CSVController()
-  {
-    $id = session("user");
-    $this->user = User::find(decrypt($id));
-  }
-
   /**
    * mostra view de importação de CSV
    *
@@ -26,7 +13,7 @@ class CSVController extends Controller
     Session::forget("attends");
     Session::forget("classes");
 
-    return view("modules.import",["user" => $this->user]);
+    return view("modules.import",["user" => auth()->user()]);
   }
 
   /**
@@ -60,7 +47,7 @@ class CSVController extends Controller
         }
         else if ($cols[0] == "SubModalidade:")
         {
-          $course = Course::where("institution_id", $this->user->id)->whereName($cols[1])->first();
+          $course = Course::where("institution_id", auth()->id())->whereName($cols[1])->first();
           if (!$course) {
             throw new Exception("Não possui o curso: " . $cols[1]);
           }
@@ -91,7 +78,7 @@ class CSVController extends Controller
           $student = DB::select("SELECT Users.id FROM Relationships, Users
                                  WHERE Relationships.user_id=? AND
                                  Relationships.friend_id=Users.id AND
-                                 Users.enrollment=?", [ $this->user->id, $cols[1] ]);
+                                 Users.enrollment=?", [ auth()->id(), $cols[1] ]);
           $result[] = [
             $cols[1], // matricula
             $cols[3], // nome
@@ -106,7 +93,7 @@ class CSVController extends Controller
       }
       Session::put("attends", $result);
       Session::put("classes", $classes);
-      return view("modules.import.classes",["user" => $this->user, "classes" => $classes]);
+      return view("modules.import.classes",["user" => auth()->user(), "classes" => $classes]);
   }
 
   public function getConfirmClasses()
@@ -141,7 +128,7 @@ class CSVController extends Controller
     }
     if($s_units) DB::insert($s_units);
 
-    return view("modules.import/students",["user" => $this->user, "students" => session("attends")]);
+    return view("modules.import/students",["user" => auth()->user(), "students" => session("attends")]);
   }
 
 
@@ -167,7 +154,7 @@ class CSVController extends Controller
           $student = DB::select("SELECT Users.id FROM Relationships, Users
                                  WHERE Relationships.user_id=? AND
                                  Relationships.friend_id=Users.id AND
-                                 Users.enrollment=?", [ $this->user->id, $attend[0] ]);
+                                 Users.enrollment=?", [ auth()->id(), $attend[0] ]);
           if (count($student))
           {
             $attend[4] = $student[0]->id;
@@ -184,9 +171,9 @@ class CSVController extends Controller
             $attend[4] = $student->id;
 
             if( !$s_relations )
-              $s_relations = "INSERT IGNORE INTO Relationships (user_id, friend_id, type ) VALUES (".$this->user->id.", $student->id, '1')";
+              $s_relations = "INSERT IGNORE INTO Relationships (user_id, friend_id, type ) VALUES (".auth()->id().", $student->id, '1')";
             else
-              $s_relations .= ", (".$this->user->id.", $student->id, '1')";
+              $s_relations .= ", (".auth()->id().", $student->id, '1')";
           }
         }
         if (!($units and $units[0]->class_id == $attend[6]))
@@ -279,13 +266,13 @@ class CSVController extends Controller
                                                            WHERE Courses.institution_id=? AND Courses.name=? AND
                                                            Courses.id=Periods.course_id AND Periods.name=? AND
                                                            Periods.id=Disciplines.period_id AND Disciplines.name=?",
-                                                          [$this->user->id, $cod[2], $cod[1], $disc])[0]->qtd;
+                                                          [auth()->id(), $cod[2], $cod[1], $disc])[0]->qtd;
           $offer[] = $out;
         }
         $structure[] = [$cod, $offer];
       }
       Session::put("structure", $structure);
-      return view("modules.import.structure",["user" => $this->user, "school" => $school]);
+      return view("modules.import.structure",["user" => auth()->user(), "school" => $school]);
     }
     catch (Exception $e) {
       return redirect("/import")->with("error", "Arquivo inválido!");
@@ -302,11 +289,11 @@ class CSVController extends Controller
     $structure = session("structure");
     $teachers = [];
     foreach ($structure as $class) {
-      $course = Course::where("institution_id", $this->user->id)->whereName($class[0][2])->first();
+      $course = Course::where("institution_id", auth()->id())->whereName($class[0][2])->first();
       if (!$course) {
         $course = new Course;
         $course->name = $class[0][2];
-        $course->institution_id = $this->user->id;
+        $course->institution_id = auth()->id();
         $course->absent_percent = 25;
         $course->average = 7;
         $course->average_final = 5;
@@ -335,11 +322,11 @@ class CSVController extends Controller
                       WHERE Relationships.user_id=? AND
                       Relationships.friend_id=Users.id AND
                       Relationships.type='2' AND
-                      Users.enrollment=?", [$this->user->id, $offer[0]])[0]->qtd
+                      Users.enrollment=?", [auth()->id(), $offer[0]])[0]->qtd
           ];
       }
     }
-    return view("modules.import.teacher", ["user" => $this->user, "teachers" => $teachers]);
+    return view("modules.import.teacher", ["user" => auth()->user(), "teachers" => $teachers]);
   }
 
   /**
@@ -357,7 +344,7 @@ class CSVController extends Controller
                               WHERE Relationships.user_id=? AND
                               Relationships.friend_id=Users.id AND
                               Relationships.type='2' AND
-                              Users.enrollment=?",[$this->user->id, $offer[0]])[0]->qtd;
+                              Users.enrollment=?",[auth()->id(), $offer[0]])[0]->qtd;
         if (!$status) {
           $user = new User;
           $user->name = $offer[1];
@@ -366,21 +353,21 @@ class CSVController extends Controller
           $user->enrollment = $offer[0];
           $user->save();
           if( !$s_relations )
-            $s_relations = "INSERT IGNORE INTO Relationships (user_id, friend_id, type ) VALUES (".$this->user->id.", $user->id, '2')";
+            $s_relations = "INSERT IGNORE INTO Relationships (user_id, friend_id, type ) VALUES (".auth()->id().", $user->id, '2')";
           else
-            $s_relations .= ", (".$this->user->id.", $user->id, '2')";
+            $s_relations .= ", (".auth()->id().", $user->id, '2')";
         }
       }
       if($s_relations) DB::insert($s_relations);
     }
-    return view("modules.import.offers", ["user" => $this->user, "structure" => $structure]);
+    return view("modules.import.offers", ["user" => auth()->user(), "structure" => $structure]);
   }
 
   public function getConfirmoffer()
   {
     $structure = session("structure");
     foreach ($structure as $class) {
-      $course = Course::where("institution_id", $this->user->id)->whereName($class[0][2])->first();
+      $course = Course::where("institution_id", auth()->id())->whereName($class[0][2])->first();
       $period = Period::where("course_id", $course->id)->where("name", $class[0][1])->first();
       $classe = Classe::where("period_id", $period->id)->whereClass($class[0][0])->first();
       if ( !$classe )
@@ -397,7 +384,7 @@ class CSVController extends Controller
                                WHERE Relationships.user_id=? AND
                                Relationships.friend_id=Users.id AND
                                Relationships.type='2' AND
-                               Users.enrollment=?",[$this->user->id, $offer_aux[0]])[0];
+                               Users.enrollment=?",[auth()->id(), $offer_aux[0]])[0];
         foreach ($offer_aux[8] as $disc)
         {
           $discipline = Discipline::where("period_id", $period->id)->where("name", $disc)->first();

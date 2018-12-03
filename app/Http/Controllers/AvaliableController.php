@@ -2,26 +2,9 @@
 
 class AvaliableController extends Controller
 {
-
-  /**
-   * Armazena o ID do usuário
-   * @var type num
-   */
-  private $user_id;
-
-  public function AvaliableController()
-  {
-    $id = session("user");
-    if ($id == null || $id == "") {
-      $this->user_id = false;
-    } else {
-      $this->user_id = decrypt($id);
-    }
-  }
-
   public function getIndex()
   {
-    $user = User::find($this->user_id);
+    $user = auth()->user();
     $exam = Exam::find(decrypt(request()->get("e")));
     $students = null;
     if ($exam->aval == "A") {
@@ -82,7 +65,7 @@ class AvaliableController extends Controller
 
   public function getNew()
   {
-    $user = User::find($this->user_id);
+    $user = auth()->user();
     $unit = Unit::find(decrypt(request()->get("u")));
     $exam = new Exam;
     $exam->unit_id = $unit->id;
@@ -157,7 +140,7 @@ class AvaliableController extends Controller
   {
     try
     {
-      $user = User::find($this->user_id);
+      $user = auth()->user();
       $unit = decrypt($unit);
       $final = Exam::whereAval("R")->where("unit_id", $unit)->first();
       if (!$final) {
@@ -238,7 +221,7 @@ class AvaliableController extends Controller
 
   public function getFinaldiscipline($offer = "")
   {
-    $user = User::find($this->user_id);
+    $user = auth()->user();
     $offer = Offer::find(decrypt($offer));
 
     /* caso não tenha data marcada, coloque a data de hoje */
@@ -299,7 +282,7 @@ class AvaliableController extends Controller
 
   public function getListstudentsexam($exam = "")
   {
-    $user = User::find($this->user_id);
+    $user = auth()->user();
     $exam = Exam::find(decrypt($exam));
     $students = null;
 

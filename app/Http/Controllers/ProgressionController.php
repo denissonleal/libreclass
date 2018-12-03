@@ -2,17 +2,9 @@
 
 class ProgressionController extends Controller
 {
-
-  private $user_id;
-
   public function __construct()
   {
-    $id = session("user");
-    if ($id == null || $id == "") {
-      $this->user_id = false;
-    } else {
-      $this->user_id = decrypt($id);
-    }
+
   }
 
 	public function postStudentsAndClasses()

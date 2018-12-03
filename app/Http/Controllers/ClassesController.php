@@ -108,9 +108,9 @@ class ClassesController extends Controller
 
 	public function getPanel()
 	{
-		if ($this->user_id) {
-			$user = User::find($this->user_id);
-			$courses = Course::where('institution_id', $this->user_id)
+		if (auth()->id()) {
+			$user = auth()->user();
+			$courses = Course::where('institution_id', auth()->id())
 				->where('status', 'E')
 				->orderBy('name')
 				->get();
@@ -270,7 +270,7 @@ class ClassesController extends Controller
 	{
 		$status = ((int) $status ? "E" : "D");
 
-		$courses = Course::where("institution_id", $this->user_id)->whereStatus("E")->get();
+		$courses = Course::where("institution_id", auth()->id())->whereStatus("E")->get();
 		foreach ($courses as $course) {
 			$course->units = DB::select("SELECT Units.value
 				FROM Periods, Classes, Offers, Units
@@ -291,7 +291,7 @@ class ClassesController extends Controller
 	public function postBlockUnit()
 	{
 		$course = Course::find(decrypt(request()->get('course')));
-		if ($course->institution_id != $this->user_id) {
+		if ($course->institution_id != auth()->id()) {
 			throw new Exception('Usuário inválido');
 		}
 
@@ -314,7 +314,7 @@ class ClassesController extends Controller
 	public function postUnblockUnit()
 	{
 		$course = Course::find(decrypt(request()->get('course')));
-		if ($course->institution_id != $this->user_id) {
+		if ($course->institution_id != auth()->id()) {
 			throw new Exception('Usuário inválido');
 		}
 
@@ -338,7 +338,7 @@ class ClassesController extends Controller
 	{
 		$s_attends = false;
 		$course = Course::find(decrypt(request()->get("course")));
-		if ($course->institution_id != $this->user_id) {
+		if ($course->institution_id != auth()->id()) {
 			throw new Exception("Você não tem permissão para realizar essa operação");
 		}
 

@@ -2,15 +2,9 @@
 
 class SocialController extends Controller
 {
-  private $user_id;
-
   public function __construct()
   {
-    $id = session("user");
-    if ( $id == null || $id == "" )
-      $this->user_id = false;
-    else
-      $this->user_id = decrypt($id);
+
   }
 
   public function getIndex()
@@ -18,7 +12,7 @@ class SocialController extends Controller
     if ( session("redirect") )
       return redirect(session("redirect"));
 
-    $user = User::find($this->user_id);
+    $user = auth()->user();
     Session::put("type", $user->type);
 
     return view("social.home", ["user" => $user]);
@@ -28,19 +22,19 @@ class SocialController extends Controller
   {
     //~ print_r(request()->all());
     foreach( request()->all() as $key => $value )
-      return User::whereId($this->user_id)->update([$key => $value]);
+      return User::whereId(auth()->id())->update([$key => $value]);
   }
 
   public function postSuggestion()
   {
     $suggestion = new Suggestion;
-    $suggestion->user_id      = $this->user_id;
+    $suggestion->user_id      = auth()->id();
     $suggestion->title       = request()->get("title");
     $suggestion->value       = request()->get("value");
     $suggestion->description = request()->get("description");
     $suggestion->save();
 
-    $user = User::find($this->user_id);
+    $user = auth()->user();
 
     Mail::send('email.suporte', ["descricao" => request()->get("description"), "email" => $user->email, "title" => request()->get("title")], function($message)
     {
