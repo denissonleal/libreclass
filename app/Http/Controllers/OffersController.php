@@ -2,6 +2,11 @@
 
 class OffersController extends Controller
 {
+	public function __construct()
+	{
+		$this->middleware('auth.type:I');
+	}
+
 	public function getUser()
 	{
 		$user = decrypt(request()->get("u"));

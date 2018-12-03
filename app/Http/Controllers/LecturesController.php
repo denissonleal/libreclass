@@ -2,6 +2,11 @@
 
 class LecturesController extends Controller
 {
+	public function __construct()
+	{
+		$this->middleware('auth.type:I');
+	}
+
 	public function getIndex()
 	{
 		$user = auth()->user();
@@ -25,11 +30,11 @@ class LecturesController extends Controller
 		$lessons = $offer->lessons();
 
 		$alunos = DB::select("SELECT Users.id, Users.name
-													FROM Attends, Units, Users
-													WHERE Units.offer_id=? AND Units.id=Attends.unit_id AND Attends.user_id=Users.id
-													AND Attends.status = 'M'
-													GROUP BY Attends.user_id
-													ORDER BY Users.name", [$offer->id]);
+			FROM Attends, Units, Users
+			WHERE Units.offer_id=? AND Units.id=Attends.unit_id AND Attends.user_id=Users.id
+			AND Attends.status = 'M'
+			GROUP BY Attends.user_id
+			ORDER BY Users.name", [$offer->id]);
 
 		$units = Unit::where("offer_id", $offer->id)->get();
 

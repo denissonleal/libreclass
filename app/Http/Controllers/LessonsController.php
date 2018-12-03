@@ -2,17 +2,9 @@
 
 class LessonsController extends Controller
 {
-	private $user_id;
-
-	public function LessonsController()
+	public function __construct()
 	{
-		$id = session("user");
-		if ($id == null || $id == "") {
-			auth()->id() = false;
-		} else {
-			auth()->id() = decrypt($id);
-		}
-
+		$this->middleware('auth.type:I');
 	}
 
 	public function getIndex()
@@ -21,13 +13,13 @@ class LessonsController extends Controller
 		$lesson = Lesson::find(decrypt(request()->get("l")));
 
 		$students = DB::select("SELECT Users.name AS name, Attends.id AS attend_id, Frequencies.value AS value, Units.offer_id, Attends.user_id, Units.id AS unit_id
-															FROM Frequencies, Attends, Users, Units
-															WHERE Frequencies.attend_id=Attends.id AND
-																		Attends.status != 'T' AND
-																		Attends.user_id=Users.id AND
-																		Frequencies.lesson_id=? AND
-																		Attends.unit_id=Units.id
-															ORDER BY Users.name", [$lesson->id]);
+			FROM Frequencies, Attends, Users, Units
+			WHERE Frequencies.attend_id=Attends.id AND
+						Attends.status != 'T' AND
+						Attends.user_id=Users.id AND
+						Frequencies.lesson_id=? AND
+						Attends.unit_id=Units.id
+			ORDER BY Users.name", [$lesson->id]);
 
 		//Obtém todas a aulas da oferta da aula para calcular atestados;
 

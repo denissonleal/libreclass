@@ -4,7 +4,7 @@ class ProgressionController extends Controller
 {
   public function __construct()
   {
-
+		$this->middleware('auth.type:I');
   }
 
 	public function postStudentsAndClasses()
@@ -79,7 +79,8 @@ class ProgressionController extends Controller
 		return ['status' => 1, 'attends' => $attends ];
 	}
 
-	public function postImportStudent() {
+	public function postImportStudent()
+	{
 		if(!count(request()->get('student_ids'))) {
 			return ['status' => 0, 'message' => 'Nenhum aluno selecionado'];
 		}
@@ -107,6 +108,5 @@ class ProgressionController extends Controller
 		}
 
 		return ['status' => 1];
-
 	}
 }

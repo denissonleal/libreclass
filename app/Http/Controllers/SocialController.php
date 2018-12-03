@@ -4,7 +4,7 @@ class SocialController extends Controller
 {
   public function __construct()
   {
-
+    $this->middleware('auth.type:I');
   }
 
   public function getIndex()
@@ -45,7 +45,4 @@ class SocialController extends Controller
 
     return Redirect::back()->with("success", "Obrigado pela sua mensagem. Nossa equipe irá analisar e responderá o mais breve possível.");
   }
-
-
-
 }

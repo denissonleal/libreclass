@@ -4,10 +4,11 @@ class PermissionController extends Controller
 {
 	public function __construct()
   {
-
+		$this->middleware('auth.type:I');
   }
 
-	public function getIndex() {
+	public function getIndex()
+	{
 		if ( session("redirect") )
 			return redirect(session("redirect"));
 
@@ -48,7 +49,8 @@ class PermissionController extends Controller
 		return view("institution.permissions", ["user" => $user, "listfriends" => $listfriends, "listmodules" => $listmodules, "adminers" => $adminers]);
 	}
 
-	public function postIndex() {
+	public function postIndex()
+	{
 		// return request()->all();
 		$user = decrypt(request()->get("id"));
 
