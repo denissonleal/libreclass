@@ -41,7 +41,7 @@
               {{ Form::label("search", "Procurar", ["class" => "control-label text-md"] ) }}
               <span class="help-block text-muted">Faça a busca informando parte do nome desejado ou número da matrícula.</span>
               <div class="input-group col-md-12">
-                {{ Form::text("search", Input::get("search"), ["class" => "form-control"] ) }}
+                {{ Form::text("search", request()->get("search"), ["class" => "form-control"] ) }}
                 <span class="input-group-btn"><button id="submit-student" class="btn btn-primary"><i class="fa fa-lg fa-search"></i></button></span>
               </div>
             </div>
@@ -125,7 +125,8 @@
         <div class="col-md-12">
           <div class="block-new-student" hidden>
           {{ Form::open(["id" => "new-student"]) }}
-					{{ Form::text("student_id", null, ['class' => "hidden"]) }}
+            @csrf
+            {{ Form::text("student_id", null, ['class' => "hidden"]) }}
             <div class="row">
               <div class="col-md-4">
                 <div class="form-group">

@@ -1,6 +1,6 @@
 
 @foreach($users as $user)
-  @if(($user->type == "P" or $user->type == "A") and $i++ < 5)
+  @if ($user->type == "P" || $user->type == "A")
     <li data="{{ encrypt($user->id)}}" class="click list-group-item">
       <div class="pull-left mr">
         {{ HTML::image($user->photo, null, ["class" => "user-photo-2x img-circle"]) }}

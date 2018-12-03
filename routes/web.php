@@ -66,6 +66,12 @@ Route::post('config/location', 'ConfigController@postLocation');
 Route::post('config/street', 'ConfigController@postStreet');
 Route::post('config/uee', 'ConfigController@postUee');
 
+// Route::controller('user', "UsersController");
+Route::get('user/teacher', 'UsersController@getTeacher');
+Route::get('user/student', 'UsersController@getStudent');
+Route::post('user/student', 'UsersController@postStudent');
+Route::any('user/find-user/{search?}', 'UsersController@anyFindUser');
+
 Route::get('/', 'HomeController@index');
 
 /** ROTAS ANTIGAS

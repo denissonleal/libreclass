@@ -30,7 +30,7 @@
           {{ Form::open(["url" => URL::to("/lectures/units/addstudent")]) }}
             <div class="row">
               <div class="col-md-12 col-sm-12">
-                  {{ Form::hidden("unit", Input::get("u")) }}
+                  {{ Form::hidden("unit", request()->get("u")) }}
                   {{ Form::label("student", "Adicionar Aluno") }}
               </div>
               <div class="col-md-10 col-sm-10">
@@ -74,7 +74,7 @@
 </div>
 
 {{ Form::open(["url" => URL::to("/lectures/units/rmstudent"), "id" => "rmstudent"]) }}
-  {{ Form::hidden("unit", Input::get("u")) }}
+  {{ Form::hidden("unit", request()->get("u")) }}
   {{ Form::hidden("student", null) }}
 </form>
 

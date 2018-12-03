@@ -1,11 +1,10 @@
 <?php namespace App\Http\Controllers;
 
 use App\Course;
+use App\Period;
 
 class PeriodsController extends Controller
 {
-	private $user_id;
-
 	public function __construct()
 	{
 		$this->middleware('auth.type:I');
@@ -14,7 +13,7 @@ class PeriodsController extends Controller
 	public function index()
 	{
 		$user = auth()->user();
-		$courses = Course::where('institution_id', $this->user_id)
+		$courses = Course::where('institution_id', auth()->id())
 			->whereStatus('E')
 			->orderBy('name')
 			->get();
@@ -39,7 +38,7 @@ class PeriodsController extends Controller
 	public function save()
 	{
 		$period = new Period;
-		if(request()->has('period_id')) {
+		if(request()->get('period_id')) {
 			$period = Period::find(request()->get('period_id'));
 		}
 		$period->name = request()->get('name');

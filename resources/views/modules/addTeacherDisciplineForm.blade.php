@@ -6,7 +6,7 @@
     {{ Form::label("search", "Procurar", ["class" => "control-label"]) }}
     <span class="help-block text-muted">Faça a busca informando parte do nome da disciplina.</span>
     <div class="input-group col-md-12">
-      {{ Form::text("search", Input::get("search"), ["class" => "form-control"] ) }}
+      {{ Form::text("search", request()->get("search"), ["class" => "form-control"] ) }}
       <span class="input-group-btn">
         <button class="btn btn-primary"><i class="fa fa-lg fa-search"></i></button>
       </span>

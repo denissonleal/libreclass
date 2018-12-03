@@ -42,7 +42,7 @@
       </div>
     </div>
 
-@if( Input::has("edit") )
+@if( request()->has("edit") )
     <div id="block" class="block">
 
   {{ Form::open() }}

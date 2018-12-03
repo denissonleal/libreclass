@@ -4,6 +4,7 @@ use App\Course;
 use App\Period;
 use App\Offer;
 use App\Discipline;
+use App\Classe;
 
 class ClassesController extends Controller
 {
