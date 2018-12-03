@@ -55,8 +55,6 @@ class DisciplinesController extends Controller
 
 	public function postDelete()
 	{
-		//~ return request()->all();
-
 		$discipline = Discipline::find(decrypt(request()->get("input-trash")));
 		$offers = DB::select("SELECT Offers.id, Classes.name
 														FROM Offers, Classes
@@ -130,12 +128,6 @@ class DisciplinesController extends Controller
 				]));
 			}
 		}
-
-		// $disciplines = DB::select("
-		// 	SELECT Disciplines.id AS id, Disciplines.name AS name, Periods.name AS period
-		// 	FROM Disciplines, Periods
-		// 	WHERE period_id = Periods.id AND course_id = ? AND Disciplines.status = 'E'",
-		// 	[decrypt(request()->get("course"))]);
 
 		return view("social.disciplines.list", [ "disciplines" => $disciplines ]);
 	}

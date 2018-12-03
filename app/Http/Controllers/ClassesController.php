@@ -47,29 +47,11 @@ class ClassesController extends Controller
 			}
 		}
 
-		// $list_classes = DB::select("SELECT
-		// 		Classes.id AS id,
-		// 		Periods.name AS period,
-		// 		Classes.name AS classe_name,
-		// 		Classes.school_year AS school_year,
-		// 		Classes.class AS classe,
-		// 		Courses.name AS name,
-		// 		Classes.status AS status
-		// 	FROM Courses, Periods, Classes
-		// 	WHERE Courses.institution_id=? AND
-		// 		Courses.status = 'E' AND
-		// 		Classes.status <> 'D' AND
-		// 		Classes.school_year IN ($year, $year-1) AND
-		// 		Periods.course_id=Courses.id AND
-		// 		Classes.period_id=Periods.id", [$user->id]);
-
-		$atual_classes = array_where($list_classes, function($key, $classe) use ($year)
-		{
+		$atual_classes = array_where($list_classes, function($key, $classe) use ($year) {
 			return $classe->school_year == $year;
 		});
 
-		$previous_classes = array_where($list_classes, function($key, $classe) use ($year)
-		{
+		$previous_classes = array_where($list_classes, function($key, $classe) use ($year) {
 			return $classe->school_year == $year-1;
 		});
 
@@ -229,29 +211,27 @@ class ClassesController extends Controller
 			$class->status = request()->get("status");
 			$class->save();
 			if ($class->status == "E") {
-				return Redirect::back()->with("success", "Turma ativada com sucesso!");
+				return redirect()->back()->with("success", "Turma ativada com sucesso!");
 			}
 			else if ($class->status == "F") {
-				return Redirect::back()->with("success", "Turma encerrada com sucesso!");
+				return redirect()->back()->with("success", "Turma encerrada com sucesso!");
 			} else {
-				return Redirect::back()->with("success", "Turma bloqueada com sucesso!<br/>Turmas bloqueadas são movidas para o final.");
+				return redirect()->back()
+					->with("success", "Turma bloqueada com sucesso!<br/>Turmas bloqueadas são movidas para o final.");
 			}
-
 		} else {
-			return Redirect::back()->with("error", "Não foi possível realizar essa operação!");
+			return redirect()->back()->with("error", "Não foi possível realizar essa operação!");
 		}
 	}
 
 	public function anyListOffers()
 	{
 		$offers = Offer::where("class_id", decrypt(request()->get("class")))->get();
-		$idStudent = decrypt(request()->get("student"));
+		$student_id = decrypt(request()->get("student"));
 
 		foreach ($offers as $offer) {
-			$offer->status = DB::select("SELECT count(*) as qtd
-				FROM Units, Attends
-				WHERE Units.offer_id=? AND Units.id=Attends.unit_id AND Attends.user_id=?",
-				[$offer->id, $idStudent])[0]->qtd;
+			$unit_ids = Unit::whereOfferId($offer->id)->get(['_id'])->pluck('id')->toArray();
+			$offer->status = Attend::whereIn('unit_id', $unit_ids)->whereUserId($student_id)->count();
 
 			$offer->name = Discipline::find($offer->discipline_id)->name;
 			$offer->id = encrypt($offer->id);
@@ -367,16 +347,11 @@ class ClassesController extends Controller
 				} else {
 					$s_attends .= ", ($unit->id, $attend->user_id)";
 				}
-
-				//  $new = new Attend;
-				//  $new->unit_id = $unit->id;
-				//  $new->user_id = $attend->user_id;
-				//  $new->save();
 			}
+
 			if ($s_attends) {
 				DB::insert($s_attends);
 			}
-
 		}
 	}
 

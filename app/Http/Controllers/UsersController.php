@@ -89,6 +89,10 @@ class UsersController extends Controller
 		// 	ORDER BY name LIMIT ? OFFSET ?",
 		// 	[auth()->id(), "%$search%", $search, $block, $current * $block]);
 
+		// $enrollment = preg_replace('/\D/', '', $search);
+		// if ($enrollment) {
+		// }
+
 		$length = [(object) ['length' => 0]];
 		// DB::select("SELECT count(*) as 'length'
 		// 	FROM Users, Relationships
@@ -432,20 +436,11 @@ class UsersController extends Controller
 			$listCourses[$course->id] = $course->name;
 		}
 
-		$relationships = [];
-		// DB::select("SELECT Users.id, Users.name, Users.enrollment "
-		// 	. "FROM Users, Relationships "
-		// 	. "WHERE Relationships.user_id=? AND Relationships.type='1' AND Relationships.friend_id=Users.id "
-		// 	. "AND (Users.name LIKE ? OR Users.enrollment=?) "
-		// 	. " ORDER BY name LIMIT ? OFFSET ?",
-		// 	[auth()->id(), "%$search%", $search, $block, $current * $block]);
-
 		$user_ids = Relationship::whereUserId(auth()->id())
 			->whereType('1')
 			->get(['friend_id'])
 			->pluck('friend_id')
 			->toArray();
-		// dd(Relationship::all());
 
 		$users = User::whereIn('_id', $user_ids);
 		if ($search) {
@@ -460,16 +455,6 @@ class UsersController extends Controller
 		$length = User::whereIn('_id', $user_ids)->where(function($query) use ($search) {
 			$query->where('name', 'like', "%$search%")->orWhere('enrollment', $search);
 		})->count();
-
-
-		// $enrollment = preg_replace('/\D/', '', $search);
-		// if ($enrollment) {
-		// }
-
-		// $length = DB::select("SELECT count(*) as 'length' "
-		// 	. "FROM Users, Relationships "
-		// 	. "WHERE Relationships.user_id=? AND Relationships.type='1' AND Relationships.friend_id=Users.id "
-		// 	. "AND (Users.name LIKE ? OR Users.enrollment=?) ", [auth()->id(), "%$search%", $search]);
 
 		return view('modules.addStudents', [
 			'courses' => $listCourses,
