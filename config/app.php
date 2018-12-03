@@ -226,7 +226,7 @@ return [
 		'View' => Illuminate\Support\Facades\View::class,
 		'Moloquent' => Jenssegers\Mongodb\Eloquent\Model::class,
 		'Form' => Collective\Html\FormFacade::class,
-		'Html' => Collective\Html\HtmlFacade::class,
+		'HTML' => Collective\Html\HtmlFacade::class,
 	],
 
 ];

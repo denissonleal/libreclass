@@ -67,6 +67,11 @@ class User extends \Moloquent implements
 		$this->attributes['name'] = titleCase(trimpp($value));
 	}
 
+	public function setStreetAttribute($value)
+	{
+		$this->attributes['street'] = titleCase(trimpp($value));
+	}
+
 	public function setEmailAttribute($value)
 	{
 		$this->attributes['email'] = mb_strtolower(trimpp($value));

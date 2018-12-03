@@ -42,7 +42,13 @@
 
             <tr class="block-config-item">
               <td>Foto</td>
-              <td>{{ strlen($user->photo) ? HTML::image($user->photo, null, ["class" => "user-photo-2x"]) : "<span class='text-info'>Inserir Foto</span>"}}</td>
+              <td>
+                @if (strlen($user->photo))
+                  {{ HTML::image($user->photo, null, ["class" => "user-photo-2x"]) }}
+                @else
+                  <span class='text-info'>Inserir Foto</span>
+                @endif
+              </td>
               <td></td>
             </tr>
 
@@ -96,7 +102,7 @@
             @if( $user->cadastre == "N" )
               <tr class="block-config-item">
                 <td>Senha</td>
-                <td class="text-info">{{ "*******" }}</td>
+                <td class="text-info">*******</td>
                 <td></td>
               </tr>
 
@@ -124,7 +130,7 @@
             @if($user->type == "I")
             <tr class="block-config-item">
               <td>Código da UEE</td>
-              <td class="text-info">{{$user->uee or "Inserir"}}</td>
+              <td class="text-info">{{ $user->uee ?? "Inserir" }}</td>
               <td></td>
             </tr>
 
@@ -283,7 +289,7 @@
           @if($user->type == "I")
             <tr class="block-config-item">
               <td>Endereço</td>
-              <td class="text-info" id="institution-description">{{$user->street or "Inserir"}}</td>
+              <td class="text-info" id="institution-description">{{ $user->street ?? "Inserir" }}</td>
               <td></td>
             </tr>
 
@@ -305,7 +311,7 @@
 
             <tr id="block-map" class="block-config-item">
               <td>Localização</td>
-              <td class="text-info">{{ $user->idCity ? $user->printLocation() : "" }}</td>
+              <td class="text-info">{{ $user->city_id ? $user->printLocation() : "" }}</td>
               <td></td>
             </tr>
 

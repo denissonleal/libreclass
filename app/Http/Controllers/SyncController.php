@@ -61,7 +61,7 @@ class SyncController extends Controller
               unset($attend->user->password);
               unset($attend->user->email);
               unset($attend->user->photo);
-              unset($attend->user->idCity);
+              unset($attend->user->city_id);
               unset($attend->user->cadastre);
               unset($attend->user->formation);
               unset($attend->user->course);

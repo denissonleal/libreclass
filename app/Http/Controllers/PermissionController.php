@@ -94,7 +94,7 @@ class PermissionController extends Controller
 		unset($user->type);
 		unset($user->gender);
 		unset($user->photo);
-		unset($user->idCity);
+		unset($user->city_id);
 		unset($user->formation);
 
 		return $user;

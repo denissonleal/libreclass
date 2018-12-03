@@ -7,7 +7,7 @@ class AuthenticateType {
 
 	public function handle($request, Closure $next, $type)
 	{
-		if ( auth()->guest() ) {
+		if (auth()->guest()) {
 			if ($request->ajax() || $request->wantsJson()) {
 				return response('unauthenticated', 401);
 			} else {

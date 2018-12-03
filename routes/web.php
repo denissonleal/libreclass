@@ -16,6 +16,10 @@ Route::get('/ie', function () {
   return view('ie');
 });
 
+Route::get('student', function () {
+  return view('students.disciplines');
+});
+
 Route::get('login', 'LoginController@index');
 Route::post('login', 'LoginController@login');
 Route::any('logout', 'LoginController@logout');
@@ -50,6 +54,17 @@ Route::get('classes', 'ClassesController@index');
 Route::post('classes/classes-by-year', 'ClassesController@classesByYear');
 Route::post('classes/listdisciplines', 'ClassesController@listdisciplines');
 
+Route::get('config', 'ConfigController@index');
+Route::post('config/photo', 'ConfigController@postPhoto');
+Route::post('config/birthdate', 'ConfigController@postBirthdate');
+Route::post('config/common', 'ConfigController@postCommon');
+Route::post('config/commonselect', 'ConfigController@postCommonselect');
+Route::post('config/gender', 'ConfigController@postGender');
+Route::post('config/type', 'ConfigController@postType');
+Route::post('config/password', 'ConfigController@postPassword');
+Route::post('config/location', 'ConfigController@postLocation');
+Route::post('config/street', 'ConfigController@postStreet');
+Route::post('config/uee', 'ConfigController@postUee');
 
 Route::get('/', 'HomeController@index');
 
@@ -58,17 +73,7 @@ Route::controller('/censo', 'CensoController');
 
 Route::controller('/classrooms', "ClassroomController");
 
-// Route::controller('LoL', "\student\DisciplinesController");
-Route::get('student', function () {
-  return View::make("students.disciplines");
-});
-
 Route::controller('sync', "SyncController");
-
-Route::get('logout', function () {
-  Session::flush();
-  return Redirect::guest("/");
-});
 
 Route::get('help/{rota}', 'HelpController@getView');
 
@@ -117,7 +122,6 @@ if (session("user") == null) {
 		Route::any('offers/get-grouped', 'OffersController@postOffersGrouped');
   }
 
-  Route::controller('config', "ConfigController");
   Route::controller('/', 'SocialController');
 }
 **/
