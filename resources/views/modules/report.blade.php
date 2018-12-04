@@ -6,6 +6,7 @@
 				<h4 class="modal-title text-blue" id="modalReportLabel"><b><i class="fa fa-support"></i> Contate o suporte</b></h3>
 			</div>
 			<form action="/suggestion" method="post">
+				@csrf
 				<div class="modal-body">
 					<p class="text-center">
 						Sua opinião é importante para o crescimento do LibreClass.
