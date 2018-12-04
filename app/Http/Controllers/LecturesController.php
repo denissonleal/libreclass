@@ -4,7 +4,7 @@ class LecturesController extends Controller
 {
 	public function __construct()
 	{
-		$this->middleware('auth.type:I');
+		$this->middleware('auth.type:P');
 	}
 
 	public function getIndex()

@@ -11,7 +11,8 @@ class UnitsController extends Controller
 		if (request()->get("u")) {
 			$this->unit = Unit::find(decrypt(request()->get("u")));
 		}
-		$this->middleware('auth.type:I');
+		$this->middleware('auth.type:IP')->except('getReportUnit');
+		$this->middleware('auth.type:I')->only('getReportUnit');
 	}
 
 	public function getIndex()
@@ -49,7 +50,7 @@ class UnitsController extends Controller
 	}
 
 	/*
-	edita a unidade. O único atributo editável é a forma de calcular a média
+	 * edita a unidade. O único atributo editável é a forma de calcular a média
 	 */
 	public function postEdit()
 	{

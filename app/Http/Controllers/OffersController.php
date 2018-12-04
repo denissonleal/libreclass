@@ -4,7 +4,8 @@ class OffersController extends Controller
 {
 	public function __construct()
 	{
-		$this->middleware('auth.type:I');
+		$this->middleware('auth.type:I')->except('postOffersGrouped');
+		$this->middleware('auth.type:IP')->only('postOffersGrouped');
 	}
 
 	public function getUser()

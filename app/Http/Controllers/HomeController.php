@@ -12,4 +12,14 @@ class HomeController extends Controller
 
 		return view('social.home');
 	}
+
+	public function ie()
+	{
+		return view('ie');
+	}
+
+	public function student()
+	{
+		return view('students.disciplines');
+	}
 }

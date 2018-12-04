@@ -8,7 +8,14 @@ class UsersController extends Controller
 {
 	public function __construct()
 	{
-		$this->middleware('auth.type:I');
+		$this->middleware('auth.type:I')->except([
+			'getStudent',
+			'postStudent',
+		]);
+		$this->middleware('auth.type:IP')->only([
+			'getStudent',
+			'postStudent',
+		]);
 	}
 
 	public function postSearchTeacher()
@@ -693,7 +700,7 @@ class UsersController extends Controller
 		return $pdf->stream();
 	}
 
-	public function typesExams($type)
+	private function typesExams($type)
 	{
 		$typesExams = [
 			"Prova Dissertativa Individual",

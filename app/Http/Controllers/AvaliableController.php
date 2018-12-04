@@ -4,7 +4,7 @@ class AvaliableController extends Controller
 {
 	public function __construct()
 	{
-		$this->middleware('auth.type:I');
+		$this->middleware('auth.type:P');
 	}
 
 	public function getIndex()
@@ -64,8 +64,6 @@ class AvaliableController extends Controller
 			Log::info('createExamsValues Error', ['message' => $e->getMessage()]);
 			return false;
 		}
-
-
 	}
 
 	public function getNew()
