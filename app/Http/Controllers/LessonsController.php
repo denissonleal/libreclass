@@ -26,7 +26,7 @@ class LessonsController extends Controller
 		foreach ($students as $student) {
 			//Obtém os atestados
 			$allLessons = Unit::find($student->unit_id)->getOffer()->lessons();
-			$attests = Attest::where('idStudent',$student->user_id)->get();
+			$attests = Attest::where('student_id',$student->user_id)->get();
 			$qtdAttests = 0;
 			foreach($attests as $attest) {
 				$attest->dateFinish = date('Y-m-d', strtotime($attest->date. '+ '. ($attest->days - 1) .' days'));

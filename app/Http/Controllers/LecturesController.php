@@ -42,7 +42,7 @@ class LecturesController extends Controller
 			$aluno->absence = $offer->qtdAbsences($aluno->id);
 
 			//Obtém os atestados e quantidade
-			$attests = Attest::where('idStudent', $aluno->id)->get();
+			$attests = Attest::where('student_id', $aluno->id)->get();
 			$qtdAttests = 0;
 			foreach($lessons as $lesson) {
 				foreach($attests as $attest) {

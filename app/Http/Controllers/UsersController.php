@@ -3,6 +3,9 @@
 use App\User;
 use App\Course;
 use App\Relationship;
+use App\Period;
+use App\Classe;
+use App\Attest;
 
 class UsersController extends Controller
 {
@@ -196,36 +199,60 @@ class UsersController extends Controller
 	{
 		$user = auth()->user();
 		$profile = decrypt(request()->get("u"));
-		$classes = DB::select("SELECT Classes.id, Classes.name, Classes.class FROM Classes, Periods, Courses "
-			. "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.status='E'",
-			[$user->id]);
+
+		$course_ids = Course::where('institution_id', $user->id)
+			->get(['_id'])
+			->pluck('id')
+			->toArray();
+
+		$period_ids = Period::whereIn('course_id', $course_ids)
+			->get(['_id'])
+			->pluck('id')
+			->toArray();
+
+		$classes = Classe::whereIn('period_id', $period_ids)
+			->whereStatus('E')
+			->get(['name', 'class']);
+
 		$listclasses = [];
 		$listidsclasses = [];
 		foreach ($classes as $class) {
 			$listclasses[$class->class] = $class->class;
 			$listidsclasses[encrypt($class->id)] = "[$class->class] $class->name";
-
 		}
 
 		if ($profile) {
 			$profile = User::find($profile);
-			$courses = DB::select("SELECT Courses.id, Courses.name, Courses.quant_unit FROM Attends, Units, Offers, Disciplines, Periods, Courses, Classes "
-			. " WHERE Units.id = Attends.unit_id "
-			. " AND Offers.id = Units.offer_id "
-			. " AND Disciplines.id = Offers.discipline_id "
-			. " AND Periods.id = Disciplines.period_id "
-			. " AND Courses.id = Periods.course_id "
-			. " AND Attends.user_id = ? "
-			. " GROUP BY Courses.id", [$profile->id]);
+
+			$courses = collect();
+			// DB::select("SELECT Courses.id, Courses.name, Courses.quant_unit
+			// 	FROM Attends, Units, Offers, Disciplines, Periods, Courses
+			// 	WHERE Units.id = Attends.unit_id
+			// 		AND Offers.id = Units.offer_id
+			// 		AND Disciplines.id = Offers.discipline_id
+			// 		AND Periods.id = Disciplines.period_id
+			// 		AND Courses.id = Periods.course_id
+			// 		AND Attends.user_id = ?
+			// 	GROUP BY Courses.id", [$profile->id]);
 
 			$listCourses = [];
-			foreach ($courses as $course) {
-				$listCourses[encrypt($course->id)] = "$course->name";
+			// foreach ($courses as $course) {
+			// 	$listCourses[encrypt($course->id)] = "$course->name";
+			// }
 
-			}
+			$attests = Attest::where('student_id', $profile->id)
+				->where('institution_id', $user->id)
+				->orderBy('date', 'desc')->get();
 
-			$attests = Attest::where("idStudent", $profile->id)->where("institution_id", $user->id)->orderBy("date", "desc")->get();
-			return view("modules.profilestudent", ["user" => $user, "profile" => $profile, "listclasses" => $listclasses, "attests" => $attests, "listidsclasses" => $listidsclasses, "listCourses" => $listCourses, 'courses' => $courses]);
+			return view('modules.profilestudent', [
+				'user' => $user,
+				'profile' => $profile,
+				'listclasses' => $listclasses,
+				'attests' => $attests,
+				'listidsclasses' => $listidsclasses,
+				'listCourses' => $listCourses,
+				'courses' => $courses,
+			]);
 		} else {
 			return redirect("/");
 		}
@@ -343,13 +370,13 @@ class UsersController extends Controller
 	 */
 	public function postAttest()
 	{
-		$idStudent = decrypt(request()->get("student"));
-		$relation = Relationship::where("user_id", auth()->id())->where("friend_id", $idStudent)->whereType(1)->whereStatus("E")->first();
+		$student_id = decrypt(request()->get("student"));
+		$relation = Relationship::where("user_id", auth()->id())->where("friend_id", $student_id)->whereType(1)->whereStatus("E")->first();
 
 		if ($relation) {
 			$attest = new Attest;
 			$attest->institution_id = auth()->id();
-			$attest->idStudent = $idStudent;
+			$attest->student_id = $student_id;
 			$attest->date = request()->get("date-year") . "-" . request()->get("date-month") . "-" . request()->get("date-day");
 			$attest->days = request()->get("days");
 			$attest->description = request()->get("description");

@@ -97,7 +97,7 @@ class Offer extends \Moloquent
 		return Lecture::where("offer_id", $this->id)->get();
 	}
 
-	public function qtdAbsences($idStudent)
+	public function qtdAbsences($student_id)
 	{
 		return DB::select("SELECT COUNT(*) as 'qtd'
 												FROM Units, Attends, Lessons, Frequencies
@@ -107,10 +107,10 @@ class Offer extends \Moloquent
 															Lessons.deleted_at IS NULL AND
 															Frequencies.attend_id=Attends.id AND
 															Frequencies.value='F' AND
-															Attends.user_id=?", [$this->id, $idStudent])[0]->qtd;
+															Attends.user_id=?", [$this->id, $student_id])[0]->qtd;
 	}
 
-	public function qtdUnitAbsences($idStudent, $unitValue)
+	public function qtdUnitAbsences($student_id, $unitValue)
 	{
 		return DB::select("SELECT COUNT(*) as 'qtd'
 												FROM Units, Attends, Lessons, Frequencies
@@ -121,7 +121,7 @@ class Offer extends \Moloquent
 															Lessons.deleted_at IS NULL AND
 															Frequencies.attend_id = Attends.id AND
 															Frequencies.value = 'F' AND
-															Attends.user_id = ?", [$this->id, $unitValue, $idStudent])[0]->qtd;
+															Attends.user_id = ?", [$this->id, $unitValue, $student_id])[0]->qtd;
 	}
 
 	public function qtdLessons()

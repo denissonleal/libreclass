@@ -252,7 +252,7 @@ class UnitsController extends Controller
 						$data['students'][$key]->absences[$i] = ".";
 					}
 
-					$attests = Attest::where('idStudent',$student->id)->get();
+					$attests = Attest::where('student_id',$student->id)->get();
 					foreach($attests as $attest) {
 						$attest->dateFinish = date('Y-m-d', strtotime($attest->date. '+ '. ($attest->days - 1) .' days'));
 
