@@ -15,12 +15,12 @@ class ExamsValue extends \Moloquent
 
 	public static function getValue($user, $exam)
 	{
-		$out = DB::select("select ExamsValues.value "
-			. "from ExamsValues, Attends "
-			. "where ExamsValues.exam_id=? and ExamsValues.attend_id=Attends.id and Attends.user_id=?",
-				[$exam, $user]);
+		$attend_ids = Attend::where('user_id', $user)->get(['_id']);
+		$value = ExamsValue::where('exam_id', $exam)
+			->whereIn('attend_id', $attend_ids)
+			->first(['value']);
 
-		return count($out) ? $out[0]->value : "";
+		return $value ? $value->value : '';
 	}
 
 }

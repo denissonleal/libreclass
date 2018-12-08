@@ -15,11 +15,12 @@ class Frequency extends \Moloquent
 
 	public static function getValue($user, $lesson)
 	{
-		$out = DB::select("select Frequencies.value "
-			. "from Frequencies, Attends "
-			. "where Frequencies.lesson_id=? and Frequencies.attend_id=Attends.id and Attends.user_id=?",
-			[$lesson, $user]);
+		$attend_ids = Attend::where('user_id', $user)->get(['_id']);
 
-		return count($out) ? $out[0]->value : "";
+		$value = Frequency::where('exam_id', $lesson)
+			->whereIn('attend_id', $attend_ids)
+			->first(['value']);
+
+		return $value ? $value->value : '';
 	}
 }

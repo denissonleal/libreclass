@@ -237,12 +237,17 @@ class AvaliableController extends Controller
 		}
 		$units = Unit::where("offer_id", $offer->id)->get();
 		$course = Offer::find($offer->id)->getDiscipline()->getPeriod()->getCourse();
-		$alunos = DB::select("select Users.id, Users.name
-													from Attends, Units, Users
-													where Units.offer_id=? AND Units.id=Attends.unit_id AND Attends.user_id=Users.id
-													AND Attends.status = 'M'
-													group by Attends.user_id
-													order by Users.name", [$offer->id]);
+		$alunos = DB::select("SELECT Users.id, Users.name
+			from Attends, Units, Users
+			where Units.offer_id=?
+				AND Units.id=Attends.unit_id
+				AND Attends.status = 'M'
+				AND Attends.user_id=Users.id
+			group by Attends.user_id
+			order by Users.name", [$offer->id]);
+
+
+
 		foreach ($alunos as $aluno) {
 			$aluno->absence = $offer->qtdAbsences($aluno->id);
 			$aluno->averages = [];
@@ -312,22 +317,23 @@ class AvaliableController extends Controller
 	public function postDelete()
 	{
 		$exam = Exam::find(decrypt(request()->get("input-trash")));
-
-		$unit = DB::select("SELECT Units.id, Units.status
-													FROM Units, Exams
-													WHERE Units.id = Exams.unit_id AND
-														Exams.id=?", [$exam->id]);
-
-		if ($unit[0]->status == 'D') {
-			return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar.<br>Unidade desabilitada.");
+		if (!$exam) {
+			return redirect("/lectures/units?u=" . encrypt($unit->id))
+				->with("error", "Não foi possível deletar");
 		}
-		if ($exam) {
-			$exam->status = "D";
-			$exam->save();
-			return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("success", "Avaliação excluída com sucesso!");
-		} else {
-			return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar");
+
+		$unit = Unit::fint($exam->unit_id);
+
+		if ($unit->status == 'D') {
+			return redirect("/lectures/units?u=" . encrypt($unit->id))
+				->with("error", "Não foi possível deletar.<br>Unidade desabilitada.");
 		}
+
+		$exam->status = "D";
+		$exam->save();
+
+		return redirect("/lectures/units?u=" . encrypt($unit->id))
+			->with("success", "Avaliação excluída com sucesso!");
 	}
 
 	function removeAccents($str) {

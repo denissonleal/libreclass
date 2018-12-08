@@ -56,24 +56,24 @@ class DisciplinesController extends Controller
 	public function postDelete()
 	{
 		$discipline = Discipline::find(decrypt(request()->get("input-trash")));
-		$offers = DB::select("SELECT Offers.id, Classes.name
-														FROM Offers, Classes
-														 WHERE Classes.status = 'E' AND
-														 Offers.discipline_id=? AND
-														 Offers.class_id=Classes.id", [$discipline->id]);
-
-		if(count($offers)) {
-			return redirect("/disciplines")->with("error", "Não foi possível excluir. <br>Disciplina vinculada à turma <b>". $offers[0]->name . "</b>");
+		if (!$discipline) {
+			return redirect("/disciplines")
+				->with("error", "Não foi possível excluir a disciplina.");
 		}
 
-		if ($discipline) {
-			$discipline->status = "D";
-			$discipline->save();
-			return redirect("/disciplines")->with("success", "Excluído com sucesso.");
+		$class_ids = $discipline->offers()->get(['class_id'])->pluck('class_id')->all();
+
+		$classe = Classe::whereIn('_id', $class_ids)->whereStatus('E')->first();
+		if ($classe) {
+			return redirect('/disciplines')
+				->with('error', "Não foi possível excluir. <br>Disciplina vinculada à turma <b>$classe->name</b>");
 		}
-		else {
-			return redirect("/disciplines")->with("error", "Não foi possível excluir a disciplina.");
-		}
+
+		$discipline->status = "D";
+		$discipline->save();
+
+		return redirect('/disciplines')
+			->with('success', 'Excluído com sucesso.');
 	}
 
 	public function getDiscipline()
