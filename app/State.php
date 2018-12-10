@@ -1,6 +1,6 @@
 <?php namespace App;
 
-class State extends \Moloquent
+class State extends \Illuminate\Database\Eloquent\Model
 {
 	/**
 	 * The attributes that are mass assignable.

@@ -1,6 +1,6 @@
 <?php namespace App;
 
-class Bind extends \Moloquent
+class Bind extends \Illuminate\Database\Eloquent\Model
 {
 	/**
 	 * The attributes that are mass assignable.

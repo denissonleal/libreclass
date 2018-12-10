@@ -1,6 +1,6 @@
 <?php namespace App;
 
-class Ctrl extends \Moloquent
+class Ctrl extends \Illuminate\Database\Eloquent\Model
 {
 	/**
 	 * The attributes that are mass assignable.

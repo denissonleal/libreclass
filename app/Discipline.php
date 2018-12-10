@@ -1,6 +1,6 @@
 <?php namespace App;
 
-class Discipline extends \Moloquent
+class Discipline extends \Illuminate\Database\Eloquent\Model
 {
 	/**
 	 * The attributes that are mass assignable.

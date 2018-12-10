@@ -1,6 +1,6 @@
 <?php namespace App;
 
-class Relationship extends \Moloquent
+class Relationship extends \Illuminate\Database\Eloquent\Model
 {
 	/**
 	 * The attributes that are mass assignable.

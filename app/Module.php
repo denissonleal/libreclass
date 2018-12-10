@@ -1,5 +1,6 @@
 <?php namespace App;
 
-class Module extends \Moloquent {
+class Module extends \Illuminate\Database\Eloquent\Model
+{
 
 }

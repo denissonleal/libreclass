@@ -1,5 +1,6 @@
 <?php namespace App;
 
-class Building extends \Moloquent {
+class Building extends \Illuminate\Database\Eloquent\Model
+{
 	protected $fillable = [];
 }

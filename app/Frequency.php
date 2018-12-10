@@ -1,6 +1,6 @@
 <?php namespace App;
 
-class Frequency extends \Moloquent
+class Frequency extends \Illuminate\Database\Eloquent\Model
 {
 	/**
 	 * The attributes that are mass assignable.

@@ -1,6 +1,6 @@
 <?php namespace App;
 
-class Attend extends \Moloquent
+class Attend extends \Illuminate\Database\Eloquent\Model
 {
 	/**
 	 * The attributes that are mass assignable.

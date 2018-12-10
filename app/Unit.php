@@ -1,6 +1,6 @@
 <?php namespace App;
 
-class Unit extends \Moloquent
+class Unit extends \Illuminate\Database\Eloquent\Model
 {
 	protected $fillable = [
 		'offer_id',

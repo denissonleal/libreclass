@@ -2,7 +2,7 @@
 
 use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
-class Lesson extends \Moloquent
+class Lesson extends \Illuminate\Database\Eloquent\Model
 {
 	use SoftDeletes;
 

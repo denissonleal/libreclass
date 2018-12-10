@@ -1,6 +1,6 @@
 <?php namespace App;
 
-class Lecture extends \Moloquent
+class Lecture extends \Illuminate\Database\Eloquent\Model
 {
 	/**
 	 * The attributes that are mass assignable.

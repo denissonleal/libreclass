@@ -1,5 +1,6 @@
 <?php namespace App;
 
-class Campu extends \Moloquent {
+class Campu extends \Illuminate\Database\Eloquent\Model
+{
 	protected $fillable = [];
 }

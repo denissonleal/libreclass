@@ -1,6 +1,6 @@
 <?php namespace App;
 
-class Attest extends \Moloquent
+class Attest extends \Illuminate\Database\Eloquent\Model
 {
 	/**
 	 * The attributes that are mass assignable.

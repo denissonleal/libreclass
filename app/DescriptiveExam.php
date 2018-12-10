@@ -1,6 +1,6 @@
 <?php namespace App;
 
-class DescriptiveExam extends \Moloquent
+class DescriptiveExam extends \Illuminate\Database\Eloquent\Model
 {
 	/**
 	 * The attributes that are mass assignable.

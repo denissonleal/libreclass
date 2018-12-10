@@ -1,6 +1,6 @@
 <?php namespace App;
 
-class Period extends \Moloquent
+class Period extends \Illuminate\Database\Eloquent\Model
 {
 	/**
 	 * The attributes that are mass assignable.
