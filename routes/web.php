@@ -152,15 +152,15 @@ Route::post('permissions', 'PermissionController@postIndex');
 Route::post('permissions/find', 'PermissionController@postFind');
 
 Route::get('lectures', 'LecturesController@getIndex');
-Route::get('lectures/finalreport', 'LecturesController@getFinalreport');
-Route::get('lectures/frequency', 'LecturesController@getFrequency');
+Route::get('lectures/finalreport/{offer?}', 'LecturesController@getFinalreport');
+Route::get('lectures/frequency/{offer}', 'LecturesController@getFrequency');
 Route::post('lectures/sort', 'LecturesController@postSort');
 
 Route::get('avaliable', 'AvaliableController@getIndex');
 Route::get('avaliable/new', 'AvaliableController@getNew');
 Route::get('avaliable/finaldiscipline', 'AvaliableController@getFinaldiscipline');
 Route::get('avaliable/average-unit', 'AvaliableController@getAverageUnit');
-Route::get('avaliable/liststudentsexam', 'AvaliableController@getListstudentsexam');
+Route::get('avaliable/liststudentsexam/{exam}', 'AvaliableController@getListstudentsexam');
 Route::get('avaliable/finalunit', 'AvaliableController@getFinalunit');
 Route::post('avaliable/save', 'AvaliableController@postSave');
 Route::post('avaliable/exam', 'AvaliableController@postExam');
