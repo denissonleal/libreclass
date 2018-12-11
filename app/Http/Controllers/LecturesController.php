@@ -1,5 +1,14 @@
 <?php namespace App\Http\Controllers;
 
+use DB;
+use App\Lecture;
+use App\Unit;
+use App\Offer;
+use App\Attest;
+use App\FinalExam;
+use App\Attend;
+use App\User;
+
 class LecturesController extends Controller
 {
 	public function __construct()
@@ -10,10 +19,13 @@ class LecturesController extends Controller
 	public function getIndex()
 	{
 		$user = auth()->user();
-		$lectures = Lecture::where("user_id", auth()->id())->orderBy("order")->get();
-		$lectures = array_where($lectures, function($key, $value) {
-			return $value->offer->classe->status != 'F';
-		});
+		$lectures = Lecture::where("user_id", auth()->id())
+			->orderBy("order")
+			->get()
+			->filter(function($value, $key) {
+				return $value->offer->classe->status != 'F';
+			})
+			->values();
 
 		return view("offers.teacher", ["user" => $user, "lectures" => $lectures]);
 	}
@@ -24,17 +36,14 @@ class LecturesController extends Controller
 			$user = auth()->user();
 		}
 		$offer = Offer::find(decrypt($offer));
-		$course = $offer->getDiscipline()->getPeriod()->getCourse();
+		$course = $offer->getDiscipline()->getPeriod()->course;
 		$qtdLessons = $offer->qtdLessons();
 
 		$lessons = $offer->lessons();
 
-		$alunos = DB::select("SELECT Users.id, Users.name
-			FROM Attends, Units, Users
-			WHERE Units.offer_id=? AND Units.id=Attends.unit_id AND Attends.user_id=Users.id
-			AND Attends.status = 'M'
-			GROUP BY Attends.user_id
-			ORDER BY Users.name", [$offer->id]);
+		$unit_ids = Unit::where('offer_id', $offer->id)->get(['id'])->pluck('id')->all();
+		$user_ids = Attend::whereIn('unit_id', $unit_ids)->whereStatus('M')->get(['user_id'])->pluck('user_id')->all();
+		$alunos = User::whereIn('id', $user_ids)->orderBy('name')->get(['id', 'name']);
 
 		$units = Unit::where("offer_id", $offer->id)->get();
 
@@ -62,11 +71,13 @@ class LecturesController extends Controller
 			foreach ($units as $unit) {
 				$exam = $unit->getAverage($aluno->id);
 
+				$arr_tmp = $aluno->averages;
 				if ($exam[1] !== null) {
-					$aluno->averages[$unit->value] = $exam[0] < $course->average ? $exam[1] : $exam[0];
+					$arr_tmp[$unit->value] = $exam[0] < $course->average ? $exam[1] : $exam[0];
 				} else {
-					$aluno->averages[$unit->value] = $exam[0];
+					$arr_tmp[$unit->value] = $exam[0];
 				}
+				$aluno->averages = $arr_tmp;
 
 				$sum += $aluno->averages[$unit->value];
 			}
@@ -112,13 +123,27 @@ class LecturesController extends Controller
 			return redirect("/lectures")->with("error", "Você não tem acesso a essa página");
 		}
 		$units = Unit::where("offer_id", $offer->id)->get();
-		$students = DB::select("select Users.id, Users.name "
-			. "from Users, Attends, Units "
-			. "where Units.offer_id=? and Attends.unit_id=Units.id and Attends.user_id=Users.id and Attends.status = 'M'"
-			. "group by Users.id order by Users.name", [$offer->id]);
+		$students = DB::select("SELECT
+				users.id,
+				users.name
+			from
+				users,
+				attends,
+				units
+			where
+				units.offer_id=? and
+				attends.unit_id=units.id and
+				attends.user_id=users.id and
+				attends.status = 'm'
+			-- group by users.id
+			order by users.name", [$offer->id]);
 
-		return view("modules.frequency", ["user" => $user, "offer" => $offer, "units" => $units, "students" => $students]);
-		return $offer;
+		return view('modules.frequency', [
+			'user' => $user,
+			'offer' => $offer,
+			'units' => $units,
+			'students' => $students,
+		]);
 	}
 
 	public function postSort()

@@ -14,6 +14,6 @@ class Bind extends \Illuminate\Database\Eloquent\Model
 
 	public function discipline()
 	{
-		return $this->hasOne('Discipline');
+		return $this->hasOne(Discipline::class);
 	}
 }

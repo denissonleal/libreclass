@@ -1,10 +1,16 @@
 <?php namespace App\Http\Controllers;
 
+use DB;
+use App\Lesson;
+use App\Unit;
+use App\Attest;
+use App\Offer;
+
 class LessonsController extends Controller
 {
 	public function __construct()
 	{
-		$this->middleware('auth.type:I');
+		$this->middleware('auth.type:IP');
 	}
 
 	public function getIndex()
@@ -12,14 +18,20 @@ class LessonsController extends Controller
 		$user = auth()->user();
 		$lesson = Lesson::find(decrypt(request()->get("l")));
 
-		$students = DB::select("SELECT Users.name AS name, Attends.id AS attend_id, Frequencies.value AS value, Units.offer_id, Attends.user_id, Units.id AS unit_id
-			FROM Frequencies, Attends, Users, Units
-			WHERE Frequencies.attend_id=Attends.id AND
-						Attends.status != 'T' AND
-						Attends.user_id=Users.id AND
-						Frequencies.lesson_id=? AND
-						Attends.unit_id=Units.id
-			ORDER BY Users.name", [$lesson->id]);
+		$students = DB::select("SELECT
+				users.name as name,
+				attends.id as attend_id,
+				frequencies.value as value,
+				units.offer_id,
+				attends.user_id,
+				units.id as unit_id
+			from frequencies, attends, users, units
+			where frequencies.attend_id=attends.id and
+				attends.status != 't' and
+				attends.user_id=users.id and
+				frequencies.lesson_id=? and
+				attends.unit_id=units.id
+			order by users.name", [$lesson->id]);
 
 		//Obtém todas a aulas da oferta da aula para calcular atestados;
 
@@ -38,19 +50,24 @@ class LessonsController extends Controller
 				}
 
 				foreach($allLessons as $tmpLesson) {
-					if (($tmpLesson->date >= $attest->date) && ($tmpLesson->date <= $attest->dateFinish))
-					{
+					if (($tmpLesson->date >= $attest->date) && ($tmpLesson->date <= $attest->dateFinish)) {
 						$qtdAttests++;
 					}
 				}
 			}
 
-			$frequency = DB::select("SELECT Offers.maxlessons, COUNT(*) as qtd "
-																. "FROM Offers, Units, Attends, Frequencies "
-																. "WHERE Offers.id=? AND Offers.id=Units.offer_id AND Units.id=Attends.unit_id "
-																	. "AND Attends.user_id=? AND Attends.id=Frequencies.attend_id AND Frequencies.value='F'",
-															[$student->offer_id, $student->user_id])[0];
-			$student->maxlessons = $frequency->maxlessons;
+			$offer = Offer::find($student->offer_id);
+
+			$frequency = DB::select("SELECT count(*) as qtd
+				from units, attends, frequencies
+				where
+					units.offer_id=? and
+					units.id=attends.unit_id and
+					attends.user_id=? and
+					attends.id=frequencies.attend_id and
+					frequencies.value='F'", [$student->offer_id, $student->user_id])[0];
+
+			$student->maxlessons = $offer->maxlessons;
 			$student->qtd = $frequency->qtd - $qtdAttests;
 		}
 		return view("modules.lessons", ["user" => $user, "lesson" => $lesson, "students" => $students]);
@@ -257,8 +274,12 @@ class LessonsController extends Controller
 	public function anyCopy()
 	{
 		$lesson = Lesson::find(decrypt(request()->get("lesson")));
-		$auth = DB::select("SELECT COUNT(*) as qtd FROM Units, Lectures WHERE Units.id=? AND Units.offer_id=Lectures.offer_id AND Lectures.user_id=?",
-			[$lesson->unit_id, auth()->id()])[0]->qtd;
+		$auth = DB::select("SELECT count(*) as qtd
+			from units, lectures
+			where
+				units.id=? and
+				units.offer_id=lectures.offer_id and
+				lectures.user_id=?", [$lesson->unit_id, auth()->id()])[0]->qtd;
 		if (!$auth) {
 			return Response::JSON(false);
 		}

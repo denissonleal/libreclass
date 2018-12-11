@@ -35,7 +35,7 @@ class Exam extends \Illuminate\Database\Eloquent\Model
 
 	public function unit()
 	{
-		return $this->belongsTo('Unit', 'unit_id');
+		return $this->belongsTo(Unit::class);
 	}
 
 	public function descriptive_exams()

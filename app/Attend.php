@@ -57,4 +57,9 @@ class Attend extends \Illuminate\Database\Eloquent\Model
 	{
 		return Unit::find($this->unit_id);
 	}
+
+	public function unit()
+	{
+		return $this->belongsTo(Unit::class);
+	}
 }

@@ -80,16 +80,19 @@ class CSVController extends Controller
 					$cols[4] = substr($cols[4], 0, 1);
 					$cols[5] = explode("/", $cols[5]);
 					$cols[5] = $cols[5][2] . "-" . $cols[5][1] . "-" . $cols[5][0];
-					$student = DB::select("SELECT Users.id FROM Relationships, Users
-						WHERE Relationships.user_id=? AND
-							Relationships.friend_id=Users.id AND
-							Users.enrollment=?", [ auth()->id(), $cols[1] ]);
+
+					$user_ids = Relationship::where('user_id', auth()->id())
+						->get(['friend_id'])
+						->pluck('friend_id')->all();
+					$student = User::whereIn('_id', $user_ids)
+						->where('enrollment', $cols[1])->first();
+
 					$result[] = [
 						$cols[1], // matricula
 						$cols[3], // nome
 						$cols[4], // sexo
 						$cols[5], // data nascimento
-						count($student) ? $student[0]->id : 0, // se o estudante existe no sistema
+						$student ? $student->id : 0, // se o estudante existe no sistema
 						$class->name, // turma
 						$class->id, // id turma
 						$period->id // id do periodo caso precise
@@ -103,8 +106,9 @@ class CSVController extends Controller
 
 	public function getConfirmClasses()
 	{
-		if ( !session("classes") )
+		if (!session("classes")) {
 			return redirect("/import")->with("error", "Algum erro aconteceu, tente novamente.");
+		}
 
 		$s_units = false;
 		$classes = session("classes");
@@ -117,18 +121,18 @@ class CSVController extends Controller
 			$classe->save();
 
 			$disciplines = Discipline::where("period_id", $c->period_id)->get();
-			foreach ( $disciplines as $discipline)
-			{
+			foreach ( $disciplines as $discipline) {
 				$offer = new Offer;
 				$offer->discipline_id = $discipline->id;
 				$offer->classroom = "";
 				$offer->class_id = $classe->id;
 				$offer->save();
 
-				if( !$s_units )
+				if( !$s_units ) {
 					$s_units = "INSERT IGNORE INTO Units (offer_id) VALUES ($offer->id)";
-				else
+				} else {
 					$s_units .= ", ($offer->id)";
+				}
 			}
 		}
 		if($s_units) DB::insert($s_units);
@@ -149,23 +153,20 @@ class CSVController extends Controller
 		$s_attends = false;
 
 
-		if (session("attends"))
-		{
+		if (session("attends")) {
 			$attends = session("attends");
-			foreach ($attends as $attend)
-			{
-				if (!$attend[4])
-				{
-					$student = DB::select("SELECT Users.id FROM Relationships, Users
-						WHERE Relationships.user_id=? AND
-							Relationships.friend_id=Users.id AND
-							Users.enrollment=?", [ auth()->id(), $attend[0] ]);
-					if (count($student))
-					{
-						$attend[4] = $student[0]->id;
-					}
-					else
-					{
+			foreach ($attends as $attend) {
+				if (!$attend[4]) {
+
+					$user_ids = Relationship::where('user_id', auth()->id())
+						->get(['friend_id'])
+						->pluck('friend_id')->all();
+					$student = User::whereIn('_id', $user_ids)
+						->where('enrollment', $cols[1])->first();
+
+					if (count($student)) {
+						$attend[4] = $student->id;
+					} else {
 						$student = new User;
 						$student->type = "N";
 						$student->enrollment = $attend[0];
@@ -175,10 +176,11 @@ class CSVController extends Controller
 						$student->save();
 						$attend[4] = $student->id;
 
-						if( !$s_relations )
+						if( !$s_relations ) {
 							$s_relations = "INSERT IGNORE INTO Relationships (user_id, friend_id, type ) VALUES (".auth()->id().", $student->id, '1')";
-						else
+						} else {
 							$s_relations .= ", (".auth()->id().", $student->id, '1')";
+						}
 					}
 				}
 				if (!($units and $units[0]->class_id == $attend[6]))
@@ -192,19 +194,23 @@ class CSVController extends Controller
 						WHERE Offers.class_id=? AND Units.offer_id=Offers.id ORDER BY Units.value DESC", [$attend[6]]);
 				}
 				foreach ($units as $unit) {
-					if (!Attend::where("unit_id", $unit->id)->where("user_id", $attend[4])->first())
-					{
-						if( !$s_attends )
+					if (!Attend::where("unit_id", $unit->id)->where("user_id", $attend[4])->first()) {
+						if( !$s_attends ) {
 							$s_attends = "INSERT IGNORE INTO Attends (unit_id, user_id) VALUES ($unit->id, ".$attend[4].")";
-						else
+						} else {
 							$s_attends .= ", ($unit->id, ".$attend[4].")";
-					}
-					else
+						}
+					} else {
 						break;
+					}
 				}
 			}
-			if($s_relations) DB::insert($s_relations);
-			if($s_attends)   DB::insert($s_attends);
+			if ($s_relations) {
+				DB::insert($s_relations);
+			}
+			if ($s_attends) {
+				DB::insert($s_attends);
+			}
 
 			return redirect("/import")->with("success", "Alunos matriculados com sucesso.");
 		}

@@ -48,6 +48,6 @@ class Lesson extends \Illuminate\Database\Eloquent\Model
 
 	public function unit()
 	{
-		return $this->belongsTo('Unit');
+		return $this->belongsTo(Unit::class);
 	}
 }

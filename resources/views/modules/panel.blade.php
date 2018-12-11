@@ -156,7 +156,9 @@
             </div>
         </li>
 
-        {{ ""; $i = count($lessons) }}
+        @php
+          $i = count($lessons);
+        @endphp
         @forelse( $lessons as $lesson )
           <li class="panel panel-default panel-daily data" key="{{encrypt($lesson->id)}}">
 
@@ -272,9 +274,9 @@
         @endif
 
 
-
-
-        {{ ""; $i = count($exams) }}
+        @php
+          $i = count($exams);
+        @endphp
         @forelse( $exams as $exam )
           <li class="panel panel-default panel-daily data" key="{{encrypt($exam->id)}}">
             <div class="panel-heading">

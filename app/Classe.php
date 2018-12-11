@@ -2,6 +2,7 @@
 
 class Classe extends \Illuminate\Database\Eloquent\Model
 {
+	public $table = 'classes';
 	/**
 	 * The attributes that are mass assignable.
 	 *

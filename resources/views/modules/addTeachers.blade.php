@@ -102,7 +102,7 @@
                 @endif
 
                 @for ( $i = $ini ; $i < $fim ; $i++ )
-                  <li {{ ($i == $current ? "class='active'" : "") }} ><a href="{{ $i }}">{{ $i+1 }} {{ ($i == $current ? "<span class='sr-only'>(current)</span>" : "") }}</a></li>
+                  <li {{ ($i == $current ? "class='active'" : "") }} ><a href="{{ $i }}">{{ $i+1 }} {!! ($i == $current ? "<span class='sr-only'>(current)</span>" : "") !!}</a></li>
                 @endfor
 
                 @if( $fim <= (int)($length/$block-1) )

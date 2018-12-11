@@ -27,7 +27,7 @@ class Unit extends \Illuminate\Database\Eloquent\Model
 
 	public function offer()
 	{
-		return $this->belongsTo('Offer', 'offer_id');
+		return $this->belongsTo(Offer::class);
 	}
 
 	public function getOffer()
@@ -48,9 +48,12 @@ class Unit extends \Illuminate\Database\Eloquent\Model
 		$weight = 0.;
 
 		foreach ($exams as $exam) {
-			$value = ExamsValue::where("exam_id", $exam->id)->where("attend_id", $attend->id)->first();
+			$value = ExamsValue::where("exam_id", $exam->id)
+				->where("attend_id", $attend->id)
+				->first();
+
 			if ($value) {
-				$sum += $value->value * ($this->calculation == "W" ? $exam->weight : 1);
+				$sum += ((float) $value->value) * ($this->calculation == "W" ? $exam->weight : 1);
 			}
 			/* so multiplica pelo peso quando for média ponderada */
 			$weight += $exam->weight;

@@ -1,6 +1,8 @@
 <?php namespace App\Http\Controllers;
 
 use App\Unit;
+use App\Lesson;
+use App\Exam;
 
 class UnitsController extends Controller
 {
@@ -201,8 +203,8 @@ class UnitsController extends Controller
 			$institution->local = $institution->printCityState();
 			$data['institution'] = $institution;
 			$data['classe'] = $unit->offer->getClass();
-			$data['period'] = $unit->offer->classe->getPeriod();
-			$data['course'] = $unit->offer->classe->period->getCourse();
+			$data['period'] = $unit->offer->classe->period;
+			$data['course'] = $unit->offer->classe->period->course;
 
 			$offer = Offer::find($unit->offer_id);
 
@@ -325,8 +327,8 @@ class UnitsController extends Controller
 			$institution->local = $institution->printCityState();
 			$data['institution'] = $institution;
 			$data['classe'] = $unit->offer->getClass();
-			$data['period'] = $unit->offer->classe->getPeriod();
-			$data['course'] = $unit->offer->classe->period->getCourse();
+			$data['period'] = $unit->offer->classe->period;
+			$data['course'] = $unit->offer->classe->period->course;
 
 			$offer = Offer::find($unit->offer_id);
 

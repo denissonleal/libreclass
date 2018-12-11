@@ -15,11 +15,11 @@ class Frequency extends \Illuminate\Database\Eloquent\Model
 
 	public static function getValue($user, $lesson)
 	{
-		$attend_ids = Attend::where('user_id', $user)->get(['_id']);
+		$attend_ids = Attend::where('user_id', $user)->get(['id']);
 
-		$value = Frequency::where('exam_id', $lesson)
+		$value = Frequency::where('lesson_id', $lesson)
 			->whereIn('attend_id', $attend_ids)
-			->first(['value']);
+			->first();
 
 		return $value ? $value->value : '';
 	}

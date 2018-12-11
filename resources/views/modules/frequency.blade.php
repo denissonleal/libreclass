@@ -49,7 +49,7 @@
         <tr>
           <td>{{ $student->name }}</td>
           @foreach ( $list as $lesson )
-          <td style="width: 25px;"><span>{{ Frequency::getValue($student->id, $lesson["id"]) == "P" ? "." : Frequency::getValue($student->id, $lesson["id"]) }}</span></td>
+          <td style="width: 25px;"><span>{{ \App\Frequency::getValue($student->id, $lesson["id"]) == "P" ? "." : \App\Frequency::getValue($student->id, $lesson["id"]) }}</span></td>
           @endforeach
         </tr>
       @endforeach

@@ -21,7 +21,7 @@
           <h3 class="text-blue"><i class="fa fa fa-bar-chart-o"></i> <b>RESULTADO FINAL</b></h3>
         </div>
         <div class="col-sm-2 col-xs-12">
-          <a href='{{ URL::to("lectures") }}' class="btn btn-default btn-block btn-block-xs">Voltar</a>
+          <a href='{{ url("lectures") }}' class="btn btn-default btn-block btn-block-xs">Voltar</a>
         </div>
 
       </div>
@@ -31,12 +31,16 @@
 
           <div class="row">
             <div class="col-md-12">
-              <p ><b>Curso:</b> {{ $offer->getDiscipline()->getPeriod()->getCourse()->name . " - "}}
-                <b>Período: </b> {{ $offer->getDiscipline()->getPeriod()->name  }}</p>
-              <p ><b>Disciplina: </b>{{ $offer->getDiscipline()->name }}</p>
-              <p ><b>Turma: </b>{{ $offer->getClass()->name ." - " }}
-                <b>Sala: </b> {{ $offer->getClass()->classroom }}</p>
-              <p ><b>Professor: </b> {{ $user->name }}</p>
+              <p>
+                <b>Curso:</b> {{ $offer->discipline->period->course->name . " - "}}
+                <b>Período: </b> {{ $offer->discipline->period->name  }}
+              </p>
+              <p><b>Disciplina: </b>{{ $offer->discipline->name }}</p>
+              <p>
+                <b>Turma: </b>{{ $offer->classe->name ." - " }}
+                <b>Sala: </b> {{ $offer->classe->classroom }}
+              </p>
+              <p><b>Professor: </b> {{ $user->name }}</p>
             </div>
 
             <br>
@@ -49,10 +53,9 @@
                     <thead>
                       <tr>
                         <th>Aluno</th>
-
-        @foreach($units as $unit)
-                        <th>{{ "U". $unit->value }}</th>
-        @endforeach
+                        @foreach($units as $unit)
+                          <th>{{ "U". $unit->value }}</th>
+                        @endforeach
                         <th>Média</th>
                         <th>Rec. Final</th>
                         <th>Faltas</th>
@@ -103,11 +106,7 @@
               </div>
             </div>
           </div>
-
     </div>
-
-
-
   </div>
 </div>
 

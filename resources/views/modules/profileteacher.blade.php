@@ -55,8 +55,8 @@
         <div class="col-xs-12">
           <table class="table table-hover">
             <tbody>
-              @foreach($profile->offers as $offer)
-                @if($offer->classe->period->course->institution_id == $user->id)
+              @foreach (collect($profile->offers) as $i => $offer)
+                @if ($offer->classe->period->course->institution_id == $user->id)
                 <tr>
                   <td>
                     <span class="bold">{{ $offer->discipline->name }}</span><br>
@@ -86,7 +86,7 @@
         <div class="col-xs-12">
           <table class="table table-hover">
             <tbody>
-              @foreach($profile->disciplines as $discipline)
+              @foreach(collect($profile->disciplines) as $discipline)
                 @if($discipline->period->course->institution_id == $user->id)
                   <tr>
                     <td>

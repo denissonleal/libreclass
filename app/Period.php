@@ -27,4 +27,9 @@ class Period extends \Illuminate\Database\Eloquent\Model
 	{
 		return $this->hasMany(Discipline::class);
 	}
+
+	public function course()
+	{
+		return $this->belongsTo(Course::class);
+	}
 }

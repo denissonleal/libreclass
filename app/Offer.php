@@ -1,5 +1,7 @@
 <?php namespace App;
 
+use DB;
+
 class Offer extends \Illuminate\Database\Eloquent\Model
 {
 	/**
@@ -39,27 +41,27 @@ class Offer extends \Illuminate\Database\Eloquent\Model
 
 	public function master()
 	{
-		return $this->belongsTo('Offer', 'offer_id');
+		return $this->belongsTo(Offer::class);
 	}
 
 	public function slaves()
 	{
-		return $this->hasMany('Offer', 'offer_id');
+		return $this->hasMany(Offer::class);
 	}
 
 	public function discipline()
 	{
-		return $this->belongsTo('Discipline', 'discipline_id');
+		return $this->belongsTo(Discipline::class);
 	}
 
 	public function units()
 	{
-		return $this->hasMany('Unit', 'offer_id');
+		return $this->hasMany(Unit::class);
 	}
 
 	public function classe()
 	{
-		return $this->belongsTo('Classe', 'class_id');
+		return $this->belongsTo(Classe::class, 'class_id');
 	}
 
 	public function getDiscipline()
@@ -99,62 +101,64 @@ class Offer extends \Illuminate\Database\Eloquent\Model
 
 	public function qtdAbsences($student_id)
 	{
-		return DB::select("SELECT COUNT(*) as 'qtd'
-												FROM Units, Attends, Lessons, Frequencies
-												WHERE Units.offer_id=? AND
-															Units.id=Lessons.unit_id AND
-															Lessons.id=Frequencies.lesson_id AND
-															Lessons.deleted_at IS NULL AND
-															Frequencies.attend_id=Attends.id AND
-															Frequencies.value='F' AND
-															Attends.user_id=?", [$this->id, $student_id])[0]->qtd;
+		return DB::select("SELECT count(*) as 'qtd'
+			from units, attends, lessons, frequencies
+			where units.offer_id=? and
+				units.id=lessons.unit_id and
+				lessons.id=frequencies.lesson_id and
+				lessons.deleted_at is null and
+				frequencies.attend_id=attends.id and
+				frequencies.value='f' and
+				attends.user_id=?", [$this->id, $student_id])[0]->qtd;
 	}
 
 	public function qtdUnitAbsences($student_id, $unitValue)
 	{
-		return DB::select("SELECT COUNT(*) as 'qtd'
-												FROM Units, Attends, Lessons, Frequencies
-												WHERE Units.offer_id = ? AND
-															Units.value = ? AND
-															Units.id = Lessons.unit_id AND
-															Lessons.id = Frequencies.lesson_id AND
-															Lessons.deleted_at IS NULL AND
-															Frequencies.attend_id = Attends.id AND
-															Frequencies.value = 'F' AND
-															Attends.user_id = ?", [$this->id, $unitValue, $student_id])[0]->qtd;
+		return DB::select("SELECT count(*) as 'qtd'
+			from units, attends, lessons, frequencies
+			where units.offer_id = ? and
+				units.value = ? and
+				units.id = lessons.unit_id and
+				lessons.id = frequencies.lesson_id and
+				lessons.deleted_at is null and
+				frequencies.attend_id = attends.id and
+				frequencies.value = 'f' and
+				attends.user_id = ?", [$this->id, $unitValue, $student_id])[0]->qtd;
 	}
 
 	public function qtdLessons()
 	{
-		return DB::select("SELECT COUNT(*) as 'qtd'
-												FROM Units, Lessons
-												WHERE Units.offer_id=? AND
-															Units.id=Lessons.unit_id AND
-															Lessons.deleted_at IS NULL", [$this->id])[0]->qtd;
+		return DB::select("SELECT count(*) as 'qtd'
+			from units, lessons
+			where units.offer_id=? and
+						units.id=lessons.unit_id and
+						lessons.deleted_at is null", [$this->id])[0]->qtd;
 	}
 
 	public function lessons()
 	{
 		return DB::select("SELECT *
-												FROM Units, Lessons
-												WHERE Units.offer_id=? AND
-															Units.id=Lessons.unit_id AND
-															Lessons.deleted_at IS NULL", [$this->id]);
+			from units, lessons
+			where units.offer_id=? and
+						units.id=lessons.unit_id and
+						lessons.deleted_at is null", [$this->id]);
 	}
 
 	public function qtdUnitLessons($unitValue)
 	{
-		return DB::select("SELECT COUNT(*) as 'qtd'
-												FROM Units, Lessons
-												WHERE Units.offer_id=? AND
-															Units.value=? AND
-															Units.id=Lessons.unit_id AND
-															Lessons.deleted_at IS NULL", [$this->id, $unitValue])[0]->qtd;
+		return DB::select("SELECT count(*) as 'qtd'
+			from units, lessons
+			where units.offer_id=? and
+				units.value=? and
+				units.id=lessons.unit_id and
+				lessons.deleted_at is null", [$this->id, $unitValue])[0]->qtd;
 	}
 
 	public function getCourse()
 	{
-		$course = DB::select("SELECT Periods.course_id FROM Classes, Periods WHERE ?=Classes.id AND Classes.period_id=Periods.id", [$this->class_id])[0]->course_id;
+		$course = DB::select("SELECT periods.course_id
+			from classes, periods
+			where ?=classes.id and classes.period_id=periods.id", [$this->class_id])[0]->course_id;
 		return Course::find($course);
 	}
 

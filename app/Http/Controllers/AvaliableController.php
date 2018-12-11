@@ -1,5 +1,12 @@
 <?php namespace App\Http\Controllers;
 
+use Exception;
+use Log;
+use App\Exam;
+use App\Attend;
+use App\ExamsValue;
+use App\Unit;
+
 class AvaliableController extends Controller
 {
 	public function __construct()
@@ -89,7 +96,7 @@ class AvaliableController extends Controller
 			$value = (float) str_replace(",", ".", request()->get("value"));
 
 			$a = Attend::find($attend);
-			$average = $a->getUnit()->getOffer()->getClass()->getPeriod()->getCourse()->average;
+			$average = $a->unit->offer->classe->period->course->average;
 
 			if (($average > 10 && ($value > 100 || $value < 0)) || ($average <= 10 && ($value > 10 || $value < 0))) {
 				throw new Exception('Invalid value.');
@@ -154,7 +161,7 @@ class AvaliableController extends Controller
 				$final->unit_id = $unit;
 				$final->date = date("Y-m-d");
 			}
-			$course = Unit::find($unit)->getOffer()->getDiscipline()->getPeriod()->getCourse();
+			$course = Unit::find($unit)->getOffer()->getDiscipline()->getPeriod()->course;
 			$attends = Attend::where("unit_id", $unit)->get();
 			return view("modules.units.retrieval", ["exam" => $final, "user" => $user, "attends" => $attends, "average" => $course->average]);
 		} catch (Exception $e) {
@@ -197,7 +204,7 @@ class AvaliableController extends Controller
 			$student = decrypt(request()->get("student"));
 			$value = (float) str_replace(",", ".", request()->get("value"));
 
-			$average = Offer::find($offer)->getClass()->getPeriod()->getCourse()->average;
+			$average = Offer::find($offer)->getClass()->getPeriod()->course->average;
 
 			if (($average > 10 && ($value > 100 || $value < 0)) || ($average <= 10 && ($value > 10 || $value < 0))) {
 				throw new Exception('Invalid value.');
@@ -236,7 +243,7 @@ class AvaliableController extends Controller
 			return redirect("/logout");
 		}
 		$units = Unit::where("offer_id", $offer->id)->get();
-		$course = Offer::find($offer->id)->getDiscipline()->getPeriod()->getCourse();
+		$course = Offer::find($offer->id)->getDiscipline()->getPeriod()->course;
 		$alunos = DB::select("SELECT Users.id, Users.name
 			from Attends, Units, Users
 			where Units.offer_id=?

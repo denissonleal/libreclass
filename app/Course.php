@@ -47,4 +47,9 @@ class Course extends \Illuminate\Database\Eloquent\Model
 	{
 		$this->attributes['average_final'] = (float) $value;
 	}
+
+	public function institution()
+	{
+		return $this->belongsTo(User::class, 'institution_id');
+	}
 }

@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use DB;
 use App\User;
 use App\Course;
 use App\Relationship;
@@ -91,28 +92,26 @@ class UsersController extends Controller
 			$listCourses[$course->name] = $course->name;
 		}
 
-		$relationships = [];
-		// DB::select("SELECT Users.id, Users.name, Relationships.enrollment, Users.type
-		// 	FROM Users, Relationships
-		// 	WHERE Relationships.user_id=?
-		// 		AND Relationships.type='2'
-		// 		AND Relationships.friend_id=Users.id
-		// 		AND Relationships.status='E'
-		// 		AND (Users.name LIKE ? OR Relationships.enrollment=?)
-		// 	ORDER BY name LIMIT ? OFFSET ?",
-		// 	[auth()->id(), "%$search%", $search, $block, $current * $block]);
+		$relationships = DB::select("SELECT users.id, users.name, relationships.enrollment, users.type
+			from users, relationships
+			where relationships.user_id=?
+				and relationships.type='2'
+				and relationships.friend_id=users.id
+				and relationships.status='e'
+				and (users.name like ? or relationships.enrollment=?)
+			order by name limit ? offset ?",
+			[auth()->id(), "%$search%", $search, $block, $current * $block]);
 
 		// $enrollment = preg_replace('/\D/', '', $search);
 		// if ($enrollment) {
 		// }
 
-		$length = [(object) ['length' => 0]];
-		// DB::select("SELECT count(*) as 'length'
-		// 	FROM Users, Relationships
-		// 	WHERE Relationships.user_id=?
-		// 		AND Relationships.type='2'
-		// 		AND Relationships.friend_id=Users.id
-		// 		AND (Users.name LIKE ? OR Relationships.enrollment=?) ", [auth()->id(), "%$search%", $search]);
+		$length = DB::select("SELECT count(*) as 'length'
+			from users, relationships
+			where relationships.user_id=?
+				and relationships.type='2'
+				and relationships.friend_id=users.id
+				and (users.name like ? or relationships.enrollment=?) ", [auth()->id(), "%$search%", $search]);
 
 		return view('modules.addTeachers', [
 			'courses' => $listCourses,
@@ -224,21 +223,20 @@ class UsersController extends Controller
 		if ($profile) {
 			$profile = User::find($profile);
 
-			$courses = collect();
-			// DB::select("SELECT Courses.id, Courses.name, Courses.quant_unit
-			// 	FROM Attends, Units, Offers, Disciplines, Periods, Courses
-			// 	WHERE Units.id = Attends.unit_id
-			// 		AND Offers.id = Units.offer_id
-			// 		AND Disciplines.id = Offers.discipline_id
-			// 		AND Periods.id = Disciplines.period_id
-			// 		AND Courses.id = Periods.course_id
-			// 		AND Attends.user_id = ?
-			// 	GROUP BY Courses.id", [$profile->id]);
+			$courses = DB::select("SELECT courses.id, courses.name, courses.quant_unit
+				FROM attends, units, offers, disciplines, periods, courses
+				WHERE units.id = attends.unit_id
+					AND offers.id = units.offer_id
+					AND disciplines.id = offers.discipline_id
+					AND periods.id = disciplines.period_id
+					AND courses.id = periods.course_id
+					AND attends.user_id = ?
+				GROUP BY courses.id", [$profile->id]);
 
 			$listCourses = [];
-			// foreach ($courses as $course) {
-			// 	$listCourses[encrypt($course->id)] = "$course->name";
-			// }
+			foreach ($courses as $course) {
+				$listCourses[encrypt($course->id)] = "$course->name";
+			}
 
 			$attests = Attest::where('student_id', $profile->id)
 				->where('institution_id', $user->id)
@@ -271,10 +269,24 @@ class UsersController extends Controller
 	public function anyReporterStudentClass()
 	{
 		$student = decrypt(request()->get("student"));
-		$disciplines = DB::select("SELECT  Courses.id as course, Disciplines.name, Offers.id as offer, Attends.id as attend, Classes.status as statusclasse "
-			. "FROM Classes, Periods, Courses, Disciplines, Offers, Units, Attends "
-			. "WHERE Courses.institution_id=? AND Courses.id=Periods.course_id AND Periods.id=Classes.period_id AND Classes.school_year=? AND Classes.id=Offers.class_id AND Offers.discipline_id=Disciplines.id AND Offers.id=Units.offer_id AND Units.id=Attends.unit_id AND Attends.user_id=? "
-			. "group by Offers.id",
+		$disciplines = DB::select("SELECT
+				courses.id as course,
+				disciplines.name,
+				offers.id as offer,
+				attends.id as attend,
+				classes.status as statusclasse
+			from classes, periods, courses, disciplines, offers, units, attends
+			where
+				courses.institution_id=? and
+				courses.id=periods.course_id and
+				periods.id=classes.period_id and
+				classes.school_year=? and
+				classes.id=offers.class_id and
+				offers.discipline_id=disciplines.id and
+				offers.id=units.offer_id and
+				units.id=attends.unit_id and
+				attends.user_id=?
+			group by offers.id",
 			[auth()->id(), request()->get("class"), $student]);
 
 		foreach ($disciplines as $discipline) {
