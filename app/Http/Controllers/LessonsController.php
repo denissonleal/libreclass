@@ -5,6 +5,8 @@ use App\Lesson;
 use App\Unit;
 use App\Attest;
 use App\Offer;
+use App\Attend;
+use App\Frequency;
 
 class LessonsController extends Controller
 {
@@ -163,10 +165,10 @@ class LessonsController extends Controller
 		$lesson->notes = request()->get("notes");
 		$lesson->save();
 
-		$unit = DB::select("SELECT Units.id, Units.status
-													FROM Units, Lessons
-													WHERE Units.id = Lessons.unit_id AND
-														Lessons.id=?", [$lesson->id]);
+		$unit = DB::select("SELECT units.id, units.status
+			FROM units, lessons
+			WHERE units.id = lessons.unit_id AND
+				lessons.id=?", [$lesson->id]);
 
 		return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("success", "Aula atualizada com sucesso");
 	}
@@ -177,31 +179,41 @@ class LessonsController extends Controller
 		$lesson_id = decrypt(request()->get("lesson_id"));
 		$value = request()->get("value") == "P" ? "F" : "P";
 
-		$offer_id = DB::select(
-			"SELECT Units.offer_id "
-			. "  FROM Lessons, Units "
-			. "WHERE Lessons.id = ? "
-			. "  AND Lessons.unit_id = Units.id",
+		$offer_id = DB::select("SELECT units.offer_id
+			FROM lessons, units
+			WHERE
+				lessons.id = ? AND
+				lessons.unit_id = units.id",
 			[$lesson_id]
 		)[0]->offer_id;
 
-		$status = Frequency::where("attend_id", $attend->id)->where("lesson_id", $lesson_id)->update(["value" => $value]);
+		$status = Frequency::where("attend_id", $attend->id)
+			->where("lesson_id", $lesson_id)
+			->update(["value" => $value]);
 
-		$frequency = DB::select(
-			"SELECT Offers.maxlessons, COUNT(*) as qtd "
-			. "  FROM Offers, Units, Attends, Frequencies "
-			. "WHERE Offers.id = ? "
-			. "  AND Offers.id = Units.offer_id "
-			. "  AND Units.id = Attends.unit_id "
-			. "  AND Attends.user_id = ? "
-			. "  AND Attends.id = Frequencies.attend_id "
-			. "  AND Frequencies.value = 'F'",
+		$offer = Offer::find($offer_id);
+
+		$frequency = collect(DB::select("SELECT count(*) as qtd
+			from
+				units,
+				attends,
+				frequencies
+			where
+				units.offer_id = ? and
+				units.id = attends.unit_id and
+				attends.user_id = ? and
+				attends.id = frequencies.attend_id and
+				frequencies.value = 'F'",
 			[$offer_id, $attend->user_id]
-		)[0];
+		))->first();
 
 		$this->slavesFrequency($attend->id, $lesson_id, $value);
 
-		return Response::json(["status" => $status, "value" => $value, "frequency" => sprintf("%d (%.1f %%)", $frequency->qtd, 100. * $frequency->qtd / $frequency->maxlessons)]);
+		return [
+			'status' => $status,
+			'value' => $value,
+			'frequency' => sprintf("%d (%.1f %%)", $frequency->qtd, 100. * $frequency->qtd / $offer->maxlessons),
+		];
 	}
 
 	/**
@@ -239,10 +251,10 @@ class LessonsController extends Controller
 	{
 		$lesson = Lesson::find(decrypt(request()->get("input-trash")));
 
-		$unit = DB::select("SELECT Units.id, Units.status
-													FROM Units, Lessons
-													WHERE Units.id = Lessons.unit_id AND
-														Lessons.id=?", [$lesson->id]);
+		$unit = DB::select("SELECT units.id, units.status
+			FROM units, lessons
+			WHERE units.id = lessons.unit_id AND
+				lessons.id=?", [$lesson->id]);
 
 		if ($unit[0]->status == 'D') {
 			return redirect("/lectures/units?u=" . encrypt($unit[0]->id))->with("error", "Não foi possível deletar.<br>Unidade desabilitada.");
@@ -324,8 +336,20 @@ class LessonsController extends Controller
 	 */
 	public function postListOffers()
 	{
-		$offers = DB::select("SELECT Offers.id, Disciplines.name, Classes.class, Periods.name as `periodName`, Courses.name as `courseName` FROM Lectures, Offers, Classes, Disciplines, Periods, Courses "
-			. "WHERE Lectures.user_id=? AND Lectures.offer_id=Offers.id AND Offers.class_id=Classes.id AND Offers.discipline_id=Disciplines.id AND Disciplines.period_id=Periods.id AND Periods.course_id=Courses.id",
+		$offers = DB::select("SELECT
+				offers.id,
+				disciplines.name,
+				classes.class,
+				periods.name as `periodName`,
+				courses.name as `courseName`
+			FROM lectures, offers, classes, disciplines, periods, courses
+			WHERE
+				lectures.user_id=? AND
+				lectures.offer_id=offers.id AND
+				offers.class_id=classes.id AND
+				offers.discipline_id=disciplines.id AND
+				disciplines.period_id=periods.id AND
+				periods.course_id=courses.id",
 			[auth()->id()]);
 
 		foreach ($offers as $offer) {
