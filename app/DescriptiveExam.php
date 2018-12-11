@@ -16,6 +16,16 @@ class DescriptiveExam extends \Illuminate\Database\Eloquent\Model
 
 	public function student()
 	{
-		return $this->belongsTo('Attend', 'attend_id')->first()->getUser();
+		return $this->attend->user;
+	}
+
+	public function attend()
+	{
+		return $this->belongsTo(Attend::class);
+	}
+
+	public function exam()
+	{
+		return $this->belongsTo(Exam::class);
 	}
 }

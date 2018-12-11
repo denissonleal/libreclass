@@ -34,4 +34,14 @@ class Relationship extends \Illuminate\Database\Eloquent\Model
 	{
 		return User::find($this->friend_id);
 	}
+
+	public function user()
+	{
+		return $this->belongsTo(User::class, 'user_id');
+	}
+
+	public function friend()
+	{
+		return $this->belongsTo(User::class, 'friend_id');
+	}
 }

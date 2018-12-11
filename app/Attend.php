@@ -62,4 +62,9 @@ class Attend extends \Illuminate\Database\Eloquent\Model
 	{
 		return $this->belongsTo(Unit::class);
 	}
+
+	public function user()
+	{
+		return $this->belongsTo(User::class);
+	}
 }
