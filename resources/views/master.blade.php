@@ -18,10 +18,10 @@
   <link rel="stylesheet" type="text/css" href="/css/validation.css">
 
   <!-- Scripts are placed here -->
-  <link rel="stylesheet" type="text/css" href="/js/jquery.min.js" asyn defer>
-  <link rel="stylesheet" type="text/css" href="/js/bootstrap.min.js" asyn defer>
-  <link rel="stylesheet" type="text/css" href="/js/register.js" asyn defer>
-  <link rel="stylesheet" type="text/css" href="/js/menu.js" asyn defer>
+  <script type="text/javascript" src="/js/jquery.min.js"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/js/register.js"></script>
+  <script type="text/javascript" src="/js/menu.js"></script>
 
   <script type="text/javascript">
     if (navigator.userAgent.match(/msie/i) || navigator.userAgent.match(/trident/i) ){

@@ -7,9 +7,9 @@ Login
 
 @section('extraJS')
 @parent
-	<script type="text/javascript" scr="/lib/additional-methods.min.js"></script>
-	<script type="text/javascript" scr="/lib/jquery.validate.min.js"></script>
-	<script type="text/javascript" scr="/js/validations/usersLogin.js"></script>
+	{{-- <script type="text/javascript" src="/lib/additional-methods.min.js"></script> --}}
+	<script type="text/javascript" src="/lib/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="/js/validations/usersLogin.js"></script>
 @stop
 
 @section('body')
